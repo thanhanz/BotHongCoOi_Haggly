@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="../Haggly.Modules.Inventory.Domain/Haggly.Modules.Inventory.Domain.csproj" />
-    <ProjectReference Include="../Haggly.Modules.Inventory.Application/Haggly.Modules.Inventory.Application.csproj" />
-    <ProjectReference Include="../Haggly.Modules.Inventory.Contracts/Haggly.Modules.Inventory.Contracts.csproj" />
-    <ProjectReference Include="../../../BuildingBlocks/Haggly.Infrastructure/Haggly.Infrastructure.csproj" />
-  </ItemGroup>
-</Project>

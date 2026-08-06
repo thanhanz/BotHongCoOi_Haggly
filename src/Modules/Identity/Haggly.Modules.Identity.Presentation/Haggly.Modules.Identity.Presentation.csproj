@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <ProjectReference Include="../Haggly.Modules.Identity.Application/Haggly.Modules.Identity.Application.csproj" />
-    <ProjectReference Include="../Haggly.Modules.Identity.Contracts/Haggly.Modules.Identity.Contracts.csproj" />
-  </ItemGroup>
-</Project>

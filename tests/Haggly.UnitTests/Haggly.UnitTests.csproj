@@ -2,7 +2,5 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Haggly.Domain/Haggly.Domain.csproj" />
     <ProjectReference Include="../../src/Haggly.Application/Haggly.Application.csproj" />
-    <ProjectReference Include="../../src/Haggly.Infrastructure/Haggly.Infrastructure.csproj" />
-    <ProjectReference Include="../../src/Haggly.Api/Haggly.Api.csproj" />
   </ItemGroup>
 </Project>
