@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../BuildingBlocks/Haggly.Infrastructure/Haggly.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Identity/Haggly.Modules.Identity.Infrastructure/Haggly.Modules.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Identity/Haggly.Modules.Identity.Presentation/Haggly.Modules.Identity.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/MarketManagement/Haggly.Modules.MarketManagement.Infrastructure/Haggly.Modules.MarketManagement.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/MarketManagement/Haggly.Modules.MarketManagement.Presentation/Haggly.Modules.MarketManagement.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/Catalog/Haggly.Modules.Catalog.Infrastructure/Haggly.Modules.Catalog.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Catalog/Haggly.Modules.Catalog.Presentation/Haggly.Modules.Catalog.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/Inventory/Haggly.Modules.Inventory.Infrastructure/Haggly.Modules.Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Inventory/Haggly.Modules.Inventory.Presentation/Haggly.Modules.Inventory.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/Sales/Haggly.Modules.Sales.Infrastructure/Haggly.Modules.Sales.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Sales/Haggly.Modules.Sales.Presentation/Haggly.Modules.Sales.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/Payments/Haggly.Modules.Payments.Infrastructure/Haggly.Modules.Payments.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Payments/Haggly.Modules.Payments.Presentation/Haggly.Modules.Payments.Presentation.csproj" />
+    <ProjectReference Include="../../Modules/Finance/Haggly.Modules.Finance.Infrastructure/Haggly.Modules.Finance.Infrastructure.csproj" />
+    <ProjectReference Include="../../Modules/Finance/Haggly.Modules.Finance.Presentation/Haggly.Modules.Finance.Presentation.csproj" />
+  </ItemGroup>
+</Project>

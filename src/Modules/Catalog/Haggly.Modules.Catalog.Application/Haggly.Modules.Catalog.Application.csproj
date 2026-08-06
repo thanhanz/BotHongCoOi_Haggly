@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Haggly.Modules.Catalog.Domain/Haggly.Modules.Catalog.Domain.csproj" />
+    <ProjectReference Include="../Haggly.Modules.Catalog.Contracts/Haggly.Modules.Catalog.Contracts.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Haggly.Application.Abstractions/Haggly.Application.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

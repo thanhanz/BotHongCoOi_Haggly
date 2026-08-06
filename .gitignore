@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+appsettings.Local.json
+database/local/*
+!database/local/.gitkeep

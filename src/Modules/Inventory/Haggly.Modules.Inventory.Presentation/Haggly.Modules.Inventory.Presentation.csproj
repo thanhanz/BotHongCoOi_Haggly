@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="../Haggly.Modules.Inventory.Application/Haggly.Modules.Inventory.Application.csproj" />
+    <ProjectReference Include="../Haggly.Modules.Inventory.Contracts/Haggly.Modules.Inventory.Contracts.csproj" />
+  </ItemGroup>
+</Project>
