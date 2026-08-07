@@ -74,6 +74,20 @@ For business behavior, inspect in this order:
 
 Do not put business decisions in endpoints, EF mappings, or adapters.
 
+## Test-first development (TDD)
+
+For every new feature or behavior change:
+
+1. Write the relevant test cases first.
+2. Run the tests and confirm the new tests fail for the expected reason.
+3. Implement the new function or modify the existing code.
+4. Run the tests again.
+5. Review and refactor the implementation while keeping all tests passing.
+
+Do not implement production behavior before its tests unless the user explicitly
+requests otherwise.
+
+
 ## Boundaries
 
 Allowed dependencies:
