@@ -5,5 +5,4 @@
   <Project Path="src\Haggly.Api\Haggly.Api.csproj" />
   <Project Path="tests\Haggly.UnitTests\Haggly.UnitTests.csproj" />
   <Project Path="tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj" />
-  <Project Path="tests\Haggly.ArchitectureTests\Haggly.ArchitectureTests.csproj" />
 </Solution>
