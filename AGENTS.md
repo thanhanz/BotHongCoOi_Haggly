@@ -37,6 +37,17 @@ guided the change.
 
 ## Business routing
 
+Module-specific guides under `docs/agent-guides/` have not been implemented yet.
+
+Until they exist:
+
+- Use this root `AGENTS.md` for repository-wide implementation rules.
+- Use `ARCHITECTURE.md` for architecture and module ownership.
+- Do not search for or depend on nonexistent module guides.
+- Derive new conventions from the first validated vertical slices before
+  documenting them as reusable guidance.
+
+
 | Concern | Owner | Read next | Expected roots |
 |---|---|---|---|
 | Users, profiles, roles, authentication | Identity | `docs/agent-guides/identity.md` | `Modules/Identity`, `Infrastructure/Authentication` |
