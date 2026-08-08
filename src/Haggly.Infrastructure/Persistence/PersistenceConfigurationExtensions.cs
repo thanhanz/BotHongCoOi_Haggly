@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Haggly.Application.Modules.Identity.Registration;
+using Haggly.Application.Abstractions.Identity;
+using Haggly.Infrastructure.Authentication;
+using Haggly.Infrastructure.Persistence.Repositories.Identity;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -28,9 +32,16 @@ public static class PersistenceConfigurationExtensions
 
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
-
-        // Register your repositories here, for example:
-        // services.AddScoped<IYourRepository, YourRepositoryImplementation>();
+        services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
+        services.AddScoped<IIdentityPasswordHasher, AspNetIdentityPasswordHasher>();
+        services.AddScoped<RegisterBuyerHandler>();
+        services.AddScoped<RegisterVendorHandler>();
+        
+        // Register strategy handlers for use cases
+        services.AddScoped<IRegisterBuyerUseCase>(provider =>
+            provider.GetRequiredService<RegisterBuyerHandler>());
+        services.AddScoped<IRegisterVendorUseCase>(provider =>
+            provider.GetRequiredService<RegisterVendorHandler>());
 
         return services;
     }

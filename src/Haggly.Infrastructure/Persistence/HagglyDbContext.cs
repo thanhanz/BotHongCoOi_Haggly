@@ -16,6 +16,6 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyIdentityConfiguration();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(HagglyDbContext).Assembly);
     }
 }
