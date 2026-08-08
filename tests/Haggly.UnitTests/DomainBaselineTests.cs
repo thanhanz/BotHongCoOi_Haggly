@@ -12,7 +12,7 @@ public sealed class DomainBaselineTests
         var fulfillment = new StallFulfillment();
         var activeItem = new OrderItem();
         activeItem.SetFinalValues(quantity: 2, unitPrice: 12_500, isNegotiated: false);
-        var cancelledItem = new OrderItem { Status = OrderItemStatus.Cancelled };
+        var cancelledItem = new OrderItem { Status = OrderItemStatus.CANCELLED };
         cancelledItem.SetFinalValues(quantity: 1, unitPrice: 50_000, isNegotiated: false);
         fulfillment.OrderItems.Add(activeItem);
         fulfillment.OrderItems.Add(cancelledItem);
