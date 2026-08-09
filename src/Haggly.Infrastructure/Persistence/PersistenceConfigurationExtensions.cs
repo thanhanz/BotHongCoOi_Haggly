@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Haggly.Application.Modules.Identity.Registration;
+using Haggly.Application.Modules.Identity.Login;
 using Haggly.Application.Abstractions.Identity;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -33,7 +34,8 @@ public static class PersistenceConfigurationExtensions
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
         services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
-        services.AddScoped<IIdentityPasswordHasher, AspNetIdentityPasswordHasher>();
+        services.AddScoped<IIdentityLoginRepository, EfIdentityLoginRepository>();
+        services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();
         
@@ -42,6 +44,9 @@ public static class PersistenceConfigurationExtensions
             provider.GetRequiredService<RegisterBuyerHandler>());
         services.AddScoped<IRegisterVendorUseCase>(provider =>
             provider.GetRequiredService<RegisterVendorHandler>());
+        services.AddScoped<LoginHandler>();
+        services.AddScoped<ILoginUseCase>(provider =>
+            provider.GetRequiredService<LoginHandler>());
 
         return services;
     }

@@ -117,9 +117,12 @@ public sealed class IdentityRegistrationTests
         Assert.False(store.WasSaved);
     }
 
-    private sealed class FixedPasswordHasher : IIdentityPasswordHasher
+    private sealed class FixedPasswordHasher : IPasswordHasher
     {
         public string Hash(User user, string password) => $"hashed:{password}";
+
+        public bool Verify(User user, string password, string passwordHash)
+            => passwordHash == $"hashed:{password}";
     }
 
     private sealed class RecordingRegistrationStore : IIdentityRegistrationRepository

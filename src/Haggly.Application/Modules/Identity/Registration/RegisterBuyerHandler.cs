@@ -9,7 +9,7 @@ namespace Haggly.Application.Modules.Identity.Registration;
 
 public sealed class RegisterBuyerHandler(
     IIdentityRegistrationRepository repository,
-    IIdentityPasswordHasher passwordHasher) : IRegisterBuyerUseCase
+    IPasswordHasher passwordHasher) : IRegisterBuyerUseCase
 {
     public async Task<RegistrationResult> HandleAsync(
         RegisterBuyerCommand command,
@@ -37,7 +37,7 @@ public sealed class RegisterBuyerHandler(
         string password,
         string fullName,
         IIdentityRegistrationRepository repository,
-        IIdentityPasswordHasher passwordHasher,
+        IPasswordHasher passwordHasher,
         CancellationToken cancellationToken)
     {
         if (await repository.EmailExistsAsync(email, cancellationToken))

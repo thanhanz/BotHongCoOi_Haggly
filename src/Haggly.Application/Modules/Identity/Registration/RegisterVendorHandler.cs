@@ -9,7 +9,7 @@ namespace Haggly.Application.Modules.Identity.Registration;
 
 public sealed class RegisterVendorHandler(
     IIdentityRegistrationRepository repository,
-    IIdentityPasswordHasher passwordHasher) : IRegisterVendorUseCase
+    IPasswordHasher passwordHasher) : IRegisterVendorUseCase
 {
     public async Task<RegistrationResult> HandleAsync(
         RegisterVendorCommand command,
