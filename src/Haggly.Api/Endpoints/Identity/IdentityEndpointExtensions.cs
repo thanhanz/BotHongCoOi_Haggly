@@ -5,9 +5,7 @@ using Haggly.Api.Endpoints.Identity.Responses;
 using Haggly.Api.Responses;
 using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Modules.Identity.Login.Commands;
-using Haggly.Application.Modules.Identity.Login.Exceptions;
 using Haggly.Application.Modules.Identity.Registration.Commands;
-using Haggly.Application.Modules.Identity.Registration.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,13 +21,23 @@ public static class IdentityEndpointExtensions
         var group = endpoints.MapGroup(IdentityRoutes.Prefix);
 
         group.MapPost(IdentityRoutes.RegisterBuyer, RegisterBuyerAsync)
-            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created);
+            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+        
         group.MapPost(IdentityRoutes.RegisterVendor, RegisterVendorAsync)
-            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created);
+            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+        
         group.MapPost(IdentityRoutes.Login, LoginAsync)
-            .Produces<ApiResponse<LoginResponse>>(StatusCodes.Status200OK);
+            .Produces<ApiResponse<LoginResponse>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
+        
         group.MapGet(IdentityRoutes.CurrentUser, GetCurrentUser)
             .Produces<ApiResponse<CurrentUserResponse>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .RequireAuthorization();
 
         return endpoints;
@@ -40,30 +48,19 @@ public static class IdentityEndpointExtensions
         [FromServices] IRegisterBuyerUseCase useCase,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await useCase.HandleAsync(
-                new RegisterBuyerCommand(
-                    request.Email,
-                    request.PhoneNumber,
-                    request.Password,
-                    request.FullName),
-                cancellationToken);
+        var result = await useCase.HandleAsync(
+            new RegisterBuyerCommand(
+                request.Email,
+                request.PhoneNumber,
+                request.Password,
+                request.FullName),
+            cancellationToken);
 
-            return Results.Created(
-                IdentityRoutes.CurrentUserLocation,
-                ApiResponse<RegistrationResponse>.Create(
-                    RegistrationResponse.From(result),
-                    "Buyer registered successfully."));
-        }
-        catch (RegistrationValidationException exception)
-        {
-            return Problem(StatusCodes.Status400BadRequest, "Registration validation failed", exception.Message);
-        }
-        catch (RegistrationConflictException exception)
-        {
-            return Problem(StatusCodes.Status409Conflict, "Registration conflict", exception.Message);
-        }
+        return Results.Created(
+            IdentityRoutes.CurrentUserLocation,
+            ApiResponse<RegistrationResponse>.Create(
+                RegistrationResponse.From(result),
+                "Buyer registered successfully."));
     }
 
     private static async Task<IResult> RegisterVendorAsync(
@@ -71,33 +68,22 @@ public static class IdentityEndpointExtensions
         [FromServices] IRegisterVendorUseCase useCase,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await useCase.HandleAsync(
-                new RegisterVendorCommand(
-                    request.Email,
-                    request.PhoneNumber,
-                    request.Password,
-                    request.FullName,
-                    request.BusinessName,
-                    request.BusinessRegistrationNo,
-                    request.TaxCode),
-                cancellationToken);
+        var result = await useCase.HandleAsync(
+            new RegisterVendorCommand(
+                request.Email,
+                request.PhoneNumber,
+                request.Password,
+                request.FullName,
+                request.BusinessName,
+                request.BusinessRegistrationNo,
+                request.TaxCode),
+            cancellationToken);
 
-            return Results.Created(
-                IdentityRoutes.CurrentUserLocation,
-                ApiResponse<RegistrationResponse>.Create(
-                    RegistrationResponse.From(result),
-                    "Vendor registered successfully."));
-        }
-        catch (RegistrationValidationException exception)
-        {
-            return Problem(StatusCodes.Status400BadRequest, "Registration validation failed", exception.Message);
-        }
-        catch (RegistrationConflictException exception)
-        {
-            return Problem(StatusCodes.Status409Conflict, "Registration conflict", exception.Message);
-        }
+        return Results.Created(
+            IdentityRoutes.CurrentUserLocation,
+            ApiResponse<RegistrationResponse>.Create(
+                RegistrationResponse.From(result),
+                "Vendor registered successfully."));
     }
 
     private static async Task<IResult> LoginAsync(
@@ -105,25 +91,14 @@ public static class IdentityEndpointExtensions
         [FromServices] ILoginUseCase useCase,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await useCase.HandleAsync(
-                new LoginCommand(request.Email, request.Password),
-                cancellationToken);
+        var result = await useCase.HandleAsync(
+            new LoginCommand(request.Email, request.Password),
+            cancellationToken);
 
-            return Results.Ok(
-                ApiResponse<LoginResponse>.Create(
-                    LoginResponse.From(result),
-                    "Login successful."));
-        }
-        catch (LoginValidationException exception)
-        {
-            return Problem(StatusCodes.Status400BadRequest, "Login validation failed", exception.Message);
-        }
-        catch (AuthenticationException exception)
-        {
-            return Problem(StatusCodes.Status401Unauthorized, "Authentication failed", exception.Message);
-        }
+        return Results.Ok(
+            ApiResponse<LoginResponse>.Create(
+                LoginResponse.From(result),
+                "Login successful."));
     }
 
     private static IResult GetCurrentUser(HttpContext httpContext)

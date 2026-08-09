@@ -1,11 +1,19 @@
+using Haggly.Api;
 using Haggly.Api.Endpoints.Identity;
 using Haggly.Api.Endpoints.Identity.Responses;
 using Haggly.Api.Responses;
+using Haggly.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Haggly.IntegrationTests;
@@ -17,6 +25,37 @@ public sealed class IdentityEndpointContractTests
     {
         Assert.Equal("/api/v1/identity", IdentityRoutes.Prefix);
         Assert.Equal("/api/v1/identity/me", IdentityRoutes.CurrentUserLocation);
+    }
+
+    [Fact]
+    public async Task OpenApi_document_contains_identity_routes_and_bearer_scheme()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseUrls("http://127.0.0.1:0");
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Jwt:Issuer"] = "Haggly.Api.Tests",
+            ["Jwt:Audience"] = "Haggly.Client.Tests",
+            ["Jwt:SigningKey"] = "integration-test-signing-key-that-is-at-least-32-characters",
+            ["Jwt:AccessTokenMinutes"] = "15"
+        });
+        builder.Services.AddTokenServices(builder.Configuration);
+        builder.Services.AddApiServices();
+        await using var app = builder.Build();
+
+        app.MapOpenApi();
+        app.MapIdentityEndpoints();
+
+        await app.StartAsync();
+        var address = app.Services.GetRequiredService<IServer>()
+            .Features.Get<IServerAddressesFeature>()!
+            .Addresses.Single();
+        using var client = new HttpClient { BaseAddress = new Uri(address) };
+        var document = await client.GetStringAsync("/openapi/v1.json");
+
+        Assert.True(document.Contains("/api/v1/identity/me", StringComparison.Ordinal), document);
+        Assert.Contains("\"Bearer\"", document);
+        Assert.Contains("\"scheme\": \"bearer\"", document);
     }
 
     [Fact]
@@ -91,5 +130,33 @@ public sealed class IdentityEndpointContractTests
         Assert.Contains(
             endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
             metadata => metadata.StatusCode is 200 or 201 && metadata.Type == responseType);
+    }
+
+    [Theory]
+    [InlineData("/api/v1/identity/register/buyer", 400)]
+    [InlineData("/api/v1/identity/register/buyer", 409)]
+    [InlineData("/api/v1/identity/register/vendor", 400)]
+    [InlineData("/api/v1/identity/register/vendor", 409)]
+    [InlineData("/api/v1/identity/login", 400)]
+    [InlineData("/api/v1/identity/login", 401)]
+    [InlineData("/api/v1/identity/me", 401)]
+    public void Identity_failures_are_documented_as_problem_details(
+        string route,
+        int statusCode)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddAuthorization();
+        using var app = builder.Build();
+
+        app.MapIdentityEndpoints();
+
+        var endpoint = ((IEndpointRouteBuilder)app).DataSources
+            .SelectMany(source => source.Endpoints)
+            .OfType<RouteEndpoint>()
+            .Single(candidate => candidate.RoutePattern.RawText == route);
+
+        Assert.Contains(
+            endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
+            metadata => metadata.StatusCode == statusCode && metadata.Type == typeof(ProblemDetails));
     }
 }

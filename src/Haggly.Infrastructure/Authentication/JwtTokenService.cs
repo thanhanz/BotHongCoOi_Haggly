@@ -28,6 +28,10 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IIdentityTok
             new(ClaimTypes.NameIdentifier, userId),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(ClaimTypes.Email, user.Email),
+            new(
+                JwtRegisteredClaimNames.Iat,
+                EpochTime.GetIntDate(issuedAt.UtcDateTime).ToString(),
+                ClaimValueTypes.Integer64),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -36,6 +40,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IIdentityTok
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey)),
             SecurityAlgorithms.HmacSha256);
+            
         var token = new JwtSecurityToken(
             issuer: settings.Issuer,
             audience: settings.Audience,

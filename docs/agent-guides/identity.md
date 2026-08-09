@@ -26,10 +26,11 @@ Those belong to their respective modules.
 
 Supported roles:
 
-- Buyer
-- Vendor
-- Admin
-- Deliverer
+- `BUYER`
+- `VENDOR`
+- `MARKET_ADMIN`
+- `PLATFORM_ADMIN`
+- `DELIVERER` (reserved and not seeded yet)
 
 A user may have multiple roles if the business allows it.
 
@@ -101,9 +102,13 @@ Stall ownership belongs to MarketManagement, not Identity.
 
 Identity defines application users and roles.
 
-Authentication infrastructure determines how a user proves their identity.
+Authentication infrastructure issues and validates HMAC-SHA256 JWT bearer access
+tokens using the `Jwt` configuration section. Issuer, audience, signature, and
+expiration are validated with no clock skew.
 
-Do not assume JWT, cookies, OAuth, or a specific provider unless selected elsewhere.
+The API exposes the `BuyerOnly`, `VendorOnly`, and `AdminOnly` policies. The admin
+policy accepts either `MARKET_ADMIN` or `PLATFORM_ADMIN`; resource ownership must
+still be checked separately by the owning use case.
 
 Application code should obtain the current authenticated user through an abstraction such as:
 

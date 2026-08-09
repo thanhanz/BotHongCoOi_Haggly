@@ -31,6 +31,7 @@ public sealed class JwtTokenServiceTests
         Assert.Contains("Haggly.Client", token.Audiences);
         Assert.Contains(token.Claims, claim => claim.Type == "sub" && claim.Value == user.Id.ToString());
         Assert.Contains(token.Claims, claim => claim.Type == "email" && claim.Value == user.Email);
+        Assert.Contains(token.Claims, claim => claim.Type == JwtRegisteredClaimNames.Iat);
         Assert.Contains(token.Claims, claim => claim.Type == ClaimTypes.Role && claim.Value == "BUYER");
         Assert.Contains(token.Claims, claim => claim.Type == ClaimTypes.Role && claim.Value == "VENDOR");
         Assert.True(result.ExpiresAt > DateTimeOffset.UtcNow);
