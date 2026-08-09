@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Haggly.Api.Endpoints.Identity.Requests;
 using Haggly.Api.Endpoints.Identity.Responses;
+using Haggly.Api.Responses;
 using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Modules.Identity.Login.Commands;
 using Haggly.Application.Modules.Identity.Login.Exceptions;
@@ -19,12 +20,16 @@ public static class IdentityEndpointExtensions
     public static IEndpointRouteBuilder MapIdentityEndpoints(
         this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/auth");
+        var group = endpoints.MapGroup(IdentityRoutes.Prefix);
 
-        group.MapPost("/register/buyer", RegisterBuyerAsync);
-        group.MapPost("/register/vendor", RegisterVendorAsync);
-        group.MapPost("/login", LoginAsync);
-        group.MapGet("/me", GetCurrentUser)
+        group.MapPost(IdentityRoutes.RegisterBuyer, RegisterBuyerAsync)
+            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created);
+        group.MapPost(IdentityRoutes.RegisterVendor, RegisterVendorAsync)
+            .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created);
+        group.MapPost(IdentityRoutes.Login, LoginAsync)
+            .Produces<ApiResponse<LoginResponse>>(StatusCodes.Status200OK);
+        group.MapGet(IdentityRoutes.CurrentUser, GetCurrentUser)
+            .Produces<ApiResponse<CurrentUserResponse>>(StatusCodes.Status200OK)
             .RequireAuthorization();
 
         return endpoints;
@@ -46,8 +51,10 @@ public static class IdentityEndpointExtensions
                 cancellationToken);
 
             return Results.Created(
-                "/api/auth/me",
-                RegistrationResponse.From(result));
+                IdentityRoutes.CurrentUserLocation,
+                ApiResponse<RegistrationResponse>.Create(
+                    RegistrationResponse.From(result),
+                    "Buyer registered successfully."));
         }
         catch (RegistrationValidationException exception)
         {
@@ -78,8 +85,10 @@ public static class IdentityEndpointExtensions
                 cancellationToken);
 
             return Results.Created(
-                "/api/auth/me",
-                RegistrationResponse.From(result));
+                IdentityRoutes.CurrentUserLocation,
+                ApiResponse<RegistrationResponse>.Create(
+                    RegistrationResponse.From(result),
+                    "Vendor registered successfully."));
         }
         catch (RegistrationValidationException exception)
         {
@@ -102,7 +111,10 @@ public static class IdentityEndpointExtensions
                 new LoginCommand(request.Email, request.Password),
                 cancellationToken);
 
-            return Results.Ok(LoginResponse.From(result));
+            return Results.Ok(
+                ApiResponse<LoginResponse>.Create(
+                    LoginResponse.From(result),
+                    "Login successful."));
         }
         catch (LoginValidationException exception)
         {
@@ -130,7 +142,10 @@ public static class IdentityEndpointExtensions
             .Distinct(StringComparer.Ordinal)
             .ToArray();
 
-        return Results.Ok(new CurrentUserResponse(userId, email, roles));
+        return Results.Ok(
+            ApiResponse<CurrentUserResponse>.Create(
+                new CurrentUserResponse(userId, email, roles),
+                "Current user retrieved successfully."));
     }
 
     private static IResult Problem(int statusCode, string title, string detail)
