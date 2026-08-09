@@ -28,7 +28,7 @@ public sealed class IdentityEndpointContractTests
     }
 
     [Fact]
-    public async Task OpenApi_document_contains_identity_routes_and_bearer_scheme()
+    public async Task Swagger_document_contains_identity_routes_and_bearer_scheme()
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -43,7 +43,7 @@ public sealed class IdentityEndpointContractTests
         builder.Services.AddApiServices();
         await using var app = builder.Build();
 
-        app.MapOpenApi();
+        app.UseSwaggerDocumentation();
         app.MapIdentityEndpoints();
 
         await app.StartAsync();
@@ -51,7 +51,7 @@ public sealed class IdentityEndpointContractTests
             .Features.Get<IServerAddressesFeature>()!
             .Addresses.Single();
         using var client = new HttpClient { BaseAddress = new Uri(address) };
-        var document = await client.GetStringAsync("/openapi/v1.json");
+        var document = await client.GetStringAsync("/swagger/v1/swagger.json");
 
         Assert.True(document.Contains("/api/v1/identity/me", StringComparison.Ordinal), document);
         Assert.Contains("\"Bearer\"", document);

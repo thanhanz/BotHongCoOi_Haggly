@@ -1,6 +1,5 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Middleware;
-using Haggly.Api.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -33,17 +32,6 @@ public static class ApiConfigurationExtensions
                 Scheme = "bearer",
                 BearerFormat = "JWT"
             });
-        });
-        services.AddOpenApi("v1", options =>
-        {
-            options.AddDocumentTransformer((document, context, cancellationToken) =>
-            {
-                document.Info.Title = "Haggly API";
-                document.Info.Version = "v1";
-                return Task.CompletedTask;
-            });
-            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
-            options.AddOperationTransformer<AuthorizationOperationTransformer>();
         });
         services.PostConfigure<JwtBearerOptions>(
             JwtBearerDefaults.AuthenticationScheme,
