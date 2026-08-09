@@ -21,7 +21,10 @@ public partial class Program
         app.UseAuthorization();
 
         if (app.Environment.IsDevelopment())
+        {
             app.MapOpenApi();
+            app.UseSwaggerDocumentation();
+        }
 
         app.MapIdentityEndpoints();
 
