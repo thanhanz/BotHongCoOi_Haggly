@@ -1,5 +1,6 @@
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Authentication;
+using Haggly.Api.Endpoints.Identity;
 
 public partial class Program
 {
@@ -11,6 +12,8 @@ public partial class Program
         builder.Services.AddTokenServices(builder.Configuration);
 
         var app = builder.Build();
+
+        app.MapIdentityEndpoints();
 
         app.Run();
     }
