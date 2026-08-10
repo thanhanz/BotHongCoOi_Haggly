@@ -1,0 +1,169 @@
+# Haggly Engineering Harness
+
+This document contains the detailed operating protocol referenced by the root
+`AGENTS.md`. The root file stays short so it can act as a high-signal routing
+map in agent context.
+
+## Grounding contract
+
+Before editing:
+
+1. Read the root `AGENTS.md` and run `git status --short`.
+2. Determine the request type, owning module, governing requirement, and
+   affected layers.
+3. Use `rg --files` and targeted `rg` searches to confirm referenced paths,
+   projects, symbols, callers, and tests exist.
+4. Read affected files completely enough to understand their contracts.
+5. Find one nearby working implementation and its tests.
+6. Define the smallest observable behavior that satisfies the request.
+
+Evidence rules:
+
+- A proposed tree in `ARCHITECTURE.md` is direction, not implemented fact.
+- Empty files and missing paths provide no evidence.
+- Existing executable behavior outranks descriptive documentation when they
+  disagree, unless the user's request explicitly changes that behavior.
+- General .NET habits do not establish a Haggly convention.
+- Do not invent classes, endpoints, database objects, configuration, commands,
+  or test results.
+- State meaningful conclusions as observed, inferred, or proposed when they
+  could otherwise be confused.
+- Show material conflicts with file evidence. Ask only when the choice changes
+  behavior significantly; otherwise use the smallest reversible interpretation
+  and disclose it.
+
+## Request modes
+
+| Mode | Operating rule |
+|---|---|
+| Explain, review, diagnose | Inspect and report; do not modify code unless asked. |
+| Bug fix | Identify the failing path and owning rule, add a regression test, make the smallest fix. |
+| New behavior | Find the requirement and business rule, then implement one vertical slice. |
+| Refactor | Preserve observable behavior, establish coverage first, avoid feature work. |
+| API change | Inspect business owner, application contract, validation, authorization, OpenAPI, integration tests. |
+| Persistence change | Inspect ownership, application port, mapping/query, transaction, migration, integration tests. |
+| Architecture change | Read all of `ARCHITECTURE.md`, inspect references, verify dependency boundaries. |
+| Documentation | Verify every statement against code/configuration; label future plans. |
+
+Product ownership wins over transport or storage. An Inventory endpoint remains
+Inventory-owned and merely exposed through API. A database change is owned by
+Persistence and the affected business module.
+
+For cross-module behavior, select one coordinating Application use case. Other
+modules expose explicit behavior or contracts; the coordinator must not mutate
+their entities directly.
+
+## Implementation record
+
+Before a non-trivial edit, be able to fill in:
+
+```text
+Request type:
+Owning module:
+Governing requirement or rule:
+Observed implementation path:
+Affected layers:
+Nearest precedent:
+Tests to add or change:
+Verification commands:
+Open assumptions or conflicts:
+```
+
+Keep this in working notes unless it helps the user review a consequential
+decision. If no implementation path or precedent exists, say that the area is
+scaffolded. Establish the smallest convention consistent with
+`ARCHITECTURE.md`; do not claim it was already present.
+
+## Editing rules
+
+- Keep the diff inside the smallest valid module and layer boundary.
+- Put invariants and state transitions in Domain.
+- Put orchestration, validation, authorization requirements, and external ports
+  in Application.
+- Put persistence and provider implementations in Infrastructure.
+- Put only transport mapping and public HTTP concerns in API.
+- Follow a local pattern only after locating it in current code.
+- Do not add unrelated cleanup, formatting, package upgrades, or abstractions.
+- Do not edit generated files directly or expose secret values.
+- Update public contracts, migrations, configuration, and documentation when
+  behavior affects them.
+- Update a module guide when the change establishes or invalidates durable
+  module knowledge.
+
+## Verification protocol
+
+Discover verification rather than trusting stale commands. Inspect:
+
+- `global.json`;
+- `Directory.Build.props` and `Directory.Packages.props`;
+- `Haggly.slnx` and affected `.csproj` files;
+- CI workflows and repository scripts;
+- the relevant test projects.
+
+Confirm every project referenced by a solution or command exists. Run the
+narrowest relevant build/test first, then broaden in proportion to risk.
+
+Preferred full ladder when the workspace supports it:
+
+```powershell
+dotnet restore Haggly.slnx
+dotnet build Haggly.slnx --no-restore
+dotnet test Haggly.slnx --no-build
+```
+
+Focused examples:
+
+```powershell
+dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj
+dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
+```
+
+Use real boundary tests for EF Core, Dapper, database constraints,
+transactions, authentication, and external adapters. Mocks cannot prove
+provider behavior.
+
+Never transform "not run," "not discovered," "unavailable," or a pre-existing
+failure into a passing result. Report the command, outcome, and limitation.
+
+## Current scaffold caveats
+
+These observations were true when this guide was created and must be rechecked,
+not assumed:
+
+- `Haggly.slnx` referenced
+  `tests/Haggly.ArchitectureTests/Haggly.ArchitectureTests.csproj`, but that
+  project was absent.
+- `src/Haggly.Api/Program.cs` was empty.
+- Module-local agent guides were empty placeholders.
+
+If still true, report them as pre-existing limitations. Do not invent missing
+implementation or claim the full solution passed.
+
+## Definition of done
+
+A code change is complete only when:
+
+- requested observable behavior is implemented in the owning module;
+- governing rules and important assumptions are preserved or disclosed;
+- relevant regression or feature tests exist;
+- architecture and module boundaries remain valid;
+- focused verification passes, or failures are accurately reported;
+- affected contracts, migrations, configuration, and documentation agree;
+- the final report identifies behavior, files, checks, skipped checks, and
+  remaining risk.
+
+## Maintaining module guides
+
+Treat `docs/agent-guides/<module>.md` as a cache of verified local knowledge,
+not speculative design. Include only:
+
+- current responsibilities and explicit non-responsibilities;
+- real entry points and paths;
+- invariants linked to implementation and tests;
+- cross-module contracts and transaction boundaries;
+- adapters and configuration key names, never secret values;
+- focused commands known to work;
+- dated decisions and known gaps that could mislead future work.
+
+Correct stale statements when a change invalidates them. An empty guide grants
+no permission to invent its contents.
