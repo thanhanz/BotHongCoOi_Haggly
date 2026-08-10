@@ -21,11 +21,44 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.201
+
+      - name: Commit lint
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          dotnet tool restore
+
+          commits="$(git rev-list --reverse "${BASE_SHA}..${HEAD_SHA}")"
+          if [[ -z "${commits}" ]]; then
+            echo "No commits found in the pull request range."
+            exit 1
+          fi
+
+          while IFS= read -r commit; do
+            message_file="$(mktemp)"
+            git show --format=%B --no-patch "${commit}" > "${message_file}"
+            subject="$(sed -n '1p' "${message_file}")"
+
+            if [[ ! "${subject}" =~ ^[a-z]+\([^[:space:]()]+\):\ .+$ ]]; then
+              echo "Invalid commit format for ${commit}: ${subject}"
+              echo "Expected: <type>(<scope>): <message>"
+              rm -f "${message_file}"
+              exit 1
+            fi
+
+            dotnet commit-lint \
+              --commit-file "${message_file}" \
+              --commit-message-config-file commit-message-config.json
+            rm -f "${message_file}"
+          done <<< "${commits}"
 
       - name: Restore
         run: dotnet restore Haggly.slnx
