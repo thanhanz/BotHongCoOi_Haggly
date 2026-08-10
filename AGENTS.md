@@ -127,6 +127,17 @@ dotnet test Haggly.slnx --no-build
 Run focused project tests first. For persistence, authentication, transactions,
 or providers, use integration tests that exercise the real boundary.
 
+When a persistence model changes, use the migration command documented in
+`docs/agent-guides/persistence.md`:
+
+```powershell
+dotnet ef migrations add CreateMarketAndStallEntities `
+    --project src\Haggly.Infrastructure\Haggly.Infrastructure.csproj `
+    --startup-project src\Haggly.Api\Haggly.Api.csproj `
+    -- `
+    --connection "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
+```
+
 ## Completion
 
 Finish only when behavior, relevant tests, boundaries, contracts, migrations,
