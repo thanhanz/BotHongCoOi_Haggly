@@ -89,7 +89,7 @@ Do not put business decisions in endpoints, EF mappings, or adapters.
 
 For every new feature or behavior change:
 
-1. Write the relevant test cases first.
+1. Write the relevant test cases first with the format `Method_Scenario_ExpectedResult`.
 2. Run the tests and confirm the new tests fail for the expected reason.
 3. Implement the new function or modify the existing code.
 4. Run the tests again.
