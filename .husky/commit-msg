@@ -1,0 +1,13 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+commit_message_file="$1"
+subject="$(sed -n '1p' "$commit_message_file")"
+
+if ! printf '%s\n' "$subject" | grep -Eq '^[a-z]+\([^[:space:]()]+\): .+$'; then
+  echo "Invalid commit message: $subject"
+  echo "Expected: <type>(<scope>): <message>"
+  exit 1
+fi
+
+dotnet husky run --group commit-msg --args "$commit_message_file"

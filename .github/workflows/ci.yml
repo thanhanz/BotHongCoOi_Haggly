@@ -34,7 +34,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          dotnet tool install --global CommitLint.Net --version 0.8.0
+          dotnet tool restore
 
           commits="$(git rev-list --reverse "${BASE_SHA}..${HEAD_SHA}")"
           if [[ -z "${commits}" ]]; then
