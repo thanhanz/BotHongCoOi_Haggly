@@ -10,6 +10,7 @@ using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
 using Haggly.Infrastructure.Persistence.Repositories.Markets;
+using Haggly.Infrastructure.Persistence.Queries.Markets;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -38,10 +39,12 @@ public static class PersistenceConfigurationExtensions
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
         services.AddHagglyMediatR();
+        services.AddScoped<DapperDbContext>();
 
         services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
         services.AddScoped<IIdentityLoginRepository, EfIdentityLoginRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
+        services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();

@@ -13,5 +13,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Identity.Core" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Dapper" />
   </ItemGroup>
 </Project>
