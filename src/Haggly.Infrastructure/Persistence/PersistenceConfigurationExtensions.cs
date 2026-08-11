@@ -4,8 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Haggly.Application.Modules.Identity.Registration;
 using Haggly.Application.Modules.Identity.Login;
 using Haggly.Application.Abstractions.Identity;
+using Haggly.Application.Abstractions.Markets;
+using Haggly.Application.Modules.Markets.Handlers;
 using Haggly.Infrastructure.Authentication;
+using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
+using Haggly.Infrastructure.Persistence.Repositories.Markets;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -33,8 +37,11 @@ public static class PersistenceConfigurationExtensions
 
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
+        services.AddHagglyMediatR();
+
         services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
         services.AddScoped<IIdentityLoginRepository, EfIdentityLoginRepository>();
+        services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();

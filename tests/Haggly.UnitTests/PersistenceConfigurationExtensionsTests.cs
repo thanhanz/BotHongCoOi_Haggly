@@ -1,4 +1,8 @@
 using Haggly.Infrastructure.Persistence;
+using Haggly.Infrastructure.MediatR;
+using Haggly.Application.Modules.Markets.Commands;
+using Haggly.Application.Modules.Markets.Dtos;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -47,5 +51,16 @@ public sealed class PersistenceConfigurationExtensionsTests
         var result = services.AddInfrastructureRepositories();
 
         Assert.Same(services, result);
+    }
+
+    [Fact]
+    public void AddHagglyMediatR_registers_market_command_handlers()
+    {
+        var services = new ServiceCollection();
+
+        services.AddHagglyMediatR();
+
+        Assert.Contains(services, descriptor =>
+            descriptor.ServiceType == typeof(IRequestHandler<CreateMarketCommand, MarketDto>));
     }
 }

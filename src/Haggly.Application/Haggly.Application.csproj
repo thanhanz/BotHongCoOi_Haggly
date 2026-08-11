@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="../Haggly.Domain/Haggly.Domain.csproj" />
+    <PackageReference Include="MediatR" />
   </ItemGroup>
 </Project>
