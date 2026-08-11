@@ -1,6 +1,6 @@
 using Haggly.Domain.Modules.Markets;
 
-namespace Haggly.Application.Modules.Markets.Dtos;
+namespace Haggly.Application.Modules.Markets.Dtos.Markets;
 
 public sealed record MarketDto(
     Guid Id,

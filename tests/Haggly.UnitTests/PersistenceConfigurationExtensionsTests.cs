@@ -1,7 +1,7 @@
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.MediatR;
-using Haggly.Application.Modules.Markets.Commands;
-using Haggly.Application.Modules.Markets.Dtos;
+using Haggly.Application.Modules.Markets.Commands.Markets;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,11 +1,11 @@
 using Haggly.Application.Abstractions.Markets;
-using Haggly.Application.Modules.Markets.Commands;
-using Haggly.Application.Modules.Markets.Dtos;
-using Haggly.Application.Modules.Markets.Exceptions;
-using Haggly.Application.Modules.Markets.Validation;
+using Haggly.Application.Modules.Markets.Commands.Markets;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
+using Haggly.Application.Modules.Markets.Exceptions.Markets;
+using Haggly.Application.Modules.Markets.Validation.Markets;
 using MediatR;
 
-namespace Haggly.Application.Modules.Markets.Handlers;
+namespace Haggly.Application.Modules.Markets.Handlers.Markets;
 
 public sealed class UpdateMarketHandler(IMarketCommandRepository repository)
     : IRequestHandler<UpdateMarketCommand, MarketDto>

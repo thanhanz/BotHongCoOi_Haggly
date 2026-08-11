@@ -28,6 +28,7 @@ public partial class Program
 
         app.MapIdentityEndpoints();
         app.MapMarketEndpoints();
+        app.MapStallEndpoints();
 
         app.Run();
     }

@@ -1,7 +1,7 @@
-using Haggly.Application.Modules.Markets.Dtos;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
 using MediatR;
 
-namespace Haggly.Application.Modules.Markets.Commands;
+namespace Haggly.Application.Modules.Markets.Commands.Markets;
 
 public sealed record CreateMarketCommand(
     string Code,

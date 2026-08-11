@@ -1,10 +1,10 @@
 using Haggly.Application.Abstractions.Markets;
-using Haggly.Application.Modules.Markets.Dtos;
-using Haggly.Application.Modules.Markets.Exceptions;
-using Haggly.Application.Modules.Markets.Queries;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
+using Haggly.Application.Modules.Markets.Exceptions.Markets;
+using Haggly.Application.Modules.Markets.Queries.Markets;
 using MediatR;
 
-namespace Haggly.Application.Modules.Markets.Handlers;
+namespace Haggly.Application.Modules.Markets.Handlers.Markets;
 
 public sealed class GetMarketByIdHandler(IMarketQuery query)
     : IRequestHandler<GetMarketByIdQuery, MarketDto>

@@ -1,0 +1,6 @@
+using Haggly.Application.Modules.Markets.Dtos.Markets;
+using MediatR;
+
+namespace Haggly.Application.Modules.Markets.Queries.Markets;
+
+public sealed record GetMarketByIdQuery(Guid Id) : IRequest<MarketDto>;

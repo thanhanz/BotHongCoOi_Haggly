@@ -1,9 +1,9 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Markets.Requests;
 using Haggly.Api.Responses;
-using Haggly.Application.Modules.Markets.Commands;
-using Haggly.Application.Modules.Markets.Dtos;
-using Haggly.Application.Modules.Markets.Queries;
+using Haggly.Application.Modules.Markets.Commands.Markets;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
+using Haggly.Application.Modules.Markets.Queries.Markets;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

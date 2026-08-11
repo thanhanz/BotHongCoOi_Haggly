@@ -1,6 +1,6 @@
 using Haggly.Api.Endpoints.Markets;
 using Haggly.Api.Responses;
-using Haggly.Application.Modules.Markets.Dtos;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
 using Haggly.Domain.Modules.Markets;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

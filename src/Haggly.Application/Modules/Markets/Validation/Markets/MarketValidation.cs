@@ -1,8 +1,8 @@
-using Haggly.Application.Modules.Markets.Commands;
-using Haggly.Application.Modules.Markets.Exceptions;
+using Haggly.Application.Modules.Markets.Commands.Markets;
+using Haggly.Application.Modules.Markets.Exceptions.Markets;
 using Haggly.Domain.Modules.Markets;
 
-namespace Haggly.Application.Modules.Markets.Validation;
+namespace Haggly.Application.Modules.Markets.Validation.Markets;
 
 internal static class MarketValidation
 {

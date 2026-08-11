@@ -1,9 +1,9 @@
 using Haggly.Application.Abstractions.Markets;
-using Haggly.Application.Modules.Markets.Dtos;
-using Haggly.Application.Modules.Markets.Queries;
+using Haggly.Application.Modules.Markets.Dtos.Markets;
+using Haggly.Application.Modules.Markets.Queries.Markets;
 using MediatR;
 
-namespace Haggly.Application.Modules.Markets.Handlers;
+namespace Haggly.Application.Modules.Markets.Handlers.Markets;
 
 public sealed class GetMarketsHandler(IMarketQuery query)
     : IRequestHandler<GetMarketsQuery, IReadOnlyCollection<MarketDto>>
