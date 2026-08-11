@@ -1,5 +1,6 @@
 using Haggly.Application.Modules.Identity.Login.Exceptions;
 using Haggly.Application.Modules.Identity.Registration.Exceptions;
+using Haggly.Application.Modules.Markets.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +50,12 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status401Unauthorized, "Authentication failed", exception.Message),
             RegistrationConflictException
                 => (StatusCodes.Status409Conflict, "Registration conflict", exception.Message),
+            MarketValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            MarketConflictException
+                => (StatusCodes.Status409Conflict, "Market conflict", exception.Message),
+            MarketNotFoundException
+                => (StatusCodes.Status404NotFound, "Market not found", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

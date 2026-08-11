@@ -2,6 +2,7 @@ using Haggly.Api;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Api.Endpoints.Identity;
+using Haggly.Api.Endpoints.Markets;
 
 public partial class Program
 {
@@ -26,6 +27,7 @@ public partial class Program
         }
 
         app.MapIdentityEndpoints();
+        app.MapMarketEndpoints();
 
         app.Run();
     }
