@@ -1,0 +1,114 @@
+using Dapper;
+using Haggly.Domain.Modules.Markets;
+using Haggly.Infrastructure.Persistence;
+using Haggly.Infrastructure.Persistence.Queries.Markets;
+using Microsoft.Extensions.Configuration;
+using Xunit;
+
+public sealed class DapperMarketQueryTests
+{
+
+  private readonly DapperDbContext _dbContext;
+  private readonly DapperMarketQuery _sut;
+
+
+  public DapperMarketQueryTests()
+  {
+    var configuration = new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>
+        {
+          ["ConnectionStrings:HagglyDatabase"] =
+                "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
+        })
+        .Build();
+
+    _dbContext = new DapperDbContext(configuration);
+
+    _sut = new DapperMarketQuery(_dbContext);
+  }
+
+  [Fact]
+  public async Task GetAllMarketsAsync_ShouldReturnOnlyActiveNonDeletedMarkets()
+  {
+    var activeId = System.Guid.NewGuid();
+    var inactiveId = System.Guid.NewGuid();
+    var deletedId = System.Guid.NewGuid();
+
+    var activeCode = $"active-{Guid.NewGuid():N}";
+    var inactiveCode = $"inactive-{Guid.NewGuid():N}";
+    var deletedCode = $"deleted-{Guid.NewGuid():N}";
+
+    await SeedMarketAsync(
+            activeId,
+            activeCode,
+            "Active Market",
+            "1 Main St",
+            MarketStatus.ACTIVE,
+            DateTime.UtcNow,
+            null);
+
+    await SeedMarketAsync(
+        inactiveId,
+        inactiveCode,
+        "Inactive Market",
+        "12 Main St",
+        MarketStatus.INACTIVE,
+        DateTime.UtcNow,
+        null);
+
+    await SeedMarketAsync(
+        deletedId,
+        deletedCode,
+        "Deleted Market",
+        "123 Main St",
+        MarketStatus.SUSPENDED,
+        DateTime.UtcNow,
+        DateTime.UtcNow);
+
+    // Act
+    var result = await _sut.GetAllAsync(CancellationToken.None);
+
+    // Assert
+    Assert.Contains(result, x => x.Id == activeId);
+    Assert.DoesNotContain(result, x => x.Id == inactiveId);
+    Assert.DoesNotContain(result, x => x.Id == deletedId);
+
+  }
+
+  private async Task SeedMarketAsync(
+    Guid id,
+    string code,
+    string name,
+    string address,
+    MarketStatus status,
+    DateTime? createdAt,
+    DateTime? deletedAt)
+  {
+    const string sql =
+        """
+        INSERT INTO markets.markets
+            ("Id", "Code","Name", "Address", "Status", "CreatedAt", "DeletedAt")
+        VALUES
+            (@id, @Code, @Name, @Address, @Status, @CreatedAt, @DeletedAt);
+        """;
+
+    await using var connection =
+        await _dbContext.OpenConnectionAsync(
+            CancellationToken.None);
+
+    await connection.ExecuteAsync(
+        sql,
+        new
+        {
+          Id = id,
+          Code = code,
+          Name = name,
+          Address = address,
+          Status = status.ToString(),
+          CreatedAt = createdAt,
+          DeletedAt = deletedAt
+        });
+  }
+
+
+}
