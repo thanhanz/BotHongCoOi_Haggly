@@ -3,6 +3,7 @@ using Haggly.Api.Endpoints.Markets.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Modules.Markets.Commands;
 using Haggly.Application.Modules.Markets.Dtos;
+using Haggly.Application.Modules.Markets.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,14 @@ public static class MarketEndpointExtensions
             .Produces<ApiResponse<MarketDto>>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapGet(string.Empty, GetMarketsAsync)
+            .Produces<ApiResponse<IReadOnlyCollection<MarketDto>>>(StatusCodes.Status200OK);
+
+        group.MapGet(MarketRoutes.ById, GetMarketByIdAsync)
+            .Produces<ApiResponse<MarketDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPut(MarketRoutes.ById, UpdateMarketAsync)
             .Produces<ApiResponse<MarketDto>>(StatusCodes.Status200OK)
@@ -58,6 +67,31 @@ public static class MarketEndpointExtensions
         return Results.Created(
             $"{MarketRoutes.Prefix}/{result.Id}",
             ApiResponse<MarketDto>.Create(result, "Market created successfully."));
+    }
+
+    private static async Task<IResult> GetMarketsAsync(
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetMarketsQuery(), cancellationToken);
+
+        return Results.Ok(
+            ApiResponse<IReadOnlyCollection<MarketDto>>.Create(
+                result,
+                "Markets retrieved successfully."));
+    }
+
+    private static async Task<IResult> GetMarketByIdAsync(
+        Guid id,
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetMarketByIdQuery(id), cancellationToken);
+
+        return Results.Ok(
+            ApiResponse<MarketDto>.Create(
+                result,
+                "Market retrieved successfully."));
     }
 
     private static async Task<IResult> UpdateMarketAsync(
