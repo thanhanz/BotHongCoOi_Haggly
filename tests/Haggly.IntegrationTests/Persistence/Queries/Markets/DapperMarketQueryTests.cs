@@ -75,6 +75,28 @@ public sealed class DapperMarketQueryTests
 
   }
 
+  [Fact]
+  public async Task GetMarketByIdAsync_ShouldReturnMarket()
+  {
+    
+    var activeId = System.Guid.NewGuid();
+    var activeCode = $"active-{Guid.NewGuid():N}";
+
+    await SeedMarketAsync(
+      activeId,
+      activeCode,
+      "Active Market",
+      "1 Main St",
+      MarketStatus.ACTIVE,
+      DateTime.UtcNow,
+      null);
+    
+    var result = await _sut.GetByIdAsync(activeId, CancellationToken.None);
+    
+    Assert.NotNull(result);
+    Assert.Equal(result.Id, activeId);
+  }
+
   private async Task SeedMarketAsync(
     Guid id,
     string code,
