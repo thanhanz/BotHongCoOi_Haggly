@@ -18,7 +18,8 @@ public static class IdentityEndpointExtensions
     public static IEndpointRouteBuilder MapIdentityEndpoints(
         this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup(IdentityRoutes.Prefix);
+        var group = endpoints.MapGroup(IdentityRoutes.Prefix)
+                             .WithTags("Authentication");
 
         group.MapPost(IdentityRoutes.RegisterBuyer, RegisterBuyerAsync)
             .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created)

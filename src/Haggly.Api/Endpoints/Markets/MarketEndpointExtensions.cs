@@ -17,6 +17,7 @@ public static class MarketEndpointExtensions
         this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup(MarketRoutes.Prefix)
+            .WithTags("Markets")
             .RequireAuthorization(IdentityPolicies.AdminOnly);
 
         group.MapPost(string.Empty, CreateMarketAsync)

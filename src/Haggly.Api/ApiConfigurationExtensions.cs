@@ -47,7 +47,7 @@ public static class ApiConfigurationExtensions
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Haggly API v1");
         });
-        app.MapGet("/", () => Results.Redirect("/swagger"));
+        app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
         return app;
     }
