@@ -57,4 +57,30 @@ public sealed class VendorAdminEndpointContractTests
             metadata => metadata.StatusCode == StatusCodes.Status400BadRequest
                 && metadata.Type == typeof(ProblemDetails));
     }
+
+    [Theory]
+    [InlineData("/api/v1/admin/vendors/{vendorId:guid}/approve")]
+    [InlineData("/api/v1/admin/vendors/{vendorId:guid}/reject")]
+    [InlineData("/api/v1/admin/vendors/{vendorId:guid}/suspend")]
+    public void MapVendorAdminEndpoints_RegistersActionRoutesWithoutAuthorization(
+        string route)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddAuthorization();
+        using var app = builder.Build();
+
+        app.MapVendorAdminEndpoints();
+
+        var endpoint = ((IEndpointRouteBuilder)app).DataSources
+            .SelectMany(source => source.Endpoints)
+            .OfType<RouteEndpoint>()
+            .Single(candidate => candidate.RoutePattern.RawText == route);
+
+        Assert.Equal(["POST"], endpoint.Metadata.GetMetadata<HttpMethodMetadata>()!.HttpMethods);
+        Assert.DoesNotContain(endpoint.Metadata, metadata => metadata is IAuthorizeData);
+        Assert.Contains(
+            endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
+            metadata => metadata.StatusCode == StatusCodes.Status200OK
+                && metadata.Type == typeof(ApiResponse<VendorAdminDto>));
+    }
 }
