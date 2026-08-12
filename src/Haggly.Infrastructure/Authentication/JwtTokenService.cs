@@ -25,9 +25,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IIdentityTok
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId),
-            new(ClaimTypes.NameIdentifier, userId),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(ClaimTypes.Email, user.Email),
             new(
                 JwtRegisteredClaimNames.Iat,
                 EpochTime.GetIntDate(issuedAt.UtcDateTime).ToString(),
@@ -35,7 +33,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IIdentityTok
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
+        claims.AddRange(roles.Select(role => new Claim("roles", role.ToString())));
 
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey)),
