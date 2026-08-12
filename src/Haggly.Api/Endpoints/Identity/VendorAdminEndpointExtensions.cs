@@ -24,14 +24,14 @@ public static class VendorAdminEndpointExtensions
             .WithTags("Vendor administration");
 
         group.MapGet(string.Empty, GetVendorsAsync)
-            .Produces<ApiResponse<PagedResult<VendorAdminDto>>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<PagedResult<VendorQueryDto>>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(IdentityPolicies.AdminOnly);
 
         group.MapPost(VendorAdminRoutes.Approve, ApproveVendorAsync)
-            .Produces<ApiResponse<VendorAdminDto>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<VendorQueryDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -39,7 +39,7 @@ public static class VendorAdminEndpointExtensions
             .RequireAuthorization(IdentityPolicies.AdminOnly);
 
         group.MapPost(VendorAdminRoutes.Reject, RejectVendorAsync)
-            .Produces<ApiResponse<VendorAdminDto>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<VendorQueryDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -47,7 +47,7 @@ public static class VendorAdminEndpointExtensions
             .RequireAuthorization(IdentityPolicies.AdminOnly);
 
         group.MapPost(VendorAdminRoutes.Suspend, SuspendVendorAsync)
-            .Produces<ApiResponse<VendorAdminDto>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<VendorQueryDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -70,7 +70,7 @@ public static class VendorAdminEndpointExtensions
             cancellationToken);
 
         return Results.Ok(
-            ApiResponse<PagedResult<VendorAdminDto>>.Create(
+            ApiResponse<PagedResult<VendorQueryDto>>.Create(
                 result,
                 "Vendors retrieved successfully."));
     }
@@ -89,7 +89,7 @@ public static class VendorAdminEndpointExtensions
             cancellationToken);
 
         return Results.Ok(
-            ApiResponse<VendorAdminDto>.Create(result, "Vendor approved successfully."));
+            ApiResponse<VendorQueryDto>.Create(result, "Vendor approved successfully."));
     }
 
     private static async Task<IResult> RejectVendorAsync(
@@ -106,7 +106,7 @@ public static class VendorAdminEndpointExtensions
             cancellationToken);
 
         return Results.Ok(
-            ApiResponse<VendorAdminDto>.Create(result, "Vendor rejected successfully."));
+            ApiResponse<VendorQueryDto>.Create(result, "Vendor rejected successfully."));
     }
 
     private static async Task<IResult> SuspendVendorAsync(
@@ -123,7 +123,7 @@ public static class VendorAdminEndpointExtensions
             cancellationToken);
 
         return Results.Ok(
-            ApiResponse<VendorAdminDto>.Create(result, "Vendor suspended successfully."));
+            ApiResponse<VendorQueryDto>.Create(result, "Vendor suspended successfully."));
     }
 
     private static bool TryGetSubject(

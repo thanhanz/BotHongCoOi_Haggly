@@ -29,12 +29,12 @@ public abstract class VendorCommandHandlerBase(
             throw new VendorCommandValidationException("A valid administrator ID is required.");
     }
 
-    protected async Task<VendorAdminDto> SaveAsync(
+    protected async Task<VendorQueryDto> SaveAsync(
         VendorAdminAggregate aggregate,
         CancellationToken cancellationToken)
     {
         await _repository.SaveChangesAsync(cancellationToken);
-        return VendorAdminDto.From(aggregate.User, aggregate.VendorProfile);
+        return VendorQueryDto.From(aggregate.User, aggregate.VendorProfile);
     }
 
     protected static VendorTransitionConflictException Conflict(Exception exception)

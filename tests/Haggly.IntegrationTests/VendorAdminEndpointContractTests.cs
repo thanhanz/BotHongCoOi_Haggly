@@ -51,7 +51,7 @@ public sealed class VendorAdminEndpointContractTests
         Assert.Contains(
             endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
             metadata => metadata.StatusCode == StatusCodes.Status200OK
-                && metadata.Type == typeof(ApiResponse<PagedResult<VendorAdminDto>>));
+                && metadata.Type == typeof(ApiResponse<PagedResult<VendorQueryDto>>));
         Assert.Contains(
             endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
             metadata => metadata.StatusCode == StatusCodes.Status400BadRequest
@@ -81,6 +81,6 @@ public sealed class VendorAdminEndpointContractTests
         Assert.Contains(
             endpoint.Metadata.OfType<IProducesResponseTypeMetadata>(),
             metadata => metadata.StatusCode == StatusCodes.Status200OK
-                && metadata.Type == typeof(ApiResponse<VendorAdminDto>));
+                && metadata.Type == typeof(ApiResponse<VendorQueryDto>));
     }
 }

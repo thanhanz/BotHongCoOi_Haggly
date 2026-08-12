@@ -6,7 +6,7 @@ namespace Haggly.Application.Abstractions.Identity;
 
 public interface IVendorAdminQuery
 {
-    Task<PagedResult<VendorAdminDto>> GetPageAsync(
+    Task<PagedResult<VendorQueryDto>> GetPageAsync(
         VendorListFilter filter,
         CancellationToken cancellationToken);
 }

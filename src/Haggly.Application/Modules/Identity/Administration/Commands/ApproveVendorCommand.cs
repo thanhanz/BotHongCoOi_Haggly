@@ -4,4 +4,4 @@ using MediatR;
 namespace Haggly.Application.Modules.Identity.Administration.Commands;
 
 public sealed record ApproveVendorCommand(Guid VendorId, Guid ApprovedBy)
-    : IRequest<VendorAdminDto>;
+    : IRequest<VendorQueryDto>;

@@ -7,9 +7,9 @@ using MediatR;
 namespace Haggly.Application.Modules.Identity.Administration;
 
 public sealed class GetVendorsHandler(IVendorAdminQuery query)
-    : IRequestHandler<GetVendorsQuery, PagedResult<VendorAdminDto>>
+    : IRequestHandler<GetVendorsQuery, PagedResult<VendorQueryDto>>
 {
-    public Task<PagedResult<VendorAdminDto>> Handle(
+    public Task<PagedResult<VendorQueryDto>> Handle(
         GetVendorsQuery request,
         CancellationToken cancellationToken)
     {

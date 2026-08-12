@@ -4,4 +4,4 @@ using MediatR;
 namespace Haggly.Application.Modules.Identity.Administration.Commands;
 
 public sealed record SuspendVendorCommand(Guid VendorId, Guid SuspendedBy)
-    : IRequest<VendorAdminDto>;
+    : IRequest<VendorQueryDto>;

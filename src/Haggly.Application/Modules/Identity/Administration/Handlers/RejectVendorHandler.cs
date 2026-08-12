@@ -9,9 +9,9 @@ public sealed class RejectVendorHandler(
     IVendorAdminCommandRepository repository,
     TimeProvider timeProvider)
     : VendorCommandHandlerBase(repository, timeProvider),
-      IRequestHandler<RejectVendorCommand, VendorAdminDto>
+      IRequestHandler<RejectVendorCommand, VendorQueryDto>
 {
-    public async Task<VendorAdminDto> Handle(
+    public async Task<VendorQueryDto> Handle(
         RejectVendorCommand request,
         CancellationToken cancellationToken)
     {

@@ -9,4 +9,4 @@ public sealed record GetVendorsQuery(
     ApprovalStatus? ApprovalStatus = null,
     string? Search = null,
     int Page = 1,
-    int PageSize = 20) : IRequest<PagedResult<VendorAdminDto>>;
+    int PageSize = 20) : IRequest<PagedResult<VendorQueryDto>>;

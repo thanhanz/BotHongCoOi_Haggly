@@ -9,9 +9,9 @@ public sealed class SuspendVendorHandler(
     IVendorAdminCommandRepository repository,
     TimeProvider timeProvider)
     : VendorCommandHandlerBase(repository, timeProvider),
-      IRequestHandler<SuspendVendorCommand, VendorAdminDto>
+      IRequestHandler<SuspendVendorCommand, VendorQueryDto>
 {
-    public async Task<VendorAdminDto> Handle(
+    public async Task<VendorQueryDto> Handle(
         SuspendVendorCommand request,
         CancellationToken cancellationToken)
     {

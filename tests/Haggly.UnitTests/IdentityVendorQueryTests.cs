@@ -13,7 +13,7 @@ public sealed class IdentityVendorQueryTests
     [Fact]
     public async Task HandleGetVendors_WithDefaults_ReturnsPagedVendorDtos()
     {
-        var vendor = new VendorAdminDto(
+        var vendor = new VendorQueryDto(
             Guid.NewGuid(), "vendor@example.com", "0900000000", "Vendor One", "Vendor Stall",
             null, null, UserStatus.PENDING, ApprovalStatus.PENDING, null, null,
             DateTimeOffset.UtcNow, null, null);
@@ -60,18 +60,18 @@ public sealed class IdentityVendorQueryTests
             handler.Handle(new GetVendorsQuery(null, null, page, pageSize), CancellationToken.None));
     }
 
-    private sealed class RecordingVendorAdminQuery(VendorAdminDto? item = null)
+    private sealed class RecordingVendorAdminQuery(VendorQueryDto? item = null)
         : IVendorAdminQuery
     {
         public VendorListFilter? LastFilter { get; private set; }
 
-        public Task<PagedResult<VendorAdminDto>> GetPageAsync(
+        public Task<PagedResult<VendorQueryDto>> GetPageAsync(
             VendorListFilter filter,
             CancellationToken cancellationToken)
         {
             LastFilter = filter;
-            var items = item is null ? Array.Empty<VendorAdminDto>() : [item];
-            return Task.FromResult(new PagedResult<VendorAdminDto>(
+            var items = item is null ? Array.Empty<VendorQueryDto>() : [item];
+            return Task.FromResult(new PagedResult<VendorQueryDto>(
                 items, filter.Page, filter.PageSize, items.Length));
         }
     }
