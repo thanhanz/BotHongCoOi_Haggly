@@ -2,7 +2,7 @@ using Haggly.Domain.Modules.Identity;
 
 namespace Haggly.Application.Modules.Identity.Dtos;
 
-public sealed record VendorAdminDto(
+public sealed record VendorQueryDto(
     Guid UserId,
     string Email,
     string PhoneNumber,
@@ -18,7 +18,7 @@ public sealed record VendorAdminDto(
     DateTimeOffset? UpdatedAt,
     Guid? UpdatedBy)
 {
-    public static VendorAdminDto From(User user, VendorProfile vendor)
+    public static VendorQueryDto From(User user, VendorProfile vendor)
         => new(
             user.Id,
             user.Email,

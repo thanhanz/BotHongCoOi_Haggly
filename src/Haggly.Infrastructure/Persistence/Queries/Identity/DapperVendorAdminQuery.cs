@@ -3,12 +3,13 @@ using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Common;
 using Haggly.Application.Modules.Identity.Administration;
 using Haggly.Application.Modules.Identity.Dtos;
+using Haggly.Domain.Modules.Identity;
 
 namespace Haggly.Infrastructure.Persistence.Queries.Identity;
 
 public sealed class DapperVendorAdminQuery(DapperDbContext dbContext) : IVendorAdminQuery
 {
-    public async Task<PagedResult<VendorAdminDto>> GetPageAsync(
+    public async Task<PagedResult<VendorQueryDto>> GetPageAsync(
         VendorListFilter filter,
         CancellationToken cancellationToken)
     {
@@ -74,8 +75,50 @@ public sealed class DapperVendorAdminQuery(DapperDbContext dbContext) : IVendorA
         var totalCount = checked((int)await results.ReadSingleAsync<long>());
         
         //Get detail of total items
-        var items = (await results.ReadAsync<VendorAdminDto>()).AsList();
+        var rows = (await results.ReadAsync<VendorRow>()).AsList();
+        var items = rows.Select(VendorRowMapper.ToVendorQueryDto).ToArray();
 
-        return new PagedResult<VendorAdminDto>(items, filter.Page, filter.PageSize, totalCount);
+        return new PagedResult<VendorQueryDto>(items, filter.Page, filter.PageSize, totalCount);
     }
+}
+
+public sealed record VendorRow(
+    Guid UserId,
+    string Email,
+    string PhoneNumber,
+    string FullName,
+    string BusinessName,
+    string? BusinessRegistrationNo,
+    string? TaxCode,
+    string UserStatus,
+    string ApprovalStatus,
+    DateTime? ApprovedAt,
+    Guid? ApprovedBy,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt,
+    Guid? UpdatedBy);
+
+public static class VendorRowMapper
+{
+    public static VendorQueryDto ToVendorQueryDto(VendorRow row)
+        => new(
+            row.UserId,
+            row.Email,
+            row.PhoneNumber,
+            row.FullName,
+            row.BusinessName,
+            row.BusinessRegistrationNo,
+            row.TaxCode,
+            Enum.Parse<UserStatus>(row.UserStatus, ignoreCase: true),
+            Enum.Parse<ApprovalStatus>(row.ApprovalStatus, ignoreCase: true),
+            ToUtcOffset(row.ApprovedAt),
+            row.ApprovedBy,
+            ToUtcOffset(row.CreatedAt)!.Value,
+            ToUtcOffset(row.UpdatedAt),
+            row.UpdatedBy);
+
+    private static DateTimeOffset? ToUtcOffset(DateTime? value)
+        => value is null
+            ? null
+            : new DateTimeOffset(DateTime.SpecifyKind(value.Value, DateTimeKind.Utc));
 }
