@@ -45,11 +45,13 @@ public static class PersistenceConfigurationExtensions
 
         services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
         services.AddScoped<IIdentityLoginRepository, EfIdentityLoginRepository>();
+        services.AddScoped<IVendorAdminCommandRepository, EfVendorAdminCommandRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<IStallQuery, DapperStallQuery>();
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();

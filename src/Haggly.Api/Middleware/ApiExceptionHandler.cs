@@ -54,6 +54,12 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status409Conflict, "Registration conflict", exception.Message),
             VendorQueryValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            VendorCommandValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            VendorNotFoundException
+                => (StatusCodes.Status404NotFound, "Vendor not found", exception.Message),
+            VendorTransitionConflictException
+                => (StatusCodes.Status409Conflict, "Vendor conflict", exception.Message),
             MarketValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             MarketConflictException

@@ -16,4 +16,22 @@ public sealed record VendorAdminDto(
     Guid? ApprovedBy,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,
-    Guid? UpdatedBy);
+    Guid? UpdatedBy)
+{
+    public static VendorAdminDto From(User user, VendorProfile vendor)
+        => new(
+            user.Id,
+            user.Email,
+            user.PhoneNumber,
+            user.FullName,
+            vendor.BusinessName,
+            vendor.BusinessRegistrationNo,
+            vendor.TaxCode,
+            user.Status,
+            vendor.ApprovalStatus,
+            vendor.ApprovedAt,
+            vendor.ApprovedBy,
+            vendor.CreatedAt,
+            vendor.UpdatedAt,
+            vendor.UpdatedBy);
+}
