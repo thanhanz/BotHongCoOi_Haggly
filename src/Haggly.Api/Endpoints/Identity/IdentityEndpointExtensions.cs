@@ -113,7 +113,7 @@ public static class IdentityEndpointExtensions
 
         var email = principal.FindFirstValue(JwtRegisteredClaimNames.Email)
             ?? principal.FindFirstValue(ClaimTypes.Email);
-        var roles = principal.FindAll(ClaimTypes.Role)
+        var roles = principal.FindAll("roles")
             .Select(claim => claim.Value)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
