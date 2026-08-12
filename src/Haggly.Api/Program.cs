@@ -27,6 +27,7 @@ public partial class Program
         }
 
         app.MapIdentityEndpoints();
+        app.MapVendorAdminEndpoints();
         app.MapMarketEndpoints();
         app.MapStallEndpoints();
 

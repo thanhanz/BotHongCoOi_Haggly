@@ -12,6 +12,7 @@ using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
 using Haggly.Infrastructure.Persistence.Repositories.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Markets;
+using Haggly.Infrastructure.Persistence.Queries.Identity;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -48,6 +49,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<IStallQuery, DapperStallQuery>();
+        services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();
