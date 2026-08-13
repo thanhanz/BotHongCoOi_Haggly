@@ -18,6 +18,21 @@ jobs:
     name: Build, test, and publish
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: haggly
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1234
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d haggly"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,11 +75,22 @@ jobs:
             rm -f "${message_file}"
           done <<< "${commits}"
 
+
+
       - name: Restore
         run: dotnet restore Haggly.slnx
 
       - name: Build
         run: dotnet build Haggly.slnx --configuration Release --no-restore
+
+      - name: Apply database migrations
+        run: >-
+          dotnet ef database update
+          --project src/Haggly.Infrastructure/Haggly.Infrastructure.csproj
+          --startup-project src/Haggly.Api/Haggly.Api.csproj
+          --configuration Release
+          --no-build
+          --connection "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
 
       - name: Unit tests
         run: >-
