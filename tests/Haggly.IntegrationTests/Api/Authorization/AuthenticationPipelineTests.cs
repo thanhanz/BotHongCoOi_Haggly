@@ -91,6 +91,43 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Theory]
+    [InlineData(RoleCode.VENDOR)]
+    [InlineData(RoleCode.MARKET_ADMIN)]
+    [InlineData(RoleCode.PLATFORM_ADMIN)]
+    public async Task AuthorizeAsync_WhenAllowedRoleUsesCatalogContributorPolicy_Succeeds(RoleCode role)
+    {
+        using var provider = CreateServices().BuildServiceProvider();
+        var tokenService = provider.GetRequiredService<Haggly.Application.Abstractions.Identity.IIdentityTokenService>();
+        var token = tokenService.CreateAccessToken(new User { Email = "contributor@example.com" }, [role]);
+        var context = new DefaultHttpContext { RequestServices = provider };
+        context.Request.Headers.Authorization = $"Bearer {token.Value}";
+        var authentication = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+
+        var authorization = await provider.GetRequiredService<IAuthorizationService>()
+            .AuthorizeAsync(authentication.Principal!, resource: null, IdentityPolicies.CatalogContributor);
+
+        Assert.True(authorization.Succeeded);
+    }
+
+    [Fact]
+    public async Task AuthorizeAsync_WhenBuyerUsesCatalogContributorPolicy_ReturnsForbidden()
+    {
+        using var provider = CreateServices().BuildServiceProvider();
+        var tokenService = provider.GetRequiredService<Haggly.Application.Abstractions.Identity.IIdentityTokenService>();
+        var token = tokenService.CreateAccessToken(
+            new User { Email = "buyer@example.com" },
+            [RoleCode.BUYER]);
+        var context = new DefaultHttpContext { RequestServices = provider };
+        context.Request.Headers.Authorization = $"Bearer {token.Value}";
+        var authentication = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+
+        var authorization = await provider.GetRequiredService<IAuthorizationService>()
+            .AuthorizeAsync(authentication.Principal!, resource: null, IdentityPolicies.CatalogContributor);
+
+        Assert.False(authorization.Succeeded);
+    }
+
+    [Theory]
     [InlineData(false, StatusCodes.Status401Unauthorized, "Authentication required")]
     [InlineData(true, StatusCodes.Status403Forbidden, "Access forbidden")]
     public async Task ChallengeOrForbid_WhenAuthenticationFails_WritesProblemDetails(
@@ -200,10 +237,16 @@ public sealed class AuthenticationPipelineTests
         var buyer = await policies.GetPolicyAsync(IdentityPolicies.BuyerOnly);
         var vendor = await policies.GetPolicyAsync(IdentityPolicies.VendorOnly);
         var admin = await policies.GetPolicyAsync(IdentityPolicies.AdminOnly);
+        var catalogContributor = await policies.GetPolicyAsync(IdentityPolicies.CatalogContributor);
 
         AssertPolicyRoles(buyer!, RoleCode.BUYER);
         AssertPolicyRoles(vendor!, RoleCode.VENDOR);
         AssertPolicyRoles(admin!, RoleCode.MARKET_ADMIN, RoleCode.PLATFORM_ADMIN);
+        AssertPolicyRoles(
+            catalogContributor!,
+            RoleCode.VENDOR,
+            RoleCode.MARKET_ADMIN,
+            RoleCode.PLATFORM_ADMIN);
     }
 
     private static IServiceCollection CreateServices()

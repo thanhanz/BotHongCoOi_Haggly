@@ -3,6 +3,7 @@ using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Api.Endpoints.Identity;
 using Haggly.Api.Endpoints.Markets;
+using Haggly.Api.Endpoints.Catalog;
 
 public partial class Program
 {
@@ -38,6 +39,7 @@ public partial class Program
         app.MapVendorAdminEndpoints();
         app.MapMarketEndpoints();
         app.MapStallEndpoints();
+        app.MapCategoryEndpoints();
 
         app.Run();
     }
