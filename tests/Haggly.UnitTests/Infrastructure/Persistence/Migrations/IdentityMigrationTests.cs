@@ -33,6 +33,16 @@ public sealed class IdentityMigrationTests
             migration => migration.Contains("InitialIdentity", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void GetMigrations_WhenCategoryMigrationExists_ContainsCreateCategories()
+    {
+        using var context = CreateContext();
+
+        Assert.Contains(
+            context.Database.GetMigrations(),
+            migration => migration.Contains("CreateCategories", StringComparison.Ordinal));
+    }
+
     private static HagglyDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<HagglyDbContext>()

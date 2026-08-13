@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Identity;
 using Haggly.Domain.Modules.Markets;
 
@@ -15,10 +16,13 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<DelivererProfile> DelivererProfiles => Set<DelivererProfile>();
     public DbSet<Market> Markets => Set<Market>();
     public DbSet<Stall> Stalls => Set<Stall>();
+    public DbSet<Category> Categories => Set<Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Ignore<Product>();
+        modelBuilder.Ignore<ProductStall>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HagglyDbContext).Assembly);
     }
 }
