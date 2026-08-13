@@ -23,14 +23,21 @@ public static class ApiConfigurationExtensions
                 Title = "Haggly API",
                 Version = "v1"
             });
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            var bearerScheme = new OpenApiSecurityScheme
             {
-                Name = "Authorization",
-                Description = "Enter a valid JWT bearer token.",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT"
+              Name = "Authorization",
+              Description = "Enter JWT token only.",
+              In = ParameterLocation.Header,
+              Type = SecuritySchemeType.Http,
+              Scheme = "bearer",
+              BearerFormat = "JWT"
+            };
+
+            options.AddSecurityDefinition("Bearer", bearerScheme);
+            
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+              [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
         });
         services.PostConfigure<JwtBearerOptions>(
@@ -47,7 +54,7 @@ public static class ApiConfigurationExtensions
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Haggly API v1");
         });
-        app.MapGet("/", () => Results.Redirect("/swagger"));
+        app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
         return app;
     }
@@ -55,6 +62,13 @@ public static class ApiConfigurationExtensions
     private static void ConfigureBearerEvents(JwtBearerOptions options)
     {
         options.Events ??= new JwtBearerEvents();
+        
+        options.Events.OnAuthenticationFailed = context =>
+        {
+          Console.WriteLine(context.Exception.Message);
+          return Task.CompletedTask;
+        };
+      
         options.Events.OnChallenge = async context =>
         {
             context.HandleResponse();

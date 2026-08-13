@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Haggly.Domain.Modules.Identity;
+using Haggly.Domain.Modules.Markets;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -12,6 +13,8 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<VendorProfile> VendorProfiles => Set<VendorProfile>();
     public DbSet<AdminProfile> AdminProfiles => Set<AdminProfile>();
     public DbSet<DelivererProfile> DelivererProfiles => Set<DelivererProfile>();
+    public DbSet<Market> Markets => Set<Market>();
+    public DbSet<Stall> Stalls => Set<Stall>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

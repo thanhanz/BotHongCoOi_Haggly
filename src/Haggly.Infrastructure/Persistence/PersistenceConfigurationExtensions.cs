@@ -4,8 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Haggly.Application.Modules.Identity.Registration;
 using Haggly.Application.Modules.Identity.Login;
 using Haggly.Application.Abstractions.Identity;
+using Haggly.Application.Abstractions.Markets;
+using Haggly.Application.Modules.Markets.Handlers.Markets;
+using Haggly.Application.Modules.Markets.Handlers.Stalls;
 using Haggly.Infrastructure.Authentication;
+using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
+using Haggly.Infrastructure.Persistence.Repositories.Markets;
+using Haggly.Infrastructure.Persistence.Queries.Markets;
+using Haggly.Infrastructure.Persistence.Queries.Identity;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -33,8 +40,18 @@ public static class PersistenceConfigurationExtensions
 
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
+        services.AddHagglyMediatR();
+        services.AddScoped<DapperDbContext>();
+
         services.AddScoped<IIdentityRegistrationRepository, EfIdentityRegistrationRepository>();
         services.AddScoped<IIdentityLoginRepository, EfIdentityLoginRepository>();
+        services.AddScoped<IVendorAdminCommandRepository, EfVendorAdminCommandRepository>();
+        services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
+        services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
+        services.AddScoped<IMarketQuery, DapperMarketQuery>();
+        services.AddScoped<IStallQuery, DapperStallQuery>();
+        services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();
