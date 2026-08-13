@@ -51,7 +51,7 @@ jobs:
         run: |
           dotnet tool restore
 
-          commits="$(git rev-list --reverse "${BASE_SHA}..${HEAD_SHA}")"
+          commits="$(git rev-list --no-merges --reverse "${BASE_SHA}..${HEAD_SHA}")"
           if [[ -z "${commits}" ]]; then
             echo "No commits found in the pull request range."
             exit 1
