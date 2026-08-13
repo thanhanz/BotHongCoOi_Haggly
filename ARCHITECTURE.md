@@ -9,13 +9,16 @@ must not be read as implemented functionality.
 Haggly is a .NET 10 modular-monolith scaffold for a digital Vietnamese market.
 The MVP domain is divided into business modules, while the executable
 application is currently delivered as one API and one relational database.
-The completed vertical slices are Identity and Markets. Identity provides
+The completed vertical slices are Identity, Markets, and the Category portion
+of Catalog. Identity provides
 registration, login, JWT authentication, authorization policies, vendor
 administration, and the current-user endpoint. Markets provides market and
-stall CRUD use cases, PostgreSQL persistence, and API endpoints.
+stall CRUD use cases, PostgreSQL persistence, and API endpoints. Catalog
+provides Category creation and authenticated reads, PostgreSQL persistence,
+and API endpoints.
 
-The MVP requirements also cover catalog, inventory, negotiation, sales,
-payments, and finance. Those areas currently have Domain model types, but their
+The MVP requirements also cover Product, Inventory, Negotiation, Sales,
+Payments, and Finance. Those areas currently have Domain model types, but their
 Application use cases, API endpoints, and persistence mappings have not yet
 been implemented.
 
@@ -103,7 +106,7 @@ are:
 |---|---|---|
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
-| Catalog | `Category`, `Product`, `ProductStall`, related enums | Domain model scaffold only |
+| Catalog | `Category`, `Product`, `ProductStall`, related enums | Category create/read vertical slice implemented; Product and ProductStall remain Domain scaffolds |
 | Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Domain model scaffold only |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
@@ -162,23 +165,31 @@ Haggly.Application/
     `-- module-specific exceptions
 ```
 
+Catalog Category Application code follows the same command/query and port
+split. It includes `CreateCategory`, `GetCategories`, and `GetCategoryById`
+contracts, Category DTOs, handlers, validation, exceptions, and separate
+command-repository and query ports. New categories are active by default;
+slugs are normalized to lowercase and unique among non-deleted categories.
+
 ### Infrastructure
 
 `Haggly.Infrastructure` contains:
 
-- `Persistence/HagglyDbContext`, EF Core configurations, Identity and Markets
-  repositories, the design-time context factory, and Identity/Markets
+- `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
+  and Category repositories, the design-time context factory, and Identity,
+  Markets, and Category
   migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity and
-  Markets reads.
+  Markets and active Category reads.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
-mappings for Identity and Markets. The migrations currently include
-`InitialIdentity` and `CreateMarketAndStallEntities`; no mappings for Catalog,
-Inventory, Negotiation, Sales, Payments, or Finance are present.
+mappings for Identity, Markets, and Category. The migrations currently include
+`InitialIdentity`, `CreateMarketAndStallEntities`, and `CreateCategories`.
+Product, ProductStall, Inventory, Negotiation, Sales, Payments, and Finance
+remain unmapped.
 
 ### API
 
@@ -195,14 +206,23 @@ Identity routes are grouped under `/api/v1/identity`:
 | `POST` | `/login` | Issue a JWT access token |
 | `GET` | `/me` | Read the authenticated user and roles |
 
-The API exposes `BuyerOnly`, `VendorOnly`, and `AdminOnly` policies. `AdminOnly`
-accepts `MARKET_ADMIN` or `PLATFORM_ADMIN`. Resource ownership checks remain the
-responsibility of the owning business use case.
+The API exposes `BuyerOnly`, `VendorOnly`, `AdminOnly`, and
+`CatalogContributor` policies. `AdminOnly` accepts `MARKET_ADMIN` or
+`PLATFORM_ADMIN`; `CatalogContributor` additionally accepts `VENDOR`. Resource
+ownership checks remain the responsibility of the owning business use case.
 
 Markets routes are grouped under `/api/v1/markets` and expose market and stall
 CRUD operations. Market and stall write operations require the configured admin
 authorization policy; reads use Application query contracts backed by Dapper
 adapters.
+
+Category routes are grouped under `/api/v1/categories`:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/categories` | Create a category; requires `CatalogContributor` |
+| `GET` | `/api/v1/categories` | List active categories; requires authentication |
+| `GET` | `/api/v1/categories/{id}` | Read one active category; requires authentication |
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
@@ -243,7 +263,9 @@ configuration, EF Core model metadata, migrations, and row mappers.
 
 `Haggly.IntegrationTests` is organized under `Api` and `Infrastructure`. It
 covers authentication and authorization behavior, Identity and Markets endpoint
-contracts, Swagger, and the Dapper Markets query against PostgreSQL. The
+contracts, Swagger, and the Dapper Markets and Category queries against
+PostgreSQL. It also covers the Category HTTP authorization and contributor
+creation path. The
 repository currently has no active architecture-test project.
 
 ## Module growth rules
@@ -269,8 +291,9 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Application, Infrastructure, and API slices for Catalog, Inventory,
-  Negotiation, Sales, Payments, and Finance.
+- Complete Product and ProductStall Catalog behavior, then complete Application,
+  Infrastructure, and API slices for Inventory, Negotiation, Sales, Payments,
+  and Finance.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its
