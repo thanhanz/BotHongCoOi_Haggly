@@ -2,10 +2,11 @@ using Haggly.Api;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Api.Endpoints.Identity;
+using Haggly.Api.Endpoints.Markets;
 
 public partial class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,14 @@ public partial class Program
         builder.Services.AddApiServices();
 
         var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            await using var scope = app.Services.CreateAsyncScope();
+            await DevelopmentAdminSeeder.SeedAsync(
+                scope.ServiceProvider.GetRequiredService<HagglyDbContext>(),
+                scope.ServiceProvider.GetRequiredService<Haggly.Application.Abstractions.Identity.IPasswordHasher>());
+        }
 
         //Middleware start here
         app.UseExceptionHandler();
@@ -26,6 +35,9 @@ public partial class Program
         }
 
         app.MapIdentityEndpoints();
+        app.MapVendorAdminEndpoints();
+        app.MapMarketEndpoints();
+        app.MapStallEndpoints();
 
         app.Run();
     }

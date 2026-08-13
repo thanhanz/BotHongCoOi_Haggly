@@ -49,7 +49,7 @@ public sealed class AuthenticationPipelineTests
         Assert.Equal("Haggly.Api.Tests", bearer.TokenValidationParameters.ValidIssuer);
         Assert.Equal("Haggly.Client.Tests", bearer.TokenValidationParameters.ValidAudience);
         Assert.Equal(TimeSpan.Zero, bearer.TokenValidationParameters.ClockSkew);
-        Assert.Equal(ClaimTypes.Role, bearer.TokenValidationParameters.RoleClaimType);
+        Assert.Equal("roles", bearer.TokenValidationParameters.RoleClaimType);
     }
 
     [Fact]

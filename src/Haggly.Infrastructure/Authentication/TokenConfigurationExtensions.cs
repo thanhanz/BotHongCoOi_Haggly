@@ -29,6 +29,7 @@ public static class TokenConfigurationExtensions
                 options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer();
+        
         services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
             .Configure<IOptions<JwtOptions>>((bearer, configuredOptions) =>
             {
@@ -47,7 +48,7 @@ public static class TokenConfigurationExtensions
                     RequireSignedTokens = true,
                     ClockSkew = TimeSpan.Zero,
                     NameClaimType = JwtRegisteredClaimNames.Sub,
-                    RoleClaimType = ClaimTypes.Role,
+                    RoleClaimType = "roles",
                     ValidAlgorithms = [SecurityAlgorithms.HmacSha256]
                 };
             });

@@ -18,7 +18,8 @@ public static class IdentityEndpointExtensions
     public static IEndpointRouteBuilder MapIdentityEndpoints(
         this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup(IdentityRoutes.Prefix);
+        var group = endpoints.MapGroup(IdentityRoutes.Prefix)
+                             .WithTags("Authentication");
 
         group.MapPost(IdentityRoutes.RegisterBuyer, RegisterBuyerAsync)
             .Produces<ApiResponse<RegistrationResponse>>(StatusCodes.Status201Created)
@@ -112,7 +113,7 @@ public static class IdentityEndpointExtensions
 
         var email = principal.FindFirstValue(JwtRegisteredClaimNames.Email)
             ?? principal.FindFirstValue(ClaimTypes.Email);
-        var roles = principal.FindAll(ClaimTypes.Role)
+        var roles = principal.FindAll("roles")
             .Select(claim => claim.Value)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
