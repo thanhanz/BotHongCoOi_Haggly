@@ -14,7 +14,7 @@ public sealed class VendorRowMapperTests
         var createdAt = new DateTime(2026, 8, 12, 10, 0, 0, DateTimeKind.Unspecified);
         var approvedAt = new DateTime(2026, 8, 12, 11, 0, 0, DateTimeKind.Unspecified);
 
-        var result = VendorRowMapper.Map(new VendorRow(
+        var result = VendorRowMapper.ToVendorQueryDto(new VendorRow(
             userId, "vendor@example.com", "0900000000", "Vendor One", "Vendor Stall",
             "BR-1", "TAX-1", "ACTIVE", "APPROVED", approvedAt, approverId,
             createdAt, null, null));
