@@ -9,7 +9,7 @@ public sealed class IdentityVendorApprovalTests
         new(2026, 8, 12, 10, 30, 0, TimeSpan.Zero);
 
     [Fact]
-    public void Approve_PendingVendor_ActivatesUserAndRecordsApproval()
+    public void Approve_WhenVendorIsPending_ActivatesUserAndRecordsApproval()
     {
         var user = CreateUser(UserStatus.PENDING);
         var vendor = CreateVendor(user.Id, ApprovalStatus.PENDING);
@@ -26,7 +26,7 @@ public sealed class IdentityVendorApprovalTests
     }
 
     [Fact]
-    public void Approve_SuspendedVendor_ReinstatesUserAndRefreshesApproval()
+    public void Approve_WhenVendorIsSuspended_ReinstatesUserAndRefreshesApproval()
     {
         var user = CreateUser(UserStatus.SUSPENDED);
         var vendor = CreateVendor(user.Id, ApprovalStatus.SUSPENDED);
@@ -41,7 +41,7 @@ public sealed class IdentityVendorApprovalTests
     }
 
     [Fact]
-    public void Reject_PendingVendor_SuspendsUserAndClearsApproval()
+    public void Reject_WhenVendorIsPending_SuspendsUserAndClearsApproval()
     {
         var user = CreateUser(UserStatus.PENDING);
         var vendor = CreateVendor(user.Id, ApprovalStatus.PENDING);
@@ -58,7 +58,7 @@ public sealed class IdentityVendorApprovalTests
     }
 
     [Fact]
-    public void Suspend_ApprovedVendor_SuspendsUserAndPreservesApprovalProvenance()
+    public void Suspend_WhenVendorIsApproved_SuspendsUserAndPreservesApprovalProvenance()
     {
         var user = CreateUser(UserStatus.ACTIVE);
         var vendor = CreateVendor(user.Id, ApprovalStatus.APPROVED);
@@ -83,7 +83,7 @@ public sealed class IdentityVendorApprovalTests
     [InlineData(ApprovalStatus.APPROVED, "Reject")]
     [InlineData(ApprovalStatus.PENDING, "Suspend")]
     [InlineData(ApprovalStatus.SUSPENDED, "Suspend")]
-    public void Decision_InvalidTransition_ThrowsConflict(
+    public void Decision_WhenTransitionIsInvalid_ThrowsConflict(
         ApprovalStatus status,
         string decision)
     {
@@ -105,7 +105,7 @@ public sealed class IdentityVendorApprovalTests
     }
 
     [Fact]
-    public void Decision_UserDoesNotOwnVendor_ThrowsConflict()
+    public void Decision_WhenUserDoesNotOwnVendor_ThrowsConflict()
     {
         var owner = CreateUser(UserStatus.PENDING);
         var otherUser = CreateUser(UserStatus.PENDING);

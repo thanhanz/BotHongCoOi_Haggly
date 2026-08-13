@@ -10,7 +10,7 @@ namespace Haggly.UnitTests.Application.Modules.Identity.Registration;
 public sealed class IdentityRegistrationTests
 {
     [Fact]
-    public async Task Register_buyer_creates_active_user_buyer_profile_and_buyer_role()
+    public async Task RegisterBuyer_WhenInputIsValid_CreatesActiveBuyerWithProfileAndRole()
     {
         var store = new RecordingRegistrationStore();
         var handler = new RegisterBuyerHandler(store, new FixedPasswordHasher());
@@ -35,7 +35,7 @@ public sealed class IdentityRegistrationTests
     }
 
     [Fact]
-    public async Task Register_vendor_creates_pending_user_vendor_profile_and_vendor_role()
+    public async Task RegisterVendor_WhenInputIsValid_CreatesPendingVendorWithProfileAndRole()
     {
         var store = new RecordingRegistrationStore();
         var handler = new RegisterVendorHandler(store, new FixedPasswordHasher());
@@ -58,7 +58,7 @@ public sealed class IdentityRegistrationTests
     }
 
     [Fact]
-    public async Task Registration_rejects_an_existing_raw_email_without_writing()
+    public async Task Register_WhenRawEmailAlreadyExists_ThrowsConflictWithoutWriting()
     {
         var store = new RecordingRegistrationStore { EmailExists = true };
         var handler = new RegisterBuyerHandler(store, new FixedPasswordHasher());
@@ -77,7 +77,7 @@ public sealed class IdentityRegistrationTests
     }
 
     [Fact]
-    public async Task Vendor_registration_requires_a_business_name()
+    public async Task RegisterVendor_WhenBusinessNameIsMissing_ThrowsValidationException()
     {
         var store = new RecordingRegistrationStore();
         var handler = new RegisterVendorHandler(store, new FixedPasswordHasher());
@@ -100,7 +100,7 @@ public sealed class IdentityRegistrationTests
     [InlineData("not-an-email", "0900000000", "password-123", "Buyer One")]
     [InlineData("buyer@example.com", "0900000000", "short", "Buyer One")]
     [InlineData("buyer@example.com", "0900000000", "password-123", "")]
-    public async Task Buyer_registration_rejects_invalid_required_input(
+    public async Task RegisterBuyer_WhenRequiredInputIsInvalid_ThrowsValidationException(
         string email,
         string phoneNumber,
         string password,

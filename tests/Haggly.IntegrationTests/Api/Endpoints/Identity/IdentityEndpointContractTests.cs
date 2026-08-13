@@ -20,14 +20,14 @@ namespace Haggly.IntegrationTests.Api.Endpoints.Identity;
 public sealed class IdentityEndpointContractTests
 {
     [Fact]
-    public void Identity_route_catalog_uses_the_v1_module_prefix()
+    public void IdentityRoutes_WhenInspected_UsesTheV1ModulePrefix()
     {
         Assert.Equal("/api/v1/identity", IdentityRoutes.Prefix);
         Assert.Equal("/api/v1/identity/me", IdentityRoutes.CurrentUserLocation);
     }
 
     [Fact]
-    public async Task Swagger_document_contains_identity_routes_and_bearer_scheme()
+    public async Task SwaggerDocument_WhenIdentityEndpointsAreMapped_ContainsIdentityRoutesAndBearerScheme()
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -58,7 +58,7 @@ public sealed class IdentityEndpointContractTests
     }
 
     [Fact]
-    public void Identity_routes_are_registered_with_expected_methods()
+    public void MapIdentityEndpoints_WhenMapped_RegistersExpectedMethods()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddAuthorization();
@@ -90,7 +90,7 @@ public sealed class IdentityEndpointContractTests
     }
 
     [Fact]
-    public void Current_user_route_requires_authorization()
+    public void CurrentUserRoute_WhenMapped_RequiresAuthorization()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddAuthorization();
@@ -111,7 +111,7 @@ public sealed class IdentityEndpointContractTests
     [InlineData("/api/v1/identity/register/vendor", typeof(ApiResponse<RegistrationResponse>))]
     [InlineData("/api/v1/identity/login", typeof(ApiResponse<LoginResponse>))]
     [InlineData("/api/v1/identity/me", typeof(ApiResponse<CurrentUserResponse>))]
-    public void Successful_identity_responses_use_the_api_response_envelope(
+    public void IdentityEndpoint_WhenSuccessful_UsesApiResponseEnvelope(
         string route,
         Type responseType)
     {
@@ -139,7 +139,7 @@ public sealed class IdentityEndpointContractTests
     [InlineData("/api/v1/identity/login", 400)]
     [InlineData("/api/v1/identity/login", 401)]
     [InlineData("/api/v1/identity/me", 401)]
-    public void Identity_failures_are_documented_as_problem_details(
+    public void IdentityEndpoint_WhenFailureIsDocumented_UsesProblemDetails(
         string route,
         int statusCode)
     {

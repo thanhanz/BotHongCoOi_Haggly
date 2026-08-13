@@ -10,7 +10,7 @@ namespace Haggly.UnitTests.Infrastructure.Authentication;
 public sealed class JwtTokenServiceTests
 {
     [Fact]
-    public void CreateAccessToken_contains_identity_and_role_claims()
+    public void CreateAccessToken_WhenUserAndRolesAreValid_ContainsIdentityAndRoleClaims()
     {
         var service = new JwtTokenService(Options.Create(new JwtOptions
         {
@@ -38,7 +38,7 @@ public sealed class JwtTokenServiceTests
     }
 
     [Fact]
-    public void CreateAccessToken_rejects_invalid_jwt_configuration()
+    public void CreateAccessToken_WhenJwtConfigurationIsInvalid_ThrowsConfigurationException()
     {
         var service = new JwtTokenService(Options.Create(new JwtOptions()));
 

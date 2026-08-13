@@ -11,7 +11,7 @@ namespace Haggly.UnitTests.Application.Modules.Identity.Administration;
 public sealed class IdentityVendorQueryTests
 {
     [Fact]
-    public async Task HandleGetVendors_WithDefaults_ReturnsPagedVendorDtos()
+    public async Task HandleGetVendors_WhenCalledWithDefaults_ReturnsPagedVendorDtos()
     {
         var vendor = new VendorQueryDto(
             Guid.NewGuid(), "vendor@example.com", "0900000000", "Vendor One", "Vendor Stall",
@@ -31,7 +31,7 @@ public sealed class IdentityVendorQueryTests
     }
 
     [Fact]
-    public async Task HandleGetVendors_WithFilterAndSearch_PassesNormalizedValues()
+    public async Task HandleGetVendors_WhenFilterAndSearchAreProvided_PassesNormalizedValues()
     {
         var query = new RecordingVendorAdminQuery();
         var handler = new GetVendorsHandler(query);
@@ -50,7 +50,7 @@ public sealed class IdentityVendorQueryTests
     [InlineData(0, 20)]
     [InlineData(1, 0)]
     [InlineData(1, 101)]
-    public async Task HandleGetVendors_WithInvalidPaging_ThrowsValidationException(
+    public async Task HandleGetVendors_WhenPagingIsInvalid_ThrowsValidationException(
         int page,
         int pageSize)
     {

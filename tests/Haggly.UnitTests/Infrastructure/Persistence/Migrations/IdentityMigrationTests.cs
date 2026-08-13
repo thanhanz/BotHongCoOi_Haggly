@@ -10,7 +10,7 @@ namespace Haggly.UnitTests.Infrastructure.Persistence.Migrations;
 public sealed class IdentityMigrationTests
 {
     [Fact]
-    public void Identity_roles_are_seeded_with_all_fixed_role_codes()
+    public void IdentityRoleSeed_WhenModelIsBuilt_ContainsAllFixedRoleCodes()
     {
         using var context = CreateContext();
         var role = context.GetService<IDesignTimeModel>().Model.FindEntityType(typeof(Role))!;
@@ -24,7 +24,7 @@ public sealed class IdentityMigrationTests
     }
 
     [Fact]
-    public void Initial_identity_migration_is_registered()
+    public void GetMigrations_WhenIdentityMigrationExists_ContainsInitialIdentity()
     {
         using var context = CreateContext();
 

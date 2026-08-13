@@ -17,7 +17,7 @@ namespace Haggly.IntegrationTests.Api.Endpoints.Identity;
 public sealed class VendorAdminEndpointContractTests
 {
     [Fact]
-    public void MapVendorAdminEndpoints_RegistersAdminVendorListRoute()
+    public void MapVendorAdminEndpoints_WhenMapped_RegistersAdminVendorListRoute()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddAuthorization();
@@ -35,7 +35,7 @@ public sealed class VendorAdminEndpointContractTests
     }
 
     [Fact]
-    public void MapVendorAdminEndpoints_DocumentsPagedResponseAndValidationFailure()
+    public void MapVendorAdminEndpoints_WhenMapped_DocumentsPagedResponseAndValidationFailure()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddAuthorization();
@@ -62,7 +62,7 @@ public sealed class VendorAdminEndpointContractTests
     [InlineData("/api/v1/admin/vendors/{vendorId:guid}/approve")]
     [InlineData("/api/v1/admin/vendors/{vendorId:guid}/reject")]
     [InlineData("/api/v1/admin/vendors/{vendorId:guid}/suspend")]
-    public void MapVendorAdminEndpoints_RegistersActionRoutesWithAdminAuthorization(
+    public void MapVendorAdminEndpoints_WhenMapped_RegistersActionRoutesWithAdminAuthorization(
         string route)
     {
         var builder = WebApplication.CreateBuilder();

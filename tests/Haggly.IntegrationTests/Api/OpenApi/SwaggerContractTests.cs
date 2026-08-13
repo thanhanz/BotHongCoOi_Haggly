@@ -15,7 +15,7 @@ namespace Haggly.IntegrationTests.Api.OpenApi;
 public sealed class SwaggerContractTests
 {
     [Fact]
-    public async Task Development_root_redirects_to_swagger_and_swagger_json_is_available()
+    public async Task SwaggerDocument_WhenDevelopmentPipelineIsConfigured_RedirectsRootAndServesJson()
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {

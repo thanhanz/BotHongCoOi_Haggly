@@ -11,7 +11,7 @@ namespace Haggly.UnitTests.Application.Modules.Identity.Login;
 public sealed class IdentityLoginTests
 {
     [Fact]
-    public async Task Login_returns_access_token_and_active_roles_for_an_active_user()
+    public async Task Login_WhenUserIsActiveAndCredentialsAreValid_ReturnsAccessTokenAndActiveRoles()
     {
         var user = new User
         {
@@ -42,7 +42,7 @@ public sealed class IdentityLoginTests
     }
 
     [Fact]
-    public async Task Login_rejects_invalid_password_without_updating_last_login()
+    public async Task Login_WhenPasswordIsInvalid_RejectsWithoutUpdatingLastLogin()
     {
         var user = new User
         {
@@ -65,7 +65,7 @@ public sealed class IdentityLoginTests
     [Theory]
     [InlineData(UserStatus.PENDING)]
     [InlineData(UserStatus.SUSPENDED)]
-    public async Task Login_rejects_users_who_are_not_active(UserStatus status)
+    public async Task Login_WhenUserIsNotActive_Rejects(UserStatus status)
     {
         var user = new User
         {
@@ -85,7 +85,7 @@ public sealed class IdentityLoginTests
     }
 
     [Fact]
-    public async Task Login_uses_a_generic_error_when_the_email_is_unknown()
+    public async Task Login_WhenEmailIsUnknown_UsesGenericAuthenticationError()
     {
         var repository = new RecordingLoginRepository();
         var handler = new LoginHandler(repository, new SuccessfulPasswordVerifier(), new FixedTokenService());
@@ -99,7 +99,7 @@ public sealed class IdentityLoginTests
     }
 
     [Fact]
-    public async Task Login_rejects_invalid_input_before_querying_the_repository()
+    public async Task Login_WhenInputIsInvalid_RejectsBeforeQueryingRepository()
     {
         var repository = new RecordingLoginRepository();
         var handler = new LoginHandler(repository, new SuccessfulPasswordVerifier(), new FixedTokenService());

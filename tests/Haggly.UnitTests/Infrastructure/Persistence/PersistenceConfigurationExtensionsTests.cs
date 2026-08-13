@@ -12,7 +12,7 @@ namespace Haggly.UnitTests.Infrastructure.Persistence;
 public sealed class PersistenceConfigurationExtensionsTests
 {
     [Fact]
-    public void AddPersistence_registers_haggly_db_context_with_postgresql()
+    public void AddPersistence_WhenConnectionStringIsConfigured_RegistersPostgreSqlDbContext()
     {
         var services = new ServiceCollection();
         var configuration = new ConfigurationManager
@@ -30,7 +30,7 @@ public sealed class PersistenceConfigurationExtensionsTests
     }
 
     [Fact]
-    public void AddPersistence_throws_when_connection_string_is_missing()
+    public void AddPersistence_WhenConnectionStringIsMissing_ThrowsConfigurationException()
     {
         var services = new ServiceCollection();
         var configuration = new ConfigurationManager();
@@ -44,7 +44,7 @@ public sealed class PersistenceConfigurationExtensionsTests
     }
 
     [Fact]
-    public void AddInfrastructureRepositories_returns_the_original_service_collection()
+    public void AddInfrastructureRepositories_WhenCalled_ReturnsOriginalServiceCollection()
     {
         var services = new ServiceCollection();
 
@@ -54,7 +54,7 @@ public sealed class PersistenceConfigurationExtensionsTests
     }
 
     [Fact]
-    public void AddHagglyMediatR_registers_market_command_handlers()
+    public void AddHagglyMediatR_WhenCalled_RegistersMarketCommandHandlers()
     {
         var services = new ServiceCollection();
 

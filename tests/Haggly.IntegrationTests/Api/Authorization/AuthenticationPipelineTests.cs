@@ -32,7 +32,7 @@ namespace Haggly.IntegrationTests.Api.Authorization;
 public sealed class AuthenticationPipelineTests
 {
     [Fact]
-    public void Token_services_configure_strict_bearer_validation()
+    public void AddTokenServices_WhenConfigurationIsValid_ConfiguresStrictBearerValidation()
     {
         using var provider = CreateServices().BuildServiceProvider();
 
@@ -53,7 +53,7 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Fact]
-    public async Task Issued_token_is_authenticated_and_authorized_by_role()
+    public async Task AuthenticateAsync_WhenIssuedTokenContainsBuyerRole_AuthenticatesAndAuthorizesBuyer()
     {
         using var provider = CreateServices().BuildServiceProvider();
         var tokenService = provider.GetRequiredService<Haggly.Application.Abstractions.Identity.IIdentityTokenService>();
@@ -73,7 +73,7 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Fact]
-    public async Task Buyer_token_is_forbidden_by_vendor_policy()
+    public async Task AuthorizeAsync_WhenBuyerTokenUsesVendorPolicy_ReturnsForbidden()
     {
         using var provider = CreateServices().BuildServiceProvider();
         var tokenService = provider.GetRequiredService<Haggly.Application.Abstractions.Identity.IIdentityTokenService>();
@@ -93,7 +93,7 @@ public sealed class AuthenticationPipelineTests
     [Theory]
     [InlineData(false, StatusCodes.Status401Unauthorized, "Authentication required")]
     [InlineData(true, StatusCodes.Status403Forbidden, "Access forbidden")]
-    public async Task Authentication_failures_use_problem_details(
+    public async Task ChallengeOrForbid_WhenAuthenticationFails_WritesProblemDetails(
         bool forbid,
         int expectedStatus,
         string expectedTitle)
@@ -119,7 +119,7 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Fact]
-    public async Task Http_pipeline_enforces_token_lifetime_and_role_policies()
+    public async Task HttpPipeline_WhenRequestsUseMissingInvalidExpiredAndWrongRoleTokens_ReturnsExpectedStatuses()
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -162,7 +162,7 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Fact]
-    public async Task Application_exception_is_written_as_problem_details()
+    public async Task TryHandleAsync_WhenApplicationExceptionOccurs_WritesProblemDetails()
     {
         var services = new ServiceCollection()
             .AddLogging()
@@ -192,7 +192,7 @@ public sealed class AuthenticationPipelineTests
     }
 
     [Fact]
-    public async Task Authorization_policies_use_the_seeded_role_codes()
+    public async Task GetPolicyAsync_WhenIdentityPoliciesAreRegistered_UsesSeededRoleCodes()
     {
         using var provider = CreateServices().BuildServiceProvider();
         var policies = provider.GetRequiredService<IAuthorizationPolicyProvider>();

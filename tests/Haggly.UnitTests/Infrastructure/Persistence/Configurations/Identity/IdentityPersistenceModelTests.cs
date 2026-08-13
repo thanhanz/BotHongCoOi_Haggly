@@ -9,7 +9,7 @@ namespace Haggly.UnitTests.Infrastructure.Persistence.Configurations.Identity;
 public sealed class IdentityPersistenceModelTests
 {
     [Fact]
-    public void Identity_entities_are_mapped_to_the_identity_schema()
+    public void IdentityModel_WhenModelIsBuilt_MapsEntitiesToIdentitySchema()
     {
         using var context = CreateContext();
 
@@ -23,7 +23,7 @@ public sealed class IdentityPersistenceModelTests
     }
 
     [Fact]
-    public void Identity_relationships_use_shared_profile_keys_and_restrict_user_role_deletes()
+    public void IdentityModel_WhenRelationshipsAreConfigured_UsesSharedProfileKeysAndRestrictDeletes()
     {
         using var context = CreateContext();
 
@@ -45,7 +45,7 @@ public sealed class IdentityPersistenceModelTests
     }
 
     [Fact]
-    public void Identity_constraints_include_email_role_code_and_user_role_pair()
+    public void IdentityModel_WhenConstraintsAreConfigured_IncludesEmailRoleCodeAndUserRolePair()
     {
         using var context = CreateContext();
 
@@ -65,7 +65,7 @@ public sealed class IdentityPersistenceModelTests
     }
 
     [Fact]
-    public void Users_and_roles_have_soft_delete_filters()
+    public void IdentityModel_WhenUsersAndRolesAreConfigured_UsesSoftDeleteFilters()
     {
         using var context = CreateContext();
 

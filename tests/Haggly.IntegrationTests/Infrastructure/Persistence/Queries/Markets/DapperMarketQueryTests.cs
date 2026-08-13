@@ -30,7 +30,7 @@ public sealed class DapperMarketQueryTests
   }
 
   [Fact]
-  public async Task GetAllMarketsAsync_ShouldReturnOnlyActiveNonDeletedMarkets()
+  public async Task GetAllAsync_WhenMarketsIncludeInactiveAndDeleted_ReturnsOnlyActiveNonDeletedMarkets()
   {
     var activeId = System.Guid.NewGuid();
     var inactiveId = System.Guid.NewGuid();
@@ -78,7 +78,7 @@ public sealed class DapperMarketQueryTests
   }
 
   [Fact]
-  public async Task GetMarketByIdAsync_ShouldReturnMarket()
+  public async Task GetByIdAsync_WhenMarketExists_ReturnsMarket()
   {
     
     var activeId = System.Guid.NewGuid();

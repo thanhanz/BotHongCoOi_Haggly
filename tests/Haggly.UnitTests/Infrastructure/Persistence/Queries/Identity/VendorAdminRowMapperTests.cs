@@ -7,7 +7,7 @@ namespace Haggly.UnitTests.Infrastructure.Persistence.Queries.Identity;
 public sealed class VendorRowMapperTests
 {
     [Fact]
-    public void MapDatabaseRow_ConvertsEnumsAndUtcDatesToResponseDto()
+    public void ToVendorQueryDto_WhenDatabaseRowContainsEnumAndLocalDates_ReturnsMappedDto()
     {
         var userId = Guid.NewGuid();
         var approverId = Guid.NewGuid();

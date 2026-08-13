@@ -7,7 +7,7 @@ namespace Haggly.UnitTests.Domain;
 public sealed class DomainBaselineTests
 {
     [Fact]
-    public void Order_total_uses_only_active_order_items()
+    public void RecalculateTotal_WhenFulfillmentContainsCancelledItems_UsesOnlyActiveItems()
     {
         var fulfillment = new StallFulfillment();
         var activeItem = new OrderItem();
@@ -25,7 +25,7 @@ public sealed class DomainBaselineTests
     }
 
     [Fact]
-    public void Daily_listing_rejects_reservations_above_current_quantity()
+    public void RefreshAvailableQuantity_WhenReservedQuantityExceedsCurrentQuantity_ThrowsInvalidOperationException()
     {
         var listing = new DailyProductListing
         {
@@ -37,7 +37,7 @@ public sealed class DomainBaselineTests
     }
 
     [Fact]
-    public void Order_item_rejects_non_positive_final_quantity()
+    public void SetFinalValues_WhenQuantityIsNonPositive_ThrowsArgumentOutOfRangeException()
     {
         var item = new OrderItem();
 

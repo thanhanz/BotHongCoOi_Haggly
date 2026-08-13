@@ -12,7 +12,7 @@ public sealed class IdentityVendorCommandHandlerTests
         new(2026, 8, 12, 10, 30, 0, TimeSpan.Zero);
 
     [Fact]
-    public async Task ApproveVendor_PendingVendor_ActivatesAndReturnsUpdatedDto()
+    public async Task ApproveVendor_WhenVendorIsPending_ActivatesAndReturnsUpdatedDto()
     {
         var aggregate = CreateAggregate(ApprovalStatus.PENDING, UserStatus.PENDING);
         var repository = new RecordingVendorAdminCommandRepository(aggregate);
@@ -30,7 +30,7 @@ public sealed class IdentityVendorCommandHandlerTests
     }
 
     [Fact]
-    public async Task RejectVendor_PendingVendor_SuspendsAndReturnsUpdatedDto()
+    public async Task RejectVendor_WhenVendorIsPending_SuspendsAndReturnsUpdatedDto()
     {
         var aggregate = CreateAggregate(ApprovalStatus.PENDING, UserStatus.PENDING);
         var repository = new RecordingVendorAdminCommandRepository(aggregate);
@@ -45,7 +45,7 @@ public sealed class IdentityVendorCommandHandlerTests
     }
 
     [Fact]
-    public async Task SuspendVendor_ApprovedVendor_SuspendsAndReturnsUpdatedDto()
+    public async Task SuspendVendor_WhenVendorIsApproved_SuspendsAndReturnsUpdatedDto()
     {
         var aggregate = CreateAggregate(ApprovalStatus.APPROVED, UserStatus.ACTIVE);
         var repository = new RecordingVendorAdminCommandRepository(aggregate);
@@ -60,7 +60,7 @@ public sealed class IdentityVendorCommandHandlerTests
     }
 
     [Fact]
-    public async Task ApproveVendor_UnknownVendor_ThrowsNotFoundWithoutSaving()
+    public async Task ApproveVendor_WhenVendorIsUnknown_ThrowsNotFoundWithoutSaving()
     {
         var repository = new RecordingVendorAdminCommandRepository();
         var handler = new ApproveVendorHandler(repository, new FixedTimeProvider(DecisionTime));
@@ -72,7 +72,7 @@ public sealed class IdentityVendorCommandHandlerTests
     }
 
     [Fact]
-    public async Task RejectVendor_ApprovedVendor_ThrowsConflictWithoutSaving()
+    public async Task RejectVendor_WhenVendorIsApproved_ThrowsConflictWithoutSaving()
     {
         var aggregate = CreateAggregate(ApprovalStatus.APPROVED, UserStatus.ACTIVE);
         var repository = new RecordingVendorAdminCommandRepository(aggregate);
