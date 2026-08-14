@@ -1,4 +1,5 @@
 using Dapper;
+using Haggly.Application.Modules.Catalog.Queries.Categories;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
@@ -49,7 +50,8 @@ public sealed class DapperCategoryQueryTests
         await SeedAsync(inactive);
         await SeedAsync(deleted);
 
-        var categories = await sut.GetAllActiveAsync(CancellationToken.None);
+        var result = await sut.GetPageAsync(new CategoryListFilter(1, 100), CancellationToken.None);
+        var categories = result.Items;
 
         Assert.Contains(categories, category => category.Id == first.Id);
         Assert.Contains(categories, category => category.Id == second.Id);

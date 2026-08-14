@@ -1,6 +1,7 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Catalog;
 using Haggly.Api.Responses;
+using Haggly.Application.Common;
 using Haggly.Application.Modules.Catalog.Dtos.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -55,7 +56,7 @@ public sealed class ProductEndpointContractTests
 
     [Theory]
     [InlineData("/api/v1/products/", "POST", 201, typeof(ApiResponse<ProductDto>))]
-    [InlineData("/api/v1/products/", "GET", 200, typeof(ApiResponse<IReadOnlyCollection<ProductDto>>))]
+    [InlineData("/api/v1/products/", "GET", 200, typeof(ApiResponse<PagedResult<ProductDto>>))]
     [InlineData("/api/v1/products/{id:guid}", "GET", 200, typeof(ApiResponse<ProductDto>))]
     public void MapProductEndpoints_WhenMapped_DocumentsSuccessfulResponses(
         string route,

@@ -1,6 +1,7 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Catalog;
 using Haggly.Api.Responses;
+using Haggly.Application.Common;
 using Haggly.Application.Modules.Catalog.Dtos.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -55,7 +56,7 @@ public sealed class CategoryEndpointContractTests
 
     [Theory]
     [InlineData("/api/v1/categories/", "POST", 201, typeof(ApiResponse<CategoryDto>))]
-    [InlineData("/api/v1/categories/", "GET", 200, typeof(ApiResponse<IReadOnlyCollection<CategoryDto>>))]
+    [InlineData("/api/v1/categories/", "GET", 200, typeof(ApiResponse<PagedResult<CategoryDto>>))]
     [InlineData("/api/v1/categories/{id:guid}", "GET", 200, typeof(ApiResponse<CategoryDto>))]
     public void MapCategoryEndpoints_WhenMapped_DocumentsSuccessfulResponses(
         string route,

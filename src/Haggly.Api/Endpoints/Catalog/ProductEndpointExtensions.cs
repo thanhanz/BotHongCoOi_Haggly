@@ -1,6 +1,7 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Catalog.Requests;
 using Haggly.Api.Responses;
+using Haggly.Application.Common;
 using Haggly.Application.Modules.Catalog.Commands.Products;
 using Haggly.Application.Modules.Catalog.Dtos.Products;
 using Haggly.Application.Modules.Catalog.Queries.Products;
@@ -31,7 +32,7 @@ public static class ProductEndpointExtensions
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet(string.Empty, GetProductsAsync)
-            .Produces<ApiResponse<IReadOnlyCollection<ProductDto>>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<PagedResult<ProductDto>>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
@@ -64,14 +65,18 @@ public static class ProductEndpointExtensions
     }
 
     private static async Task<IResult> GetProductsAsync(
-        Guid? categoryId,
+        [FromQuery] Guid? categoryId,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetProductsQuery(categoryId), cancellationToken);
+        var result = await sender.Send(
+            new GetProductsQuery(categoryId, page ?? 1, pageSize ?? 20),
+            cancellationToken);
 
         return Results.Ok(
-            ApiResponse<IReadOnlyCollection<ProductDto>>.Create(
+            ApiResponse<PagedResult<ProductDto>>.Create(
                 result,
                 "Products retrieved successfully."));
     }

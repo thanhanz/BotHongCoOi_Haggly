@@ -1,6 +1,7 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Catalog.Requests;
 using Haggly.Api.Responses;
+using Haggly.Application.Common;
 using Haggly.Application.Modules.Catalog.Commands.Categories;
 using Haggly.Application.Modules.Catalog.Dtos.Categories;
 using Haggly.Application.Modules.Catalog.Queries.Categories;
@@ -31,7 +32,8 @@ public static class CategoryEndpointExtensions
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet(string.Empty, GetCategoriesAsync)
-            .Produces<ApiResponse<IReadOnlyCollection<CategoryDto>>>(StatusCodes.Status200OK)
+            .Produces<ApiResponse<PagedResult<CategoryDto>>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapGet(CategoryRoutes.ById, GetCategoryByIdAsync)
@@ -64,13 +66,17 @@ public static class CategoryEndpointExtensions
     }
 
     private static async Task<IResult> GetCategoriesAsync(
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetCategoriesQuery(), cancellationToken);
+        var result = await sender.Send(
+            new GetCategoriesQuery(page ?? 1, pageSize ?? 20),
+            cancellationToken);
 
         return Results.Ok(
-            ApiResponse<IReadOnlyCollection<CategoryDto>>.Create(
+            ApiResponse<PagedResult<CategoryDto>>.Create(
                 result,
                 "Categories retrieved successfully."));
     }

@@ -70,7 +70,7 @@ public sealed class CategoryApiIntegrationTests
         createRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 
         var created = await client.SendAsync(createRequest);
-        using var listRequest = new HttpRequestMessage(HttpMethod.Get, "/api/v1/categories");
+        using var listRequest = new HttpRequestMessage(HttpMethod.Get, "/api/v1/categories?page=1&pageSize=100");
         listRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
         var categories = await client.SendAsync(listRequest);
 

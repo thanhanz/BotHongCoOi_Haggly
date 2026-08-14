@@ -1,4 +1,5 @@
 using Dapper;
+using Haggly.Application.Modules.Catalog.Queries.Products;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
@@ -63,12 +64,18 @@ public sealed class DapperProductQueryTests
         await SeedProductAsync(deleted);
         await SeedProductAsync(otherCategory);
 
-        var products = await sut.GetAllActiveAsync(firstCategory.Id, CancellationToken.None);
+        var result = await sut.GetPageAsync(
+            new ProductListFilter(firstCategory.Id, 1, 20),
+            CancellationToken.None);
+        var products = result.Items;
 
         Assert.Contains(products, product => product.Id == active.Id);
         Assert.DoesNotContain(products, product => product.Id == inactive.Id);
         Assert.DoesNotContain(products, product => product.Id == deleted.Id);
         Assert.DoesNotContain(products, product => product.Id == otherCategory.Id);
+        Assert.Equal(1, result.Page);
+        Assert.Equal(20, result.PageSize);
+        Assert.Equal(1, result.TotalCount);
     }
 
     [Fact]
