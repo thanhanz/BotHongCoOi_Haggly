@@ -22,6 +22,197 @@ namespace Haggly.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
+
+                    b.HasIndex("Status", "DisplayOrder", "Name");
+
+                    b.ToTable("categories", "catalog");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DefaultUnit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId", "Name")
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
+
+                    b.HasIndex("CategoryId", "Status");
+
+                    b.ToTable("products", "catalog");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.ProductStall", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("DefaultUnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsNegotiable")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("MinimumOrderQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SellingUnit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("StallId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StallId", "ProductId")
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
+
+                    b.ToTable("product_stalls", "catalog");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Identity.AdminProfile", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -504,6 +695,46 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.ToTable("stalls", "markets");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Category", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Catalog.Category", "ParentCategory")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Product", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Catalog.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.ProductStall", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Catalog.Product", "Product")
+                        .WithMany("ProductStalls")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Markets.Stall", "Stall")
+                        .WithMany()
+                        .HasForeignKey("StallId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Stall");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Identity.AdminProfile", b =>
                 {
                     b.HasOne("Haggly.Domain.Modules.Identity.User", null)
@@ -576,6 +807,18 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("Market");
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Category", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Product", b =>
+                {
+                    b.Navigation("ProductStalls");
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Identity.Role", b =>

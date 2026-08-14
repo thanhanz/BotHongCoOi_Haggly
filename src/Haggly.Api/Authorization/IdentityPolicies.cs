@@ -5,4 +5,5 @@ public static class IdentityPolicies
     public const string BuyerOnly = "identity:buyer";
     public const string VendorOnly = "identity:vendor";
     public const string AdminOnly = "identity:admin";
+    public const string CatalogContributor = "catalog:contributor";
 }

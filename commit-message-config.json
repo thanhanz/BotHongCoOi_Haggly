@@ -2,7 +2,7 @@
   "config": {
     "max-subject-length": {
       "enabled": true,
-      "value": 90
+      "value": 100
     },
     "conventional-commit": {
       "enabled": true,

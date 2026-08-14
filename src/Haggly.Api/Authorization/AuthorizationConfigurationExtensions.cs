@@ -18,6 +18,12 @@ public static class AuthorizationConfigurationExtensions
                 IdentityPolicies.AdminOnly,
                 policy => policy.RequireRole(
                     RoleCode.MARKET_ADMIN.ToString(),
+                    RoleCode.PLATFORM_ADMIN.ToString()))
+            .AddPolicy(
+                IdentityPolicies.CatalogContributor,
+                policy => policy.RequireRole(
+                    RoleCode.VENDOR.ToString(),
+                    RoleCode.MARKET_ADMIN.ToString(),
                     RoleCode.PLATFORM_ADMIN.ToString()));
 
         return services;
