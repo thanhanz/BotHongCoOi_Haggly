@@ -106,7 +106,7 @@ are:
 |---|---|---|
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
-| Catalog | `Category`, `Product`, `ProductStall`, related enums | Category and Product create/read vertical slices implemented; ProductStall remains deferred |
+| Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
 | Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Domain model scaffold only |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
@@ -168,7 +168,8 @@ Haggly.Application/
 Catalog Category and Product Application code follows the same command/query
 and port split. Category includes `CreateCategory`, `GetCategories`, and
 `GetCategoryById`; Product includes `CreateProduct`, `GetProducts`, and
-`GetProductById`. Both have DTOs, handlers, validation, exceptions, and
+`GetProductById`; ProductStall includes create, paginated read, read-by-id, and
+patch use cases. These have DTOs, handlers, validation, exceptions, and
 separate command-repository and query ports. New catalog definitions are active
 by default; Category slugs are normalized to lowercase and unique among
 non-deleted categories, while Product names are unique within a category among
@@ -179,20 +180,21 @@ non-deleted products.
 `Haggly.Infrastructure` contains:
 
 - `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
-  and Category repositories, the design-time context factory, and Identity,
-  Markets, and Category
+  Category, and ProductStall repositories, the design-time context factory, and Identity,
+  Markets, Category, and ProductStall
   migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity and
-  Markets and active Category reads.
+  Markets and active Category, Product, and ProductStall reads.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
 mappings for Identity, Markets, and Category. The migrations currently include
-`InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`, and
-`CreateProducts`. Product is mapped to `catalog.products`; ProductStall,
-Inventory, Negotiation, Sales, Payments, and Finance remain unmapped.
+`InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`,
+`CreateProducts`, and `CreateProductStalls`. Product and ProductStall are mapped
+to `catalog.products` and `catalog.product_stalls`; Inventory, Negotiation,
+Sales, Payments, and Finance remain unmapped.
 
 ### API
 
@@ -234,6 +236,15 @@ Product routes are grouped under `/api/v1/products`:
 | `POST` | `/api/v1/products` | Create a product; requires `CatalogContributor` |
 | `GET` | `/api/v1/products` | List active products; accepts optional `categoryId`; requires authentication |
 | `GET` | `/api/v1/products/{id}` | Read one active product; requires authentication |
+
+Stall product routes are grouped under `/api/v1/stalls/{stallId}/products`:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/stalls/{stallId}/products` | Attach a catalog product; requires the stall owner |
+| `GET` | `/api/v1/stalls/{stallId}/products` | Paginated stall-product list; requires authentication |
+| `GET` | `/api/v1/stalls/{stallId}/products/{id}` | Read one stall product; requires authentication |
+| `PATCH` | `/api/v1/stalls/{stallId}/products/{id}` | Update stall configuration; requires the stall owner |
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
@@ -302,9 +313,8 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete ProductStall Catalog behavior, then complete Application,
-  Infrastructure, and API slices for Inventory, Negotiation, Sales, Payments,
-  and Finance.
+- Complete Application, Infrastructure, and API slices for Inventory,
+  Negotiation, Sales, Payments, and Finance.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its

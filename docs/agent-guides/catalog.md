@@ -2,9 +2,9 @@
 
 ## Current scope
 
-Category and Product are implemented Catalog create/read API slices.
-ProductStall remains a Domain-only scaffold and must not be added to the
-Product migration.
+Category, Product, and ProductStall are implemented Catalog API slices.
+ProductStall stores a reusable stall-specific configuration for an existing
+catalog Product; daily availability remains an Inventory concern.
 
 ## Entry points
 
@@ -13,7 +13,7 @@ Product migration.
 - EF configuration and command repository:
   `src/Haggly.Infrastructure/Persistence/Configurations/Catalog` and
   `Repositories/Catalog`.
-- Dapper active Category and Product reads: `Persistence/Queries/Catalog`.
+- Dapper active Category, Product, and ProductStall reads: `Persistence/Queries/Catalog`.
 - HTTP endpoints: `src/Haggly.Api/Endpoints/Catalog`.
 
 ## Category rules
@@ -34,8 +34,9 @@ Product migration.
 - Products map to `catalog.products`. `CreateProducts` adds the restricted
   Category foreign key, filtered unique `CategoryId`/`Name` index, and
   Category/status read index.
-- `HagglyDbContext` explicitly ignores ProductStall until its own persistence
-  slice is implemented.
+- ProductStalls map to `catalog.product_stalls` through `ProductStallConfiguration`.
+- `CreateProductStalls` creates the ProductStall table, restricted Product and
+  Stall foreign keys, and the unique active `(StallId, ProductId)` index.
 
 ## Product rules
 
@@ -60,6 +61,14 @@ Product migration.
   `GET /api/v1/products/{id}` require an authenticated user.
 - Product validation, conflict, and not-found exceptions map to Problem
   Details responses.
+- `POST /api/v1/stalls/{stallId}/products` attaches an existing active Product
+  and requires the authenticated user to own the Stall.
+- `GET /api/v1/stalls/{stallId}/products` is paginated; the by-id GET reads one
+  active association.
+- `PATCH /api/v1/stalls/{stallId}/products/{id}` updates stall-specific fields
+  and requires the Stall owner. There is intentionally no DELETE endpoint.
+- ProductStall validation, forbidden, conflict, and not-found exceptions map to
+  `400`, `403`, `409`, and `404` Problem Details responses respectively.
 
 ## Focused verification
 
@@ -68,4 +77,6 @@ dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter
 dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Category"
 dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Product"
 dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Product"
+
+dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~ProductStallApiIntegrationTests"
 ```
