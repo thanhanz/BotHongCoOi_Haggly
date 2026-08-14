@@ -4,6 +4,7 @@ using Haggly.Application.Modules.Identity.Administration;
 using Haggly.Application.Modules.Markets.Exceptions.Markets;
 using Haggly.Application.Modules.Markets.Exceptions.Stalls;
 using Haggly.Application.Modules.Catalog.Exceptions.Categories;
+using Haggly.Application.Modules.Catalog.Exceptions.Products;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +80,12 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status409Conflict, "Category conflict", exception.Message),
             CategoryNotFoundException
                 => (StatusCodes.Status404NotFound, "Category not found", exception.Message),
+            ProductValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            ProductConflictException
+                => (StatusCodes.Status409Conflict, "Product conflict", exception.Message),
+            ProductNotFoundException
+                => (StatusCodes.Status404NotFound, "Product not found", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

@@ -106,7 +106,7 @@ are:
 |---|---|---|
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
-| Catalog | `Category`, `Product`, `ProductStall`, related enums | Category create/read vertical slice implemented; Product and ProductStall remain Domain scaffolds |
+| Catalog | `Category`, `Product`, `ProductStall`, related enums | Category create/read and Product Application/persistence slices implemented; Product API and ProductStall remain deferred |
 | Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Domain model scaffold only |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
@@ -165,11 +165,14 @@ Haggly.Application/
     `-- module-specific exceptions
 ```
 
-Catalog Category Application code follows the same command/query and port
-split. It includes `CreateCategory`, `GetCategories`, and `GetCategoryById`
-contracts, Category DTOs, handlers, validation, exceptions, and separate
-command-repository and query ports. New categories are active by default;
-slugs are normalized to lowercase and unique among non-deleted categories.
+Catalog Category and Product Application code follows the same command/query
+and port split. Category includes `CreateCategory`, `GetCategories`, and
+`GetCategoryById`; Product includes `CreateProduct`, `GetProducts`, and
+`GetProductById`. Both have DTOs, handlers, validation, exceptions, and
+separate command-repository and query ports. New catalog definitions are active
+by default; Category slugs are normalized to lowercase and unique among
+non-deleted categories, while Product names are unique within a category among
+non-deleted products.
 
 ### Infrastructure
 
@@ -188,8 +191,8 @@ slugs are normalized to lowercase and unique among non-deleted categories.
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
 mappings for Identity, Markets, and Category. The migrations currently include
 `InitialIdentity`, `CreateMarketAndStallEntities`, and `CreateCategories`.
-Product, ProductStall, Inventory, Negotiation, Sales, Payments, and Finance
-remain unmapped.
+Product is mapped to `catalog.products`; ProductStall, Inventory, Negotiation,
+Sales, Payments, and Finance remain unmapped.
 
 ### API
 
@@ -223,6 +226,9 @@ Category routes are grouped under `/api/v1/categories`:
 | `POST` | `/api/v1/categories` | Create a category; requires `CatalogContributor` |
 | `GET` | `/api/v1/categories` | List active categories; requires authentication |
 | `GET` | `/api/v1/categories/{id}` | Read one active category; requires authentication |
+
+Product Application and persistence behavior is complete, but Product HTTP
+routes have not yet been mapped.
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
@@ -291,9 +297,9 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Product and ProductStall Catalog behavior, then complete Application,
-  Infrastructure, and API slices for Inventory, Negotiation, Sales, Payments,
-  and Finance.
+- Complete Product HTTP behavior and ProductStall Catalog behavior, then
+  complete Application, Infrastructure, and API slices for Inventory,
+  Negotiation, Sales, Payments, and Finance.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its

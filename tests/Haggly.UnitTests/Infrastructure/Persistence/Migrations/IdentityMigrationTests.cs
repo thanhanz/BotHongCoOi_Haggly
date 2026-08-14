@@ -43,6 +43,16 @@ public sealed class IdentityMigrationTests
             migration => migration.Contains("CreateCategories", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void GetMigrations_WhenProductMigrationExists_ContainsCreateProducts()
+    {
+        using var context = CreateContext();
+
+        Assert.Contains(
+            context.Database.GetMigrations(),
+            migration => migration.Contains("CreateProducts", StringComparison.Ordinal));
+    }
+
     private static HagglyDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<HagglyDbContext>()

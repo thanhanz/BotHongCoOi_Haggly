@@ -17,11 +17,11 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<Market> Markets => Set<Market>();
     public DbSet<Stall> Stalls => Set<Stall>();
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Ignore<Product>();
         modelBuilder.Ignore<ProductStall>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HagglyDbContext).Assembly);
     }

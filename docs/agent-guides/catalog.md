@@ -2,9 +2,9 @@
 
 ## Current scope
 
-Category is the only implemented Catalog vertical slice. Product and
-ProductStall remain Domain-only scaffolds and must not be added to a Category
-migration.
+Category is the implemented Catalog API slice. Product has Application and
+persistence support but no HTTP endpoints yet. ProductStall remains a
+Domain-only scaffold and must not be added to the Product migration.
 
 ## Entry points
 
@@ -31,8 +31,20 @@ migration.
 - Categories map to `catalog.categories`.
 - `CreateCategories` creates the schema/table, a restricted self-parent foreign
   key, a filtered unique slug index for non-deleted rows, and read-order indexes.
-- `HagglyDbContext` explicitly ignores Product and ProductStall until their own
-  persistence slice is implemented.
+- Products map to `catalog.products`. `CreateProducts` adds the restricted
+  Category foreign key, filtered unique `CategoryId`/`Name` index, and
+  Category/status read index.
+- `HagglyDbContext` explicitly ignores ProductStall until its own persistence
+  slice is implemented.
+
+## Product rules
+
+- Creation requires an existing active Category, a nonblank product name of at
+  most 200 characters, and a defined `ProductUnit`.
+- Names, descriptions, and image URLs are trimmed; new products are `ACTIVE`.
+- Active product names are unique only within their Category.
+- Product queries return active, non-deleted products; the list query supports
+  an optional Category ID filter.
 
 ## API and authorization
 
@@ -42,6 +54,8 @@ migration.
   authenticated user.
 - Category validation, conflict, and not-found exceptions map to Problem
   Details responses.
+- Product endpoints and Product exception-to-Problem-Details mapping are still
+  deferred to the Product API phase.
 
 ## Focused verification
 

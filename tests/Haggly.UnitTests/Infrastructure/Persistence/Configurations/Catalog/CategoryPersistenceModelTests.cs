@@ -50,11 +50,10 @@ public sealed class CategoryPersistenceModelTests
     }
 
     [Fact]
-    public void MapCategory_WhenModelIsBuilt_DoesNotIncludeDeferredProductEntities()
+    public void MapCategory_WhenModelIsBuilt_StillExcludesDeferredProductStall()
     {
         using var context = CreateContext();
 
-        Assert.Null(context.Model.FindEntityType(typeof(Product)));
         Assert.Null(context.Model.FindEntityType(typeof(ProductStall)));
     }
 

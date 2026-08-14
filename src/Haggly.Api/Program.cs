@@ -40,6 +40,7 @@ public partial class Program
         app.MapMarketEndpoints();
         app.MapStallEndpoints();
         app.MapCategoryEndpoints();
+        app.MapProductEndpoints();
 
         app.Run();
     }
