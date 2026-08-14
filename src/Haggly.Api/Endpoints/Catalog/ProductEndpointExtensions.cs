@@ -34,14 +34,16 @@ public static class ProductEndpointExtensions
         group.MapGet(string.Empty, GetProductsAsync)
             .Produces<ApiResponse<PagedResult<ProductDto>>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .AllowAnonymous();
 
         group.MapGet(ProductRoutes.ById, GetProductByIdAsync)
             .Produces<ApiResponse<ProductDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status404NotFound);
-
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .AllowAnonymous();
+        
         return endpoints;
     }
 
