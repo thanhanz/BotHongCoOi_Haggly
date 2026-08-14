@@ -41,6 +41,7 @@ public partial class Program
         app.MapStallEndpoints();
         app.MapCategoryEndpoints();
         app.MapProductEndpoints();
+        app.MapProductStallEndpoints();
 
         app.Run();
     }

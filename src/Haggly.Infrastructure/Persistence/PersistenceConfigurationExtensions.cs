@@ -51,11 +51,13 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IVendorAdminCommandRepository, EfVendorAdminCommandRepository>();
         services.AddScoped<ICategoryCommandRepository, EfCategoryCommandRepository>();
         services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
+        services.AddScoped<IProductStallCommandRepository, EfProductStallCommandRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
         services.AddScoped<IProductQuery, DapperProductQuery>();
+        services.AddScoped<IProductStallQuery, DapperProductStallQuery>();
         services.AddScoped<IStallQuery, DapperStallQuery>();
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
         services.AddSingleton(TimeProvider.System);

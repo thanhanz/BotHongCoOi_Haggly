@@ -50,11 +50,11 @@ public sealed class CategoryPersistenceModelTests
     }
 
     [Fact]
-    public void MapCategory_WhenModelIsBuilt_StillExcludesDeferredProductStall()
+    public void MapCategory_WhenModelIsBuilt_MapsProductStallAssociation()
     {
         using var context = CreateContext();
 
-        Assert.Null(context.Model.FindEntityType(typeof(ProductStall)));
+        Assert.NotNull(context.Model.FindEntityType(typeof(ProductStall)));
     }
 
     private static HagglyDbContext CreateContext()
