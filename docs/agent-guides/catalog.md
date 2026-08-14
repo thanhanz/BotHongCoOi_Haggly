@@ -2,9 +2,9 @@
 
 ## Current scope
 
-Category is the implemented Catalog API slice. Product has Application and
-persistence support but no HTTP endpoints yet. ProductStall remains a
-Domain-only scaffold and must not be added to the Product migration.
+Category and Product are implemented Catalog create/read API slices.
+ProductStall remains a Domain-only scaffold and must not be added to the
+Product migration.
 
 ## Entry points
 
@@ -13,7 +13,7 @@ Domain-only scaffold and must not be added to the Product migration.
 - EF configuration and command repository:
   `src/Haggly.Infrastructure/Persistence/Configurations/Catalog` and
   `Repositories/Catalog`.
-- Dapper active-category reads: `Persistence/Queries/Catalog`.
+- Dapper active Category and Product reads: `Persistence/Queries/Catalog`.
 - HTTP endpoints: `src/Haggly.Api/Endpoints/Catalog`.
 
 ## Category rules
@@ -54,12 +54,18 @@ Domain-only scaffold and must not be added to the Product migration.
   authenticated user.
 - Category validation, conflict, and not-found exceptions map to Problem
   Details responses.
-- Product endpoints and Product exception-to-Problem-Details mapping are still
-  deferred to the Product API phase.
+- `POST /api/v1/products` requires `CatalogContributor` (`VENDOR`,
+  `MARKET_ADMIN`, or `PLATFORM_ADMIN`).
+- `GET /api/v1/products` accepts an optional `categoryId`; it and
+  `GET /api/v1/products/{id}` require an authenticated user.
+- Product validation, conflict, and not-found exceptions map to Problem
+  Details responses.
 
 ## Focused verification
 
 ```powershell
 dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Category"
 dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Category"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Product"
+dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Product"
 ```
