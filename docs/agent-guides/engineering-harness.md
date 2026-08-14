@@ -90,6 +90,42 @@ scaffolded. Establish the smallest convention consistent with
 - Update a module guide when the change establishes or invalidates durable
   module knowledge.
 
+## Repository artifact hygiene
+
+Implementation work must leave only task-required deliverables in the
+repository. Allowed tracked changes are production source, test source,
+required migrations or other generated source, required configuration, and
+directly affected documentation. Do not create an additional file merely to
+record working notes, command output, analysis, test results, or a completion
+report.
+
+Build and test commands may create the repository's existing ignored `bin/`
+and `obj/` directories. Unless the user explicitly requests one as a
+deliverable, do not create repository-local paths for:
+
+- `.build`, `.tools`, `.dotnet`, `artifacts`, or `TestResults`;
+- coverage output, logs, reports, downloads, or scratch data;
+- a .NET CLI home, SDK installation, NuGet/package cache, or tool cache;
+- redirected build output or intermediate output outside the standard ignored
+  `bin/` and `obj/` paths.
+
+Use the operating system's temporary directory for unavoidable temporary data
+and remove data created there when it is no longer needed. Use an existing
+tool manifest only when the task requires it; do not create a tool manifest or
+local tool folder solely to run verification. Do not change `.gitignore` to
+conceal a generated path.
+
+Preserve the initial `git status --short` as the ownership baseline. Before
+finishing:
+
+1. Run `git status --short` again and account for every changed or new path.
+2. Search the repository for prohibited artifact paths created during the
+   task.
+3. Remove only artifacts created by the current task. Never delete or clean a
+   pre-existing ignored, modified, or untracked user path.
+4. Report remaining changes by category: source, tests, migrations or generated
+   source, configuration, and documentation.
+
 ## Verification protocol
 
 Discover verification rather than trusting stale commands. Inspect:

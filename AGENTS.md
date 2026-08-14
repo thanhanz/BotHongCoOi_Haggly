@@ -98,6 +98,18 @@ For every new feature or behavior change:
 Do not implement production behavior before its tests unless the user explicitly
 requests otherwise.
 
+## Workspace hygiene
+
+Create only task-required deliverables: production code, tests, required
+migrations or generated source, required configuration, and directly affected
+documentation. Builds and tests may create the repository's already-ignored
+`bin/` and `obj/` directories. Do not create repository-local `.build`,
+`.tools`, `.dotnet`, `artifacts`, `TestResults`, coverage, log, report, cache,
+download, SDK-home, package-cache, or scratch paths unless the user explicitly
+requests one as a deliverable. Do not add ignore rules merely to hide such
+artifacts. Follow the cleanup and final-audit workflow in
+`docs/agent-guides/engineering-harness.md`.
+
 
 ## Boundaries
 
