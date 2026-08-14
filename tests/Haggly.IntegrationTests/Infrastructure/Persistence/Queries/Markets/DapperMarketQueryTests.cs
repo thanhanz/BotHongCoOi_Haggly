@@ -2,6 +2,7 @@ using Dapper;
 using Haggly.Domain.Modules.Markets;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Queries.Markets;
+using Haggly.IntegrationTests.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -16,15 +17,7 @@ public sealed class DapperMarketQueryTests
 
   public DapperMarketQueryTests()
   {
-    var configuration = new ConfigurationBuilder()
-        .AddInMemoryCollection(new Dictionary<string, string?>
-        {
-          ["ConnectionStrings:HagglyDatabase"] =
-                "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
-        })
-        .Build();
-
-    _dbContext = new DapperDbContext(configuration);
+    _dbContext = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
 
     _sut = new DapperMarketQuery(_dbContext);
   }

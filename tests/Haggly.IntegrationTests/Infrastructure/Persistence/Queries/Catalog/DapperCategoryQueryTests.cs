@@ -3,6 +3,7 @@ using Haggly.Application.Modules.Catalog.Queries.Categories;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
+using Haggly.IntegrationTests.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -15,15 +16,7 @@ public sealed class DapperCategoryQueryTests
 
     public DapperCategoryQueryTests()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:HagglyDatabase"] =
-                    "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
-            })
-            .Build();
-
-        dbContext = new DapperDbContext(configuration);
+        dbContext = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
         sut = new DapperCategoryQuery(dbContext);
     }
 

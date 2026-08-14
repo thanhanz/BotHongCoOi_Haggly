@@ -8,6 +8,7 @@ using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Identity;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.Persistence;
+using Haggly.IntegrationTests.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -84,8 +85,7 @@ public sealed class ProductApiIntegrationTests
         builder.Logging.ClearProviders();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["ConnectionStrings:HagglyDatabase"] =
-                "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234",
+            ["ConnectionStrings:HagglyDatabase"] = IntegrationTestDatabase.ConnectionString,
             ["Jwt:Issuer"] = "Haggly.Api.Tests",
             ["Jwt:Audience"] = "Haggly.Client.Tests",
             ["Jwt:SigningKey"] = "integration-test-signing-key-that-is-at-least-32-characters",
