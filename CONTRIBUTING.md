@@ -43,6 +43,11 @@ The development database uses the `HagglyDatabase` connection string from
 `src/Haggly.Api/appsettings.Development.json` and PostgreSQL port `5433`.
 Development credentials must not be reused in production.
 
+Integration tests use a separate `haggly_test` database. The test harness
+creates the database if needed and applies the existing EF Core migrations
+before database-backed tests run. You can override its connection string with
+`HAGGLY_TEST_CONNECTION_STRING`, but it must continue to target `haggly_test`.
+
 In Development, the API exposes Swagger at `/swagger` and redirects `/` to the
 Swagger UI.
 
