@@ -17,21 +17,21 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             SELECT *
             FROM inventory.inventory_sessions
             WHERE "StallId" = @StallId
-              AND "BusinessDate" = @BusinessDate;
+              AND "BusinessDate" = CAST(@BusinessDate AS date);
 
             SELECT l.*
             FROM inventory.daily_product_listings l
             INNER JOIN inventory.inventory_sessions s
                 ON s."Id" = l."InventorySessionId"
             WHERE s."StallId" = @StallId
-              AND s."BusinessDate" = @BusinessDate
+              AND s."BusinessDate" = CAST(@BusinessDate AS date)
             ORDER BY l."Id";
             """;
 
         await using var connection = await dbContext.OpenConnectionAsync(cancellationToken);
         var command = new CommandDefinition(
             sessionSql,
-            new { StallId = stallId, BusinessDate = businessDate },
+            new { StallId = stallId, BusinessDate = ToDatabaseDate(businessDate) },
             cancellationToken: cancellationToken);
         using var results = await connection.QueryMultipleAsync(command);
         return await ReadSessionWithListingsAsync(results);
@@ -46,7 +46,7 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             SELECT *
             FROM inventory.inventory_sessions
             WHERE "StallId" = @StallId
-              AND "BusinessDate" < @BusinessDate
+              AND "BusinessDate" < CAST(@BusinessDate AS date)
             ORDER BY "BusinessDate" DESC, "Id" DESC
             LIMIT 1;
 
@@ -58,7 +58,7 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
                 SELECT "Id"
                 FROM inventory.inventory_sessions
                 WHERE "StallId" = @StallId
-                  AND "BusinessDate" < @BusinessDate
+                  AND "BusinessDate" < CAST(@BusinessDate AS date)
                 ORDER BY "BusinessDate" DESC, "Id" DESC
                 LIMIT 1)
             ORDER BY l."Id";
@@ -67,7 +67,7 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
         await using var connection = await dbContext.OpenConnectionAsync(cancellationToken);
         var command = new CommandDefinition(
             sessionSql,
-            new { StallId = stallId, BusinessDate = businessDate },
+            new { StallId = stallId, BusinessDate = ToDatabaseDate(businessDate) },
             cancellationToken: cancellationToken);
         using var results = await connection.QueryMultipleAsync(command);
         return await ReadSessionWithListingsAsync(results);
@@ -83,7 +83,7 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             INNER JOIN inventory.inventory_sessions s
                 ON s."Id" = l."InventorySessionId"
             WHERE s."StallId" = @StallId
-              AND (@BusinessDate IS NULL OR s."BusinessDate" = @BusinessDate)
+              AND (@BusinessDate IS NULL OR s."BusinessDate" = CAST(@BusinessDate AS date))
               AND (@ListingId IS NULL OR l."DailyProductListingId" = @ListingId)
               AND (@TransactionType IS NULL OR l."TransactionType" = @TransactionType);
 
@@ -92,7 +92,7 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             INNER JOIN inventory.inventory_sessions s
                 ON s."Id" = l."InventorySessionId"
             WHERE s."StallId" = @StallId
-              AND (@BusinessDate IS NULL OR s."BusinessDate" = @BusinessDate)
+              AND (@BusinessDate IS NULL OR s."BusinessDate" = CAST(@BusinessDate AS date))
               AND (@ListingId IS NULL OR l."DailyProductListingId" = @ListingId)
               AND (@TransactionType IS NULL OR l."TransactionType" = @TransactionType)
             ORDER BY l."OccurredAt" DESC, l."Id" DESC
@@ -105,7 +105,9 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             new
             {
                 filter.StallId,
-                filter.BusinessDate,
+                BusinessDate = filter.BusinessDate is null
+                    ? (DateTime?)null
+                    : ToDatabaseDate(filter.BusinessDate.Value),
                 filter.ListingId,
                 TransactionType = filter.TransactionType?.ToString(),
                 Offset = (filter.Page - 1) * filter.PageSize,
@@ -122,6 +124,9 @@ public sealed class DapperInventoryQuery(DapperDbContext dbContext) : IInventory
             filter.PageSize,
             totalCount);
     }
+
+    private static DateTime ToDatabaseDate(DateOnly value)
+        => value.ToDateTime(TimeOnly.MinValue);
 
     private static async Task<InventorySession?> ReadSessionWithListingsAsync(
         SqlMapper.GridReader results)

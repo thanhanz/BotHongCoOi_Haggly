@@ -36,4 +36,34 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HagglyDbContext).Assembly);
     }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        PrepareInventoryLedgerEntries();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(
+        bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
+    {
+        PrepareInventoryLedgerEntries();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void PrepareInventoryLedgerEntries()
+    {
+        ChangeTracker.DetectChanges();
+
+        // Ledgers are append-only. EF can classify a new ledger added to an
+        // already tracked listing as Modified because its Guid key is assigned
+        // by the domain. Normalize that graph change to an INSERT.
+        foreach (var entry in ChangeTracker.Entries<InventoryLedger>())
+        {
+            if (entry.State == EntityState.Modified)
+            {
+                entry.State = EntityState.Added;
+            }
+        }
+    }
 }
