@@ -3,7 +3,6 @@ using Haggly.Application.Common;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Inventory.Commands;
 using Haggly.Application.Modules.Inventory.Exceptions;
-using Haggly.Application.Modules.Inventory.Handlers;
 using Haggly.Application.Modules.Inventory.Queries;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Inventory;

@@ -137,13 +137,14 @@ Haggly.Application/
 |   `-- identity token-service contract
 `-- Modules/Identity/
     |-- Registration/
-    |   |-- RegisterBuyerHandler
-    |   |-- RegisterVendorHandler
-    |   |-- commands, DTOs, validation, and exceptions
+    |   |-- Commands/
+    |   |   |-- RegisterBuyerCommand and RegisterBuyerHandler
+    |   |   `-- RegisterVendorCommand and RegisterVendorHandler
+    |   |-- DTOs, validation, and exceptions
     |   `-- ...
     `-- Login/
-        |-- LoginHandler
-        |-- command and DTOs
+        |-- Commands/LoginCommand and LoginHandler
+        |-- DTOs
         |-- validation
         `-- authentication/validation exceptions
 ```
@@ -159,16 +160,15 @@ Haggly.Application/
 |   |-- market and stall command repository contracts
 |   `-- market and stall query contracts
 `-- Modules/Markets/
-    |-- Commands/Markets and Commands/Stalls
-    |-- Queries/Markets and Queries/Stalls
-    |-- Handlers/Markets and Handlers/Stalls
+    |-- Commands/Markets and Commands/Stalls (requests and handlers)
+    |-- Queries/Markets and Queries/Stalls (requests and handlers)
     |-- DTOs/Markets and DTOs/Stalls
     |-- Validation/Markets and Validation/Stalls
     `-- module-specific exceptions
 ```
 
 Catalog Category and Product Application code follows the same command/query
-and port split. Category includes `CreateCategory`, `GetCategories`, and
+and handler co-location convention, with a separate port split. Category includes `CreateCategory`, `GetCategories`, and
 `GetCategoryById`; Product includes `CreateProduct`, `GetProducts`, and
 `GetProductById`; ProductStall includes create, paginated read, read-by-id, and
 patch use cases. These have DTOs, handlers, validation, exceptions, and
