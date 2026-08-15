@@ -9,18 +9,20 @@ must not be read as implemented functionality.
 Haggly is a .NET 10 modular-monolith scaffold for a digital Vietnamese market.
 The MVP domain is divided into business modules, while the executable
 application is currently delivered as one API and one relational database.
-The completed vertical slices are Identity, Markets, and the Category and
-Product portions of Catalog. Identity provides
+The completed vertical slices are Identity, Markets, Catalog, and Inventory.
+Identity provides
 registration, login, JWT authentication, authorization policies, vendor
 administration, and the current-user endpoint. Markets provides market and
 stall CRUD use cases, PostgreSQL persistence, and API endpoints. Catalog
 provides Category and Product creation and authenticated reads, PostgreSQL
-persistence, and API endpoints.
+persistence, and API endpoints. Inventory provides daily sessions, listing
+snapshots, stock adjustments, ledger reads, optimistic concurrency, PostgreSQL
+persistence, and vendor API endpoints.
 
-The MVP requirements also cover ProductStall, Inventory, Negotiation, Sales,
-Payments, and Finance. Those areas currently have Domain model types, but their
-Application use cases, API endpoints, and persistence mappings have not yet
-been implemented.
+The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
+and Finance. Negotiation, Sales, Payments, and Finance currently have Domain
+model types only; their Application use cases, API endpoints, and persistence
+mappings have not yet been implemented.
 
 ## Technology actually used
 
@@ -107,7 +109,7 @@ are:
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
 | Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
-| Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Domain model scaffold only |
+| Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Domain model scaffold only |
@@ -180,21 +182,21 @@ non-deleted products.
 `Haggly.Infrastructure` contains:
 
 - `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
-  Category, and ProductStall repositories, the design-time context factory, and Identity,
-  Markets, Category, and ProductStall
-  migrations.
-- `Persistence/DapperDbContext` and Dapper query adapters for Identity and
-  Markets and active Category, Product, and ProductStall reads.
+  Catalog, and Inventory repositories, the design-time context factory, and
+  Identity, Markets, Catalog, and Inventory migrations.
+- `Persistence/DapperDbContext` and Dapper query adapters for Identity,
+  Markets, Catalog, and Inventory reads.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
-mappings for Identity, Markets, and Category. The migrations currently include
-`InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`,
-`CreateProducts`, and `CreateProductStalls`. Product and ProductStall are mapped
-to `catalog.products` and `catalog.product_stalls`; Inventory, Negotiation,
-Sales, Payments, and Finance remain unmapped.
+mappings for Identity, Markets, Catalog, and Inventory. The migrations currently
+include `InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`,
+`CreateProducts`, `CreateProductStalls`, and `CreateInventoryEntities`.
+Product and ProductStall are mapped to `catalog.products` and
+`catalog.product_stalls`; Inventory is mapped to the `inventory` schema.
+Negotiation, Sales, Payments, and Finance remain unmapped.
 
 ### API
 
@@ -246,6 +248,20 @@ Stall product routes are grouped under `/api/v1/stalls/{stallId}/products`:
 | `GET` | `/api/v1/stalls/{stallId}/products/{id}` | Read one stall product; requires authentication |
 | `PATCH` | `/api/v1/stalls/{stallId}/products/{id}` | Update stall configuration; requires the stall owner |
 
+Inventory routes are grouped under `/api/v1/vendor/stalls/{stallId}` and
+require the `VendorOnly` policy:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/open` | Open today's session and optionally create listings |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current` | Read today's session |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/previous` | Read the latest earlier session |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current/close` | Close today's session |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-listings` | Add a listing |
+| `PATCH` | `/api/v1/vendor/stalls/{stallId}/inventory-listings/{listingId}` | Change price or visibility with `expectedVersion` |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-adjustments` | Apply a signed stock adjustment with `expectedVersion` |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-ledger` | Filter and page ledger entries |
+
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
 Development, Swagger UI is available at `/swagger`, and `/` redirects to it.
@@ -280,14 +296,16 @@ and repositories are adapters, not business-rule owners.
 
 `Haggly.UnitTests` is organized by production boundary: `Domain`, `Application`,
 and `Infrastructure`, with module-specific folders under the relevant boundary.
-It covers current Identity and Markets behavior, JWT services, persistence
-configuration, EF Core model metadata, migrations, and row mappers.
+It covers current Identity, Markets, and Inventory behavior, JWT services,
+persistence configuration, EF Core model metadata, migrations, and row mappers.
 
 `Haggly.IntegrationTests` is organized under `Api` and `Infrastructure`. It
-covers authentication and authorization behavior, Identity and Markets endpoint
-contracts, Swagger, and the Dapper Markets, Category, and Product queries
-against PostgreSQL. It also covers the Category and Product HTTP authorization
-and contributor creation paths. The
+covers authentication and authorization behavior, Identity, Markets, and
+Inventory endpoint contracts, Swagger, and Dapper Markets, Category, Product,
+and Inventory queries against PostgreSQL. Inventory boundary tests cover the
+real EF constraints/concurrency behavior and the full authenticated HTTP
+lifecycle. It also covers the Category and Product HTTP authorization and
+contributor creation paths. The
 repository currently has no active architecture-test project.
 
 ## Module growth rules
@@ -313,8 +331,8 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Application, Infrastructure, and API slices for Inventory,
-  Negotiation, Sales, Payments, and Finance.
+- Complete Application, Infrastructure, and API slices for Negotiation, Sales,
+  Payments, and Finance.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its
