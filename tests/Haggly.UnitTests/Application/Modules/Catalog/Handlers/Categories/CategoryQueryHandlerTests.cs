@@ -1,7 +1,6 @@
 using Haggly.Application.Abstractions.Catalog;
 using Haggly.Application.Common;
 using Haggly.Application.Modules.Catalog.Exceptions.Categories;
-using Haggly.Application.Modules.Catalog.Handlers.Categories;
 using Haggly.Application.Modules.Catalog.Queries.Categories;
 using Haggly.Domain.Modules.Catalog;
 using Xunit;

@@ -3,11 +3,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Haggly.Application.Modules.Identity.Registration;
 using Haggly.Application.Modules.Identity.Login;
+using Haggly.Application.Modules.Identity.Registration.Commands;
+using Haggly.Application.Modules.Identity.Login.Commands;
 using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Abstractions.Catalog;
 using Haggly.Application.Abstractions.Markets;
-using Haggly.Application.Modules.Markets.Handlers.Markets;
-using Haggly.Application.Modules.Markets.Handlers.Stalls;
+using Haggly.Application.Abstractions.Inventory;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -16,6 +17,8 @@ using Haggly.Infrastructure.Persistence.Repositories.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
 using Haggly.Infrastructure.Persistence.Queries.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Identity;
+using Haggly.Infrastructure.Persistence.Queries.Inventory;
+using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -54,12 +57,18 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IProductStallCommandRepository, EfProductStallCommandRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
+
+        services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
+        services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
+        services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
+        
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
         services.AddScoped<IProductQuery, DapperProductQuery>();
         services.AddScoped<IProductStallQuery, DapperProductStallQuery>();
         services.AddScoped<IStallQuery, DapperStallQuery>();
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
+        services.AddScoped<IInventoryQuery, DapperInventoryQuery>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();

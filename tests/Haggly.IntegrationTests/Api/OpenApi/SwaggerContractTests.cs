@@ -1,6 +1,7 @@
 using System.Net;
 using Haggly.Api;
 using Haggly.Api.Endpoints.Identity;
+using Haggly.Api.Endpoints.Inventory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -27,6 +28,7 @@ public sealed class SwaggerContractTests
 
         app.UseSwaggerDocumentation();
         app.MapIdentityEndpoints();
+        app.MapInventoryEndpoints();
 
         await app.StartAsync();
         var address = app.Services.GetRequiredService<IServer>()
@@ -48,5 +50,6 @@ public sealed class SwaggerContractTests
         Assert.Equal("/swagger", root.Headers.Location?.OriginalString);
         Assert.Contains("Haggly API", document);
         Assert.Contains("/api/v1/identity/login", document);
+        Assert.Contains("inventory-sessions/open", document);
     }
 }

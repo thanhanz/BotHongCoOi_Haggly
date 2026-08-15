@@ -1,6 +1,5 @@
 using Haggly.Application.Abstractions.Markets;
 using Haggly.Application.Modules.Markets.Dtos.Markets;
-using Haggly.Application.Modules.Markets.Handlers.Markets;
 using Haggly.Application.Modules.Markets.Queries.Markets;
 using Haggly.Application.Modules.Markets.Exceptions.Markets;
 using Haggly.Domain.Modules.Markets;
