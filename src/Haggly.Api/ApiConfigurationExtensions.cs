@@ -1,5 +1,6 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Middleware;
+using Haggly.Application.Common.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -15,6 +16,9 @@ public static class ApiConfigurationExtensions
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddHagglyAuthorization();
+        services.AddSingleton<IBusinessClock>(_ => new BusinessClock(
+            TimeProvider.System,
+            FindInventoryTimeZone()));
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
@@ -84,5 +88,17 @@ public static class ApiConfigurationExtensions
             StatusCodes.Status403Forbidden,
             "Access forbidden",
             "The authenticated user does not have permission to access this resource.");
+    }
+
+    private static TimeZoneInfo FindInventoryTimeZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+        }
     }
 }
