@@ -1,3 +1,4 @@
+using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Sales;
 using Xunit;
@@ -27,13 +28,17 @@ public sealed class DomainBaselineTests
     [Fact]
     public void RefreshAvailableQuantity_WhenReservedQuantityExceedsCurrentQuantity_ThrowsInvalidOperationException()
     {
-        var listing = new DailyProductListing
-        {
-            CurrentQuantity = 3,
-            ReservedQuantity = 4
-        };
+        var listing = DailyProductListing.Open(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Tomato",
+            ProductUnit.KG,
+            publicUnitPrice: 100,
+            openingQuantity: 3,
+            actorId: Guid.NewGuid(),
+            occurredAt: DateTimeOffset.UtcNow);
 
-        Assert.Throws<InvalidOperationException>(listing.RefreshAvailableQuantity);
+        Assert.Throws<InvalidOperationException>(() => listing.UpdateReservedQuantity(4));
     }
 
     [Fact]

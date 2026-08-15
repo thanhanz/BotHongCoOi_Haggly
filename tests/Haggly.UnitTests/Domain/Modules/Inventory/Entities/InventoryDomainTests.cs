@@ -16,7 +16,7 @@ public sealed class InventoryDomainTests
         var productStallId = Guid.NewGuid();
         var actorId = Guid.NewGuid();
 
-        var listing = DailyProductListing.CreateOpening(
+        var listing = DailyProductListing.Open(
             sessionId,
             productStallId,
             productNameSnapshot: "Tomato",
@@ -49,7 +49,7 @@ public sealed class InventoryDomainTests
         decimal openingQuantity,
         decimal publicUnitPrice)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => DailyProductListing.CreateOpening(
+        Assert.Throws<ArgumentOutOfRangeException>(() => DailyProductListing.Open(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "Tomato",
@@ -64,11 +64,9 @@ public sealed class InventoryDomainTests
     public void RefreshAvailableQuantity_WhenListingIsHidden_PreservesHiddenStatus()
     {
         var listing = CreateListing(openingQuantity: 10m);
-        listing.Status = DailyListingStatus.HIDDEN;
-        listing.ReservedQuantity = 3m;
-
-        listing.RefreshAvailableQuantity();
-
+        listing.Hide();
+        listing.UpdateReservedQuantity(3m);
+        
         Assert.Equal(7m, listing.AvailableQuantity);
         Assert.Equal(DailyListingStatus.HIDDEN, listing.Status);
     }
@@ -117,8 +115,10 @@ public sealed class InventoryDomainTests
         decimal reservedQuantity)
     {
         var listing = CreateListing(openingQuantity: 10m);
-        listing.ReservedQuantity = reservedQuantity;
-        listing.RefreshAvailableQuantity();
+        if (reservedQuantity > 0m)
+        {
+            listing.UpdateReservedQuantity(reservedQuantity);
+        }
 
         Assert.Throws<InvalidOperationException>(() => listing.AdjustQuantity(
             quantityDelta: quantityDelta,
@@ -148,8 +148,7 @@ public sealed class InventoryDomainTests
     public void Hide_WhenCalled_PreservesQuantitiesAndMarksListingHidden()
     {
         var listing = CreateListing(openingQuantity: 10m);
-        listing.ReservedQuantity = 2m;
-        listing.RefreshAvailableQuantity();
+        listing.UpdateReservedQuantity(2m);
 
         listing.Hide();
 
@@ -195,10 +194,24 @@ public sealed class InventoryDomainTests
         });
     }
 
+    [Fact]
+    public void EnsureOpen_WhenSessionIsClosed_ThrowsInvalidOperationException()
+    {
+        var session = InventorySession.Open(
+            Guid.NewGuid(),
+            new DateOnly(2026, 8, 15),
+            OccurredAt,
+            Guid.NewGuid(),
+            notes: null);
+        session.Close(Guid.NewGuid(), OccurredAt.AddHours(8));
+
+        Assert.Throws<InvalidOperationException>(session.EnsureOpen);
+    }
+
     private static DailyProductListing CreateListing(
         decimal openingQuantity,
         decimal publicUnitPrice = 45_000m)
-        => DailyProductListing.CreateOpening(
+        => DailyProductListing.Open(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "Tomato",
