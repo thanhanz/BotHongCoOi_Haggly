@@ -57,6 +57,12 @@ public static class InventoryValidation
         ValidateListingId(command.ListingId);
         ValidateExpectedVersion(command.ExpectedVersion);
 
+        if (command.PublicUnitPrice is null && command.Status is null)
+        {
+            throw new InventoryValidationException(
+                "At least one listing field must be provided for update.");
+        }
+
         if (command.PublicUnitPrice < 0m)
         {
             throw new InventoryValidationException("Public unit price cannot be negative.");

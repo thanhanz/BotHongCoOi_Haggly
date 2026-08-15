@@ -133,6 +133,12 @@ public sealed class DailyProductListing : AuditableEntity
     }
 
     public void Hide()
+        => HideCore(null, null);
+
+    public void Hide(Guid actorId, DateTimeOffset occurredAt)
+        => HideCore(actorId, occurredAt);
+
+    private void HideCore(Guid? actorId, DateTimeOffset? occurredAt)
     {
         if (Status == DailyListingStatus.HIDDEN)
         {
@@ -141,9 +147,16 @@ public sealed class DailyProductListing : AuditableEntity
 
         Status = DailyListingStatus.HIDDEN;
         Version++;
+        MarkUpdated(actorId, occurredAt);
     }
 
     public void Show()
+        => ShowCore(null, null);
+
+    public void Show(Guid actorId, DateTimeOffset occurredAt)
+        => ShowCore(actorId, occurredAt);
+
+    private void ShowCore(Guid? actorId, DateTimeOffset? occurredAt)
     {
         if (Status != DailyListingStatus.HIDDEN)
         {
@@ -154,6 +167,7 @@ public sealed class DailyProductListing : AuditableEntity
             ? DailyListingStatus.SOLD_OUT
             : DailyListingStatus.AVAILABLE;
         Version++;
+        MarkUpdated(actorId, occurredAt);
     }
 
     public void UpdateReservedQuantity(decimal reservedQuantity)
@@ -189,6 +203,15 @@ public sealed class DailyProductListing : AuditableEntity
             Status = AvailableQuantity == 0m
                 ? DailyListingStatus.SOLD_OUT
                 : DailyListingStatus.AVAILABLE;
+        }
+    }
+
+    private void MarkUpdated(Guid? actorId, DateTimeOffset? occurredAt)
+    {
+        if (actorId is not null && occurredAt is not null)
+        {
+            UpdatedBy = actorId;
+            UpdatedAt = occurredAt;
         }
     }
 

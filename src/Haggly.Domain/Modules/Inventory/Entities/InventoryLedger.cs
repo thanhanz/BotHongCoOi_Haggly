@@ -39,7 +39,9 @@ public sealed class InventoryLedger : ImmutableEntity
             UnitPriceAfter = unitPriceAfter,
             ReferenceType = nameof(InventorySession),
             PerformedBy = performedBy,
-            OccurredAt = occurredAt
+            OccurredAt = occurredAt,
+            CreatedAt = occurredAt,
+            CreatedBy = performedBy
         };
 
     internal static InventoryLedger CreateAdjustment(
@@ -62,7 +64,9 @@ public sealed class InventoryLedger : ImmutableEntity
             ReferenceType = nameof(DailyProductListing),
             Reason = reason,
             PerformedBy = performedBy,
-            OccurredAt = occurredAt
+            OccurredAt = occurredAt,
+            CreatedAt = occurredAt,
+            CreatedBy = performedBy
         };
 
     internal static InventoryLedger CreatePriceChange(
@@ -84,6 +88,8 @@ public sealed class InventoryLedger : ImmutableEntity
             UnitPriceAfter = unitPriceAfter,
             ReferenceType = nameof(DailyProductListing),
             PerformedBy = performedBy,
-            OccurredAt = occurredAt
+            OccurredAt = occurredAt,
+            CreatedAt = occurredAt,
+            CreatedBy = performedBy
         };
 }

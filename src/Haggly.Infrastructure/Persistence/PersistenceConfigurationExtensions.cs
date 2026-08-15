@@ -6,6 +6,7 @@ using Haggly.Application.Modules.Identity.Login;
 using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Abstractions.Catalog;
 using Haggly.Application.Abstractions.Markets;
+using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Modules.Markets.Handlers.Markets;
 using Haggly.Application.Modules.Markets.Handlers.Stalls;
 using Haggly.Infrastructure.Authentication;
@@ -16,6 +17,7 @@ using Haggly.Infrastructure.Persistence.Repositories.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
 using Haggly.Infrastructure.Persistence.Queries.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Identity;
+using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -54,6 +56,11 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IProductStallCommandRepository, EfProductStallCommandRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
+
+        services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
+        services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
+        services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
+        
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
         services.AddScoped<IProductQuery, DapperProductQuery>();
