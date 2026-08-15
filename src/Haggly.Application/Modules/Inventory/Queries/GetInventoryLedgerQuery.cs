@@ -7,6 +7,7 @@ namespace Haggly.Application.Modules.Inventory.Queries;
 
 public sealed record GetInventoryLedgerQuery(
     Guid StallId,
+    Guid ownerId,
     DateOnly? BusinessDate,
     Guid? ListingId,
     InventoryTransactionType? TransactionType,

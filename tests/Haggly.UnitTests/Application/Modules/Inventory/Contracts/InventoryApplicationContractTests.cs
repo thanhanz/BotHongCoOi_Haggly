@@ -76,6 +76,7 @@ public sealed class InventoryApplicationContractTests
     {
         var query = new GetInventoryLedgerQuery(
             Guid.NewGuid(),
+            Guid.NewGuid(),
             BusinessDate: null,
             ListingId: null,
             TransactionType: null,

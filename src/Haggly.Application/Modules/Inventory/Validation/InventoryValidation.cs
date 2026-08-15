@@ -94,14 +94,14 @@ public static class InventoryValidation
         => ValidateActorAndStall(command.StallId, command.ActorUserId);
 
     public static void Validate(GetCurrentInventorySessionQuery query)
-        => ValidateStall(query.StallId);
+        => ValidateActorAndStall(query.StallId, query.ActorUserId);
 
     public static void Validate(GetPreviousInventorySessionQuery query)
-        => ValidateStall(query.StallId);
+        => ValidateActorAndStall(query.StallId, query.ActorUserId);
 
     public static void Validate(GetInventoryLedgerQuery query)
     {
-        ValidateStall(query.StallId);
+        ValidateActorAndStall(query.StallId, query.ownerId);
         if (query.ListingId == Guid.Empty)
         {
             throw new InventoryValidationException("Listing ID must be valid when provided.");
