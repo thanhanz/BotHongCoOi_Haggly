@@ -4,6 +4,7 @@ using Haggly.Infrastructure.Authentication;
 using Haggly.Api.Endpoints.Identity;
 using Haggly.Api.Endpoints.Markets;
 using Haggly.Api.Endpoints.Catalog;
+using Haggly.Api.Endpoints.Inventory;
 
 public partial class Program
 {
@@ -42,6 +43,7 @@ public partial class Program
         app.MapCategoryEndpoints();
         app.MapProductEndpoints();
         app.MapProductStallEndpoints();
+        app.MapInventoryEndpoints();
 
         app.Run();
     }

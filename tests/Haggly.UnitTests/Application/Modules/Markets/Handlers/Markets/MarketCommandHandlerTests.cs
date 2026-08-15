@@ -2,7 +2,6 @@ using Haggly.Application.Abstractions.Markets;
 using Haggly.Application.Modules.Markets.Commands.Markets;
 using Haggly.Application.Modules.Markets.Dtos.Markets;
 using Haggly.Application.Modules.Markets.Exceptions.Markets;
-using Haggly.Application.Modules.Markets.Handlers.Markets;
 using Haggly.Domain.Modules.Markets;
 using Xunit;
 

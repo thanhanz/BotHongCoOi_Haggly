@@ -568,6 +568,212 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.ToTable("vendor_profiles", "identity");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.DailyProductListing", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AvailableQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("CurrentQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<Guid>("InventorySessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("OpeningQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("ProductNameSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProductStallId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("PublicUnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("ReservedQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("SellingUnitSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductStallId");
+
+                    b.HasIndex("InventorySessionId", "ProductStallId")
+                        .IsUnique();
+
+                    b.ToTable("daily_product_listings", "inventory", t =>
+                        {
+                            t.HasCheckConstraint("CK_daily_product_listings_available_quantity_bounds", "\"AvailableQuantity\" >= 0 AND \"AvailableQuantity\" = \"CurrentQuantity\" - \"ReservedQuantity\"");
+
+                            t.HasCheckConstraint("CK_daily_product_listings_quantity_bounds", "\"OpeningQuantity\" >= 0 AND \"CurrentQuantity\" >= 0 AND \"ReservedQuantity\" >= 0 AND \"ReservedQuantity\" <= \"CurrentQuantity\"");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.InventoryLedger", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DailyProductListingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InventorySessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PerformedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("QuantityAfter")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("QuantityBefore")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("QuantityDelta")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("ReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ReferenceType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<decimal?>("UnitPriceAfter")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("UnitPriceBefore")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DailyProductListingId", "OccurredAt", "Id");
+
+                    b.HasIndex("InventorySessionId", "OccurredAt", "Id");
+
+                    b.ToTable("inventory_ledgers", "inventory", t =>
+                        {
+                            t.HasCheckConstraint("CK_inventory_ledgers_price_bounds", "(\"UnitPriceBefore\" IS NULL OR \"UnitPriceBefore\" >= 0) AND (\"UnitPriceAfter\" IS NULL OR \"UnitPriceAfter\" >= 0)");
+
+                            t.HasCheckConstraint("CK_inventory_ledgers_quantity_bounds", "\"QuantityBefore\" >= 0 AND \"QuantityAfter\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.InventorySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("BusinessDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ClosedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset>("OpenedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OpenedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StallId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StallId", "BusinessDate")
+                        .IsUnique();
+
+                    b.ToTable("inventory_sessions", "inventory");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Markets.Market", b =>
                 {
                     b.Property<Guid>("Id")
@@ -790,6 +996,55 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.DailyProductListing", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Inventory.InventorySession", "InventorySession")
+                        .WithMany("DailyProductListings")
+                        .HasForeignKey("InventorySessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Catalog.ProductStall", "ProductStall")
+                        .WithMany()
+                        .HasForeignKey("ProductStallId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InventorySession");
+
+                    b.Navigation("ProductStall");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.InventoryLedger", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Inventory.DailyProductListing", "DailyProductListing")
+                        .WithMany("InventoryLedgers")
+                        .HasForeignKey("DailyProductListingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Inventory.InventorySession", "InventorySession")
+                        .WithMany("InventoryLedgers")
+                        .HasForeignKey("InventorySessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DailyProductListing");
+
+                    b.Navigation("InventorySession");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.InventorySession", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Markets.Stall", "Stall")
+                        .WithMany()
+                        .HasForeignKey("StallId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Stall");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Markets.Stall", b =>
                 {
                     b.HasOne("Haggly.Domain.Modules.Markets.Market", "Market")
@@ -837,6 +1092,18 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("UserRoles");
 
                     b.Navigation("VendorProfile");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.DailyProductListing", b =>
+                {
+                    b.Navigation("InventoryLedgers");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Inventory.InventorySession", b =>
+                {
+                    b.Navigation("DailyProductListings");
+
+                    b.Navigation("InventoryLedgers");
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Markets.Market", b =>

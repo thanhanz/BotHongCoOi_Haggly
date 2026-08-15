@@ -1,7 +1,6 @@
 using Haggly.Application.Abstractions.Catalog;
 using Haggly.Application.Modules.Catalog.Commands.ProductStalls;
 using Haggly.Application.Modules.Catalog.Exceptions.ProductStalls;
-using Haggly.Application.Modules.Catalog.Handlers.ProductStalls;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Markets;
 using Xunit;
