@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Identity;
+using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Markets;
 
 namespace Haggly.Infrastructure.Persistence;
@@ -24,6 +25,11 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductStall> ProductStalls => Set<ProductStall>();
+
+    // Inventory
+    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
+    public DbSet<DailyProductListing> DailyProductListings => Set<DailyProductListing>();
+    public DbSet<InventoryLedger> InventoryLedgers => Set<InventoryLedger>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
