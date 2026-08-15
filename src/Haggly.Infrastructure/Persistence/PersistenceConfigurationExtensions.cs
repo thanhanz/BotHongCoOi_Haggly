@@ -17,6 +17,7 @@ using Haggly.Infrastructure.Persistence.Repositories.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Catalog;
 using Haggly.Infrastructure.Persistence.Queries.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Identity;
+using Haggly.Infrastructure.Persistence.Queries.Inventory;
 using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 
 namespace Haggly.Infrastructure.Persistence;
@@ -67,6 +68,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IProductStallQuery, DapperProductStallQuery>();
         services.AddScoped<IStallQuery, DapperStallQuery>();
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
+        services.AddScoped<IInventoryQuery, DapperInventoryQuery>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
