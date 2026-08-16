@@ -9,6 +9,7 @@ using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Abstractions.Catalog;
 using Haggly.Application.Abstractions.Markets;
 using Haggly.Application.Abstractions.Inventory;
+using Haggly.Application.Abstractions.Sales;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -19,6 +20,7 @@ using Haggly.Infrastructure.Persistence.Queries.Markets;
 using Haggly.Infrastructure.Persistence.Queries.Identity;
 using Haggly.Infrastructure.Persistence.Queries.Inventory;
 using Haggly.Infrastructure.Persistence.Repositories.Inventory;
+using Haggly.Infrastructure.Persistence.Repositories.Sales;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -61,6 +63,9 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
         services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
         services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
+        services.AddScoped<IInventorySaleRecorder, EfInventorySaleRecorder>();
+        services.AddScoped<IPosSaleCommandRepository, EfPosSaleCommandRepository>();
+        services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();

@@ -3,6 +3,7 @@ using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Identity;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Markets;
+using Haggly.Domain.Modules.Sales;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -30,6 +31,10 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
     public DbSet<DailyProductListing> DailyProductListings => Set<DailyProductListing>();
     public DbSet<InventoryLedger> InventoryLedgers => Set<InventoryLedger>();
+
+    // Sales
+    public DbSet<PosSale> PosSales => Set<PosSale>();
+    public DbSet<PosSaleItem> PosSaleItems => Set<PosSaleItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

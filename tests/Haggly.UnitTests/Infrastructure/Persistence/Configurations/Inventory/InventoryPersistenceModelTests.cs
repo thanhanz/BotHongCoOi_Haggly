@@ -123,13 +123,11 @@ public sealed class InventoryPersistenceModelTests
     }
 
     [Fact]
-    public void ConfigureInventoryEntities_WhenModelIsBuilt_DoesNotDiscoverReservationOrSalesGraph()
+    public void ConfigureInventoryEntities_WhenModelIsBuilt_DoesNotDiscoverReservationGraph()
     {
         using var context = CreateContext();
 
         Assert.Null(context.Model.FindEntityType(typeof(InventoryReservation)));
-        Assert.DoesNotContain(context.Model.GetEntityTypes(), entityType =>
-            entityType.ClrType.Namespace?.Contains("Modules.Sales", StringComparison.Ordinal) == true);
     }
 
     private static HagglyDbContext CreateContext()

@@ -69,6 +69,33 @@ public sealed class InventoryLedger : ImmutableEntity
             CreatedBy = performedBy
         };
 
+    internal static InventoryLedger CreatePosSale(
+        Guid dailyProductListingId,
+        Guid inventorySessionId,
+        decimal quantity,
+        decimal quantityBefore,
+        decimal quantityAfter,
+        decimal unitPrice,
+        Guid saleId,
+        Guid performedBy,
+        DateTimeOffset occurredAt)
+        => new()
+        {
+            DailyProductListingId = dailyProductListingId,
+            InventorySessionId = inventorySessionId,
+            TransactionType = InventoryTransactionType.POS_SALE,
+            QuantityDelta = -quantity,
+            QuantityBefore = quantityBefore,
+            QuantityAfter = quantityAfter,
+            UnitPriceAfter = unitPrice,
+            ReferenceType = "POS_SALE",
+            ReferenceId = saleId,
+            PerformedBy = performedBy,
+            OccurredAt = occurredAt,
+            CreatedAt = occurredAt,
+            CreatedBy = performedBy
+        };
+
     internal static InventoryLedger CreatePriceChange(
         Guid dailyProductListingId,
         Guid inventorySessionId,

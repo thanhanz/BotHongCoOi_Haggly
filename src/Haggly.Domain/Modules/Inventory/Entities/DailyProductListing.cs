@@ -102,6 +102,49 @@ public sealed class DailyProductListing : AuditableEntity
         return ledger;
     }
 
+    public InventoryLedger RecordPosSale(
+        decimal quantity,
+        Guid saleId,
+        Guid actorId,
+        DateTimeOffset occurredAt)
+    {
+        if (quantity <= 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Sale quantity must be greater than zero.");
+        }
+
+        if (saleId == Guid.Empty)
+        {
+            throw new ArgumentException("A valid sale ID is required.", nameof(saleId));
+        }
+
+        if (quantity > AvailableQuantity)
+        {
+            throw new InvalidOperationException(
+                "Sale quantity cannot exceed available inventory.");
+        }
+
+        var quantityBefore = CurrentQuantity;
+        CurrentQuantity -= quantity;
+        RefreshAvailableQuantity();
+        Version++;
+        UpdatedAt = occurredAt;
+        UpdatedBy = actorId;
+
+        var ledger = InventoryLedger.CreatePosSale(
+            Id,
+            InventorySessionId,
+            quantity,
+            quantityBefore,
+            CurrentQuantity,
+            PublicUnitPrice,
+            saleId,
+            actorId,
+            occurredAt);
+        InventoryLedgers.Add(ledger);
+        return ledger;
+    }
+
     public InventoryLedger ChangePrice(
         decimal publicUnitPrice,
         Guid actorId,
