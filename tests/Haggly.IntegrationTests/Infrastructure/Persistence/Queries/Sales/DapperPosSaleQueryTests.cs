@@ -8,6 +8,55 @@ namespace Haggly.IntegrationTests.Infrastructure.Persistence.Queries.Sales;
 public sealed class DapperPosSaleQueryTests
 {
     [Fact]
+    public async Task GetByIdWithItemsAsync_WhenSaleExists_ReturnsSaleWithItems()
+    {
+        var db = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
+        var saleId = Guid.NewGuid();
+        var stallId = Guid.NewGuid();
+        var itemId = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+
+        await using (var connection = await db.OpenConnectionAsync(CancellationToken.None))
+        {
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO sales.pos_sales
+                    ("Id", "StallId", "SaleNo", "ClientRequestId", "Status", "TotalAmount",
+                     "CompletedBy", "CompletedAt", "PaymentMethod", "PaymentStatus", "AmountPaid", "CreatedAt")
+                VALUES
+                    (@SaleId, @StallId, @SaleNo, @ClientRequestId, 'COMPLETED', 20.00,
+                     @CompletedBy, @CompletedAt, 'CASH', 'PAID', 20.00, @CompletedAt);
+
+                INSERT INTO sales.pos_sale_items
+                    ("Id", "PosSaleId", "InventoryItemId", "ProductNameSnapshot", "SellingUnitSnapshot",
+                     "UnitPrice", "Quantity", "LineTotal", "CreatedAt")
+                VALUES
+                    (@ItemId, @SaleId, @InventoryItemId, 'Tomato', 'KG', 20.00, 1.000, 20.00, @CompletedAt);
+                """,
+                new
+                {
+                    SaleId = saleId,
+                    StallId = stallId,
+                    SaleNo = $"POS-{saleId:N}",
+                    ClientRequestId = Guid.NewGuid().ToString("N"),
+                    CompletedBy = Guid.NewGuid(),
+                    CompletedAt = now,
+                    ItemId = itemId,
+                    InventoryItemId = Guid.NewGuid()
+                });
+        }
+
+        var result = await new DapperPosSaleQuery(db)
+            .GetByIdWithItemsAsync(stallId, saleId, CancellationToken.None);
+
+        Assert.NotNull(result);
+        var item = Assert.Single(result.Items);
+        Assert.Equal(itemId, item.Id);
+        Assert.Equal("Tomato", item.ProductNameSnapshot);
+        Assert.Equal(20m, item.LineTotal);
+    }
+
+    [Fact]
     public async Task GetPageAsync_WhenSalesExist_ReturnsPagedSaleHeaders()
     {
         var db = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());

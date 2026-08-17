@@ -269,6 +269,7 @@ and require the `VendorOnly` policy:
 |---|---|---|
 | `POST` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Complete an idempotent sale and deduct inventory atomically |
 | `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Page the stall's completed POS history |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales/{posSaleId}` | Return one POS sale with its item details |
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In

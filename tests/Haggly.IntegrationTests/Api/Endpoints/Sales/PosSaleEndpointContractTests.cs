@@ -14,6 +14,7 @@ public sealed class PosSaleEndpointContractTests
     [Theory]
     [InlineData("POST", PosSaleRoutes.Root)]
     [InlineData("GET", PosSaleRoutes.Root)]
+    [InlineData("GET", PosSaleRoutes.Detail)]
     public void MapPosSaleEndpoints_Route_IsRegisteredAndVendorOnly(string method, string suffix)
     {
         using var app = CreateApp();

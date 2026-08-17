@@ -36,6 +36,12 @@ public static class PosSaleEndpointExtensions
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        group.MapGet(PosSaleRoutes.Detail, GetDetailAsync)
+            .Produces<ApiResponse<PosSaleDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         return endpoints;
     }
 
@@ -84,6 +90,25 @@ public static class PosSaleEndpointExtensions
         return Results.Ok(ApiResponse<PagedResult<PosSaleDto>>.Create(
             result,
             "POS sales retrieved successfully."));
+    }
+
+    private static async Task<IResult> GetDetailAsync(
+        Guid stallId,
+        Guid posSaleId,
+        HttpContext context,
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new GetPosSaleDetailsQuery(
+                stallId,
+                posSaleId,
+                CurrentUserId(context)),
+            cancellationToken);
+
+        return Results.Ok(ApiResponse<PosSaleDto>.Create(
+            result,
+            "POS sale details retrieved successfully."));
     }
 
     private static Guid CurrentUserId(HttpContext context)

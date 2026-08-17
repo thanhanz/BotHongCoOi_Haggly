@@ -57,6 +57,16 @@ public sealed class PosSaleApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
+        using var detailResponse = await SendGetAsync(
+            app.Services,
+            client,
+            $"/api/v1/vendor/stalls/{scenario.StallId}/pos-sales/{ReadSaleId(response)}",
+            scenario.OwnerId);
+
+        Assert.Equal(HttpStatusCode.OK, detailResponse.StatusCode);
+        var detailBody = await detailResponse.Content.ReadAsStringAsync();
+        Assert.Contains(inventoryItemId.ToString(), detailBody);
+
         var db = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
         await using var connection = await db.OpenConnectionAsync(CancellationToken.None);
         var quantity = await connection.ExecuteScalarAsync<decimal>(
@@ -144,6 +154,22 @@ public sealed class PosSaleApiIntegrationTests
             CreateToken(services, userId));
         return await client.SendAsync(request);
     }
+
+    private static async Task<HttpResponseMessage> SendGetAsync(
+        IServiceProvider services,
+        HttpClient client,
+        string path,
+        Guid userId)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            CreateToken(services, userId));
+        return await client.SendAsync(request);
+    }
+
+    private static Guid ReadSaleId(HttpResponseMessage response)
+        => Guid.Parse(response.Headers.Location!.OriginalString.TrimEnd('/').Split('/')[^1]);
 
     private static string CreateToken(IServiceProvider services, Guid userId)
     {

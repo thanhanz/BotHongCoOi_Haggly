@@ -5,6 +5,11 @@ namespace Haggly.Application.Abstractions.Sales;
 
 public interface IPosSaleQuery
 {
+    Task<PosSale?> GetByIdWithItemsAsync(
+        Guid stallId,
+        Guid saleId,
+        CancellationToken cancellationToken);
+
     Task<PagedResult<PosSale>> GetPageAsync(
         Guid stallId,
         int page,
