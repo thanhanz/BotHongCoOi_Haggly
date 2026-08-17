@@ -29,7 +29,7 @@ public sealed record PosSaleDto(
 
 public sealed record PosSaleItemDto(
     Guid Id,
-    Guid DailyProductListingId,
+    Guid InventoryItemId,
     string ProductNameSnapshot,
     ProductUnit SellingUnitSnapshot,
     decimal UnitPrice,
@@ -39,7 +39,7 @@ public sealed record PosSaleItemDto(
     public static PosSaleItemDto From(PosSaleItem item)
         => new(
             item.Id,
-            item.DailyProductListingId,
+            item.InventoryItemId,
             item.ProductNameSnapshot,
             item.SellingUnitSnapshot,
             item.UnitPrice,

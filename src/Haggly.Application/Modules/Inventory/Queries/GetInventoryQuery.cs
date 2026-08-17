@@ -3,5 +3,4 @@ using MediatR;
 
 namespace Haggly.Application.Modules.Inventory.Queries;
 
-public sealed record GetCurrentInventorySessionQuery(Guid StallId, Guid ActorUserId)
-    : IRequest<InventorySessionDto>;
+public sealed record GetInventoryQuery(Guid StallId, Guid ActorUserId) : IRequest<InventoryDto>;

@@ -1,7 +1,7 @@
 namespace Haggly.Api.Endpoints.Inventory.Requests;
 
 public sealed record AdjustInventoryRequest(
-    Guid ListingId,
+    Guid InventoryItemId,
     decimal QuantityDelta,
     string Reason,
     long ExpectedVersion);

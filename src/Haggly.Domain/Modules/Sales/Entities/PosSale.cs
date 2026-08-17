@@ -71,7 +71,7 @@ public sealed class PosSale : AuditableEntity
 
         foreach (var item in items)
         {
-            if (!listingIds.Add(item.DailyProductListingId))
+            if (!listingIds.Add(item.InventoryItemId))
             {
                 throw new ArgumentException(
                     "A daily product listing can occur only once in a POS sale.",
@@ -79,7 +79,7 @@ public sealed class PosSale : AuditableEntity
             }
 
             sale.Items.Add(PosSaleItem.Create(
-                item.DailyProductListingId,
+                item.InventoryItemId,
                 item.ProductNameSnapshot,
                 item.SellingUnitSnapshot,
                 item.UnitPrice,
@@ -93,7 +93,7 @@ public sealed class PosSale : AuditableEntity
 }
 
 public sealed record PosSaleItemInput(
-    Guid DailyProductListingId,
+    Guid InventoryItemId,
     string ProductNameSnapshot,
     ProductUnit SellingUnitSnapshot,
     decimal UnitPrice,

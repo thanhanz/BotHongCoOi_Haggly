@@ -12,7 +12,7 @@ public sealed class CreateProductStallHandler(IProductStallCommandRepository rep
 {
     public async Task<ProductStallDto> Handle(CreateProductStallCommand c, CancellationToken ct)
     {
-        Validate(c.StallId, c.ProductId, c.ActorUserId, c.SellingUnit, c.MinimumOrderQuantity, c.DefaultUnitPrice);
+        Validate(c.StallId, c.ProductId, c.ActorUserId, c.SellingUnit, c.MinimumOrderQuantity, c.CurrentUnitPrice);
         
         var stall = await repository.FindActiveStallAsync(c.StallId, ct)
             ?? throw new ProductStallNotFoundException("The stall was not found.");
@@ -26,15 +26,8 @@ public sealed class CreateProductStallHandler(IProductStallCommandRepository rep
         if (await repository.ExistsAsync(c.StallId, c.ProductId, ct))
             throw new ProductStallConflictException("This product is already attached to the stall.");
         
-        var value = new ProductStall { 
-                          StallId = c.StallId, 
-                          ProductId = c.ProductId,
-                          DisplayName = c.DisplayName?.Trim(), 
-                          SellingUnit = c.SellingUnit,
-                          MinimumOrderQuantity = c.MinimumOrderQuantity, 
-                          DefaultUnitPrice = c.DefaultUnitPrice,
-                          IsNegotiable = c.IsNegotiable, 
-                          IsActive = true };
+        var value = ProductStall.Create(c.StallId, c.ProductId, c.DisplayName, c.SellingUnit,
+            c.MinimumOrderQuantity, c.CurrentUnitPrice, c.IsNegotiable);
         
         await repository.AddAsync(value, ct); 
         await repository.SaveChangesAsync(ct);

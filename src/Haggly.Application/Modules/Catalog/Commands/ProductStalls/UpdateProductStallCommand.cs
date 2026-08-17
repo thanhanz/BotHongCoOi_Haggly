@@ -11,6 +11,7 @@ public sealed record UpdateProductStallCommand(
     string? DisplayName, 
     ProductUnit? SellingUnit,
     decimal? MinimumOrderQuantity, 
-    decimal? DefaultUnitPrice, 
+    decimal? CurrentUnitPrice,
     bool? IsNegotiable, 
-    bool? IsActive) : IRequest<ProductStallDto>;
+    bool? IsActive,
+    long ExpectedVersion) : IRequest<ProductStallDto>;

@@ -3,7 +3,8 @@ using MediatR;
 
 namespace Haggly.Application.Modules.Inventory.Commands;
 
-public sealed record AddDailyProductListingCommand(
+public sealed record AddInventoryItemCommand(
     Guid StallId,
     Guid ActorUserId,
-    InventoryListingInput Listing) : IRequest<DailyProductListingDto>;
+    Guid ProductStallId,
+    decimal CurrentQuantity) : IRequest<InventoryItemDto>;

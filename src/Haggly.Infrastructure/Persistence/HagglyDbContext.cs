@@ -28,8 +28,8 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<ProductStall> ProductStalls => Set<ProductStall>();
 
     // Inventory
-    public DbSet<InventorySession> InventorySessions => Set<InventorySession>();
-    public DbSet<DailyProductListing> DailyProductListings => Set<DailyProductListing>();
+    public DbSet<Inventory> Inventories => Set<Inventory>();
+    public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<InventoryLedger> InventoryLedgers => Set<InventoryLedger>();
 
     // Sales

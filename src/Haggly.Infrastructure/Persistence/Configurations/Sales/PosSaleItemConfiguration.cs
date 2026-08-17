@@ -15,7 +15,7 @@ internal sealed class PosSaleItemConfiguration : IEntityTypeConfiguration<PosSal
             table.HasCheckConstraint("CK_pos_sale_items_price_bounds", "\"UnitPrice\" >= 0 AND \"LineTotal\" >= 0");
         });
         builder.HasKey(item => item.Id);
-        builder.HasIndex(item => new { item.PosSaleId, item.DailyProductListingId }).IsUnique();
+        builder.HasIndex(item => new { item.PosSaleId, item.InventoryItemId }).IsUnique();
         builder.Property(item => item.ProductNameSnapshot).HasMaxLength(200).IsRequired();
         builder.Property(item => item.SellingUnitSnapshot)
             .HasConversion<string>()

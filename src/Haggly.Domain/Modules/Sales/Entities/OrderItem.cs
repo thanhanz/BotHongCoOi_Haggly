@@ -6,7 +6,7 @@ namespace Haggly.Domain.Modules.Sales;
 public sealed class OrderItem : AuditableEntity
 {
     public Guid StallFulfillmentId { get; set; }
-    public Guid DailyProductListingId { get; set; }
+    public Guid InventoryItemId { get; set; }
     public string ProductNameSnapshot { get; set; } = string.Empty;
     public string SellingUnitSnapshot { get; set; } = string.Empty;
     public decimal PublicUnitPriceSnapshot { get; set; }
@@ -18,7 +18,7 @@ public sealed class OrderItem : AuditableEntity
     public string? Notes { get; set; }
 
     public StallFulfillment? StallFulfillment { get; set; }
-    public DailyProductListing? DailyProductListing { get; set; }
+    public InventoryItem? InventoryItem { get; set; }
     public ICollection<InventoryReservation> InventoryReservations { get; set; } = new List<InventoryReservation>();
 
     public void SetFinalValues(decimal quantity, decimal unitPrice, bool isNegotiated)

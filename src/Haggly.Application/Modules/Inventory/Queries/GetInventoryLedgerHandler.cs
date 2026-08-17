@@ -26,8 +26,7 @@ public sealed class GetInventoryLedgerHandler(
             cancellationToken);
         var filter = new InventoryLedgerListFilter(
             stall.Id,
-            request.BusinessDate,
-            request.ListingId,
+            request.InventoryItemId,
             request.TransactionType,
             request.Page,
             request.PageSize);

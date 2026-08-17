@@ -14,12 +14,12 @@ public interface IInventorySaleRecorder
 }
 
 public sealed record InventorySaleLine(
-    Guid DailyProductListingId,
+    Guid InventoryItemId,
     decimal Quantity,
     long ExpectedVersion);
 
 public sealed record InventorySaleItemSnapshot(
-    Guid DailyProductListingId,
+    Guid InventoryItemId,
     string ProductNameSnapshot,
     ProductUnit SellingUnitSnapshot,
     decimal UnitPrice,

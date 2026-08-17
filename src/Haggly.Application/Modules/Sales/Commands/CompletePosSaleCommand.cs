@@ -10,6 +10,6 @@ public sealed record CompletePosSaleCommand(
     IReadOnlyCollection<PosSaleLineInput> Items) : IRequest<PosSaleDto>;
 
 public sealed record PosSaleLineInput(
-    Guid DailyProductListingId,
+    Guid InventoryItemId,
     decimal Quantity,
     long ExpectedVersion);

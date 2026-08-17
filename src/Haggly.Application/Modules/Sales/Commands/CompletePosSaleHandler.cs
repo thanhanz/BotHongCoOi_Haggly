@@ -41,7 +41,7 @@ public sealed class CompletePosSaleHandler(
                 command.ActorUserId,
                 command.Items
                     .Select(item => new InventorySaleLine(
-                        item.DailyProductListingId,
+                        item.InventoryItemId,
                         item.Quantity,
                         item.ExpectedVersion))
                     .ToArray(),
@@ -55,7 +55,7 @@ public sealed class CompletePosSaleHandler(
                 command.ClientRequestId.Trim(),
                 snapshots
                     .Select(item => new PosSaleItemInput(
-                        item.DailyProductListingId,
+                        item.InventoryItemId,
                         item.ProductNameSnapshot,
                         item.SellingUnitSnapshot,
                         item.UnitPrice,

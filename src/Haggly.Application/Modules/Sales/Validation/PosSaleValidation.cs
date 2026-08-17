@@ -32,12 +32,12 @@ public static class PosSaleValidation
         var listingIds = new HashSet<Guid>();
         foreach (var item in command.Items)
         {
-            if (item.DailyProductListingId == Guid.Empty)
+            if (item.InventoryItemId == Guid.Empty)
             {
                 throw new PosSaleValidationException("A valid daily product listing ID is required.");
             }
 
-            if (!listingIds.Add(item.DailyProductListingId))
+            if (!listingIds.Add(item.InventoryItemId))
             {
                 throw new PosSaleValidationException(
                     "A daily product listing can occur only once in a POS sale.");

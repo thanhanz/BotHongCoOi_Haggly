@@ -3,58 +3,34 @@ using Haggly.Application.Modules.Inventory.Exceptions;
 using Haggly.Domain.Modules.Inventory;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 
 namespace Haggly.Infrastructure.Persistence.Repositories.Inventory;
 
-public sealed class EfInventoryCommandRepository(HagglyDbContext dbContext)
-    : IInventoryCommandRepository
+public sealed class EfInventoryCommandRepository(HagglyDbContext dbContext) : IInventoryCommandRepository
 {
-    public Task<InventorySession?> FindSessionAsync(
-        Guid stallId,
-        DateOnly businessDate,
-        CancellationToken cancellationToken)
-        => dbContext.InventorySessions
-            .Include(session => session.DailyProductListings)
-            .ThenInclude(listing => listing.InventoryLedgers)
-            .SingleOrDefaultAsync(
-                session => session.StallId == stallId
-                    && session.BusinessDate == businessDate,
-                cancellationToken);
+    public Task<DomainInventory?> FindInventoryAsync(Guid stallId, CancellationToken cancellationToken)
+        => dbContext.Inventories.Include(inventory => inventory.Items)
+            .ThenInclude(item => item.InventoryLedgers)
+            .SingleOrDefaultAsync(inventory => inventory.StallId == stallId, cancellationToken);
 
-    public Task<DailyProductListing?> FindListingAsync(
-        Guid stallId,
-        Guid listingId,
-        CancellationToken cancellationToken)
-        => dbContext.DailyProductListings
-            .Include(listing => listing.InventorySession)
-            .Include(listing => listing.InventoryLedgers)
-            .SingleOrDefaultAsync(
-                listing => listing.Id == listingId
-                    && listing.InventorySession!.StallId == stallId,
-                cancellationToken);
+    public Task<InventoryItem?> FindItemAsync(Guid stallId, Guid inventoryItemId, CancellationToken cancellationToken)
+        => dbContext.InventoryItems.Include(item => item.Inventory).Include(item => item.InventoryLedgers)
+            .SingleOrDefaultAsync(item => item.Id == inventoryItemId && item.Inventory!.StallId == stallId, cancellationToken);
 
-    public Task<bool> ListingExistsAsync(
-        Guid inventorySessionId,
-        Guid productStallId,
-        CancellationToken cancellationToken)
-        => dbContext.DailyProductListings.AnyAsync(
-            listing => listing.InventorySessionId == inventorySessionId
-                && listing.ProductStallId == productStallId,
-            cancellationToken);
+    public Task<bool> ItemExistsAsync(Guid inventoryId, Guid productStallId, CancellationToken cancellationToken)
+        => dbContext.InventoryItems.AnyAsync(
+            item => item.InventoryId == inventoryId && item.ProductStallId == productStallId, cancellationToken);
 
-    public Task AddSessionAsync(
-        InventorySession session,
-        CancellationToken cancellationToken)
+    public Task AddInventoryAsync(DomainInventory inventory, CancellationToken cancellationToken)
     {
-        dbContext.InventorySessions.Add(session);
+        dbContext.Inventories.Add(inventory);
         return Task.CompletedTask;
     }
 
-    public Task AddListingAsync(
-        DailyProductListing listing,
-        CancellationToken cancellationToken)
+    public Task AddItemAsync(InventoryItem item, CancellationToken cancellationToken)
     {
-        dbContext.DailyProductListings.Add(listing);
+        dbContext.InventoryItems.Add(item);
         return Task.CompletedTask;
     }
 
@@ -66,15 +42,12 @@ public sealed class EfInventoryCommandRepository(HagglyDbContext dbContext)
         }
         catch (DbUpdateConcurrencyException)
         {
-            throw new InventoryConflictException(
-                "The inventory record was changed by another request. Refresh and retry.");
+            throw new InventoryConflictException("The inventory was changed by another request. Refresh and retry.");
         }
-        catch (DbUpdateException exception) when (
-            exception.InnerException is PostgresException postgres
-                && postgres.SqlState == PostgresErrorCodes.UniqueViolation)
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException postgres
+            && postgres.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            throw new InventoryConflictException(
-                "The inventory record already exists.");
+            throw new InventoryConflictException("The inventory record already exists.");
         }
     }
 }

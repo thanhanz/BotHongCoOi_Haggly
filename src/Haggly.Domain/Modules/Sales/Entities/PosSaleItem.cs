@@ -6,7 +6,7 @@ namespace Haggly.Domain.Modules.Sales;
 public sealed class PosSaleItem : AuditableEntity
 {
     public Guid PosSaleId { get; private set; }
-    public Guid DailyProductListingId { get; private set; }
+    public Guid InventoryItemId { get; private set; }
     public string ProductNameSnapshot { get; private set; } = string.Empty;
     public ProductUnit SellingUnitSnapshot { get; private set; }
     public decimal UnitPrice { get; private set; }
@@ -20,7 +20,7 @@ public sealed class PosSaleItem : AuditableEntity
     }
 
     internal static PosSaleItem Create(
-        Guid dailyProductListingId,
+        Guid inventoryItemId,
         string productNameSnapshot,
         ProductUnit sellingUnitSnapshot,
         decimal unitPrice,
@@ -28,9 +28,9 @@ public sealed class PosSaleItem : AuditableEntity
         DateTimeOffset occurredAt)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(productNameSnapshot);
-        if (dailyProductListingId == Guid.Empty)
+        if (inventoryItemId == Guid.Empty)
         {
-            throw new ArgumentException("A valid daily product listing ID is required.", nameof(dailyProductListingId));
+            throw new ArgumentException("A valid inventory item ID is required.", nameof(inventoryItemId));
         }
 
         if (quantity <= 0m)
@@ -45,7 +45,7 @@ public sealed class PosSaleItem : AuditableEntity
 
         return new PosSaleItem
         {
-            DailyProductListingId = dailyProductListingId,
+            InventoryItemId = inventoryItemId,
             ProductNameSnapshot = productNameSnapshot,
             SellingUnitSnapshot = sellingUnitSnapshot,
             UnitPrice = unitPrice,
