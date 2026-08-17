@@ -40,6 +40,9 @@ the time of a completed sale.
   price/unit/name and deducting stock.
 - Quantity changes append immutable InventoryLedger rows. Current product data
   is not duplicated in InventoryItem.
+- `IInventorySaleRecorder` is the Sales-facing port. It verifies stall ownership,
+  checks both InventoryItem and ProductStall versions, snapshots current catalog
+  data, and records `POS_SALE` atomically with the sale.
 
 ## HTTP routes
 

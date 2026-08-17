@@ -12,6 +12,7 @@ internal sealed class PosSaleConfiguration : IEntityTypeConfiguration<PosSale>
         builder.ToTable("pos_sales", "sales", table =>
         {
             table.HasCheckConstraint("CK_pos_sales_total_amount_bounds", "\"TotalAmount\" >= 0");
+            table.HasCheckConstraint("CK_pos_sales_amount_paid_bounds", "\"AmountPaid\" >= 0 AND \"AmountPaid\" = \"TotalAmount\"");
         });
         builder.HasKey(sale => sale.Id);
         builder.HasIndex(sale => sale.SaleNo).IsUnique();
@@ -23,6 +24,9 @@ internal sealed class PosSaleConfiguration : IEntityTypeConfiguration<PosSale>
             .HasMaxLength(32)
             .IsRequired();
         builder.Property(sale => sale.TotalAmount).HasPrecision(18, 2).IsRequired();
+        builder.Property(sale => sale.PaymentMethod).HasConversion<string>().HasMaxLength(32).IsRequired();
+        builder.Property(sale => sale.PaymentStatus).HasConversion<string>().HasMaxLength(32).IsRequired();
+        builder.Property(sale => sale.AmountPaid).HasPrecision(18, 2).IsRequired();
         builder.Property(sale => sale.CompletedAt).IsRequired();
         builder.ConfigureAuditable();
 

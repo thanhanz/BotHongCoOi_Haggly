@@ -4,6 +4,7 @@ using Haggly.Domain.Modules.Identity;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Markets;
 using Haggly.Domain.Modules.Sales;
+using Haggly.Domain.Modules.Finance;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -35,6 +36,9 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     // Sales
     public DbSet<PosSale> PosSales => Set<PosSale>();
     public DbSet<PosSaleItem> PosSaleItems => Set<PosSaleItem>();
+
+    // Finance
+    public DbSet<RevenueLedger> RevenueLedgers => Set<RevenueLedger>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

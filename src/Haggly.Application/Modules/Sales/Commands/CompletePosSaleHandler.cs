@@ -1,4 +1,5 @@
 using Haggly.Application.Abstractions.Inventory;
+using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Sales.Dtos;
@@ -12,7 +13,8 @@ public sealed class CompletePosSaleHandler(
     IPosSaleCommandRepository repository,
     IInventorySaleRecorder inventory,
     IPosSaleUnitOfWork unitOfWork,
-    IBusinessClock businessClock)
+    IBusinessClock businessClock,
+    IRevenueSaleRecorder? revenue = null)
     : IRequestHandler<CompletePosSaleCommand, PosSaleDto>
 {
     public async Task<PosSaleDto> Handle(
@@ -25,6 +27,7 @@ public sealed class CompletePosSaleHandler(
             command.StallId,
             command.ClientRequestId.Trim(),
             cancellationToken);
+
         if (existing is not null)
         {
             return PosSaleDto.From(existing);
@@ -55,17 +58,27 @@ public sealed class CompletePosSaleHandler(
                 command.ActorUserId,
                 command.ClientRequestId.Trim(),
                 snapshots
-                    .Select(item => new PosSaleItemInput(
+                .Select(item => new PosSaleItemInput(
                         item.InventoryItemId,
                         item.ProductNameSnapshot,
                         item.SellingUnitSnapshot,
-                        item.UnitPrice,
-                        item.Quantity))
+                    item.UnitPrice,
+                    item.Quantity))
                     .ToArray(),
-                occurredAt);
+                occurredAt,
+                command.PaymentMethod,
+                command.AmountPaid);
 
-            // TODO(Finance): Record one RevenueLedger SALE entry for this POS sale
-            // through IRevenueSaleRecorder in this same transaction.
+            if (revenue is not null)
+            {
+                await revenue.RecordCompletedPosSaleAsync(
+                    new CompletedPosSaleRevenue(
+                        sale.Id,
+                        sale.StallId,
+                        sale.TotalAmount,
+                        sale.CompletedAt),
+                    transactionCancellationToken);
+            }
             await repository.AddAsync(sale, transactionCancellationToken);
             await repository.SaveChangesAsync(transactionCancellationToken);
             return PosSaleDto.From(sale);

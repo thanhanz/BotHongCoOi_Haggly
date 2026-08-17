@@ -1,4 +1,5 @@
 using Haggly.Application.Abstractions.Inventory;
+using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Sales.Commands;
@@ -56,6 +57,35 @@ public sealed class CompletePosSaleHandlerTests
         Assert.Equal(1, inventory.RecordCalls);
         Assert.Equal(1, unitOfWork.TransactionCount);
         Assert.Equal(repository.Sales[0].Id, inventory.SaleId);
+    }
+
+    [Fact]
+    public async Task Handle_WhenRevenueRecorderIsAvailable_RecordsSaleRevenueBeforeCommit()
+    {
+        var revenue = new FakeRevenueSaleRecorder();
+        var repository = new FakePosSaleCommandRepository();
+        var inventory = new FakeInventorySaleRecorder
+        {
+            Items =
+            [new InventorySaleItemSnapshot(
+                Guid.NewGuid(), "Tomato", ProductUnit.KG, 45_000m, 1m, 0L, 0L)]
+        };
+        var handler = new CompletePosSaleHandler(
+            repository,
+            inventory,
+            new FakePosSaleUnitOfWork(),
+            new FixedBusinessClock(Now),
+            revenue);
+
+        var result = await handler.Handle(
+            new CompletePosSaleCommand(
+                Guid.NewGuid(), Guid.NewGuid(), "client-revenue",
+                [new PosSaleLineInput(inventory.Items[0].InventoryItemId, 1m, 0L, 0L)]),
+            CancellationToken.None);
+
+        var entry = Assert.Single(revenue.Entries);
+        Assert.Equal(result.Id, entry.SaleId);
+        Assert.Equal(result.TotalAmount, entry.GrossAmount);
     }
 
     [Fact]
@@ -170,6 +200,19 @@ public sealed class CompletePosSaleHandlerTests
             }
 
             return Task.FromResult(Items);
+        }
+    }
+
+    private sealed class FakeRevenueSaleRecorder : IRevenueSaleRecorder
+    {
+        public List<CompletedPosSaleRevenue> Entries { get; } = [];
+
+        public Task RecordCompletedPosSaleAsync(
+            CompletedPosSaleRevenue revenue,
+            CancellationToken cancellationToken)
+        {
+            Entries.Add(revenue);
+            return Task.CompletedTask;
         }
     }
 

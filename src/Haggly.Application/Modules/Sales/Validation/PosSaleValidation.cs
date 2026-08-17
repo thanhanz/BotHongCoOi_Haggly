@@ -1,5 +1,6 @@
 using Haggly.Application.Modules.Sales.Commands;
 using Haggly.Application.Modules.Sales.Exceptions;
+using Haggly.Domain.Modules.Payments;
 
 namespace Haggly.Application.Modules.Sales.Validation;
 
@@ -27,6 +28,12 @@ public static class PosSaleValidation
         if (command.Items is null || command.Items.Count == 0)
         {
             throw new PosSaleValidationException("At least one sale item is required.");
+        }
+
+        if (!Enum.IsDefined(command.PaymentMethod)
+            || command.AmountPaid is < 0m)
+        {
+            throw new PosSaleValidationException("Payment method and amount are invalid.");
         }
 
         var listingIds = new HashSet<Guid>();

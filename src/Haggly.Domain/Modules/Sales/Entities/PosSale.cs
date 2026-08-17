@@ -1,5 +1,6 @@
 using Haggly.Domain.Common;
 using Haggly.Domain.Modules.Catalog;
+using Haggly.Domain.Modules.Payments;
 
 namespace Haggly.Domain.Modules.Sales;
 
@@ -18,6 +19,9 @@ public sealed class PosSale : AuditableEntity
     public decimal TotalAmount { get; private set; }
     public Guid CompletedBy { get; private set; }
     public DateTimeOffset CompletedAt { get; private set; }
+    public PaymentMethodCode PaymentMethod { get; private set; }
+    public PaymentStatus PaymentStatus { get; private set; }
+    public decimal AmountPaid { get; private set; }
 
     public ICollection<PosSaleItem> Items { get; private set; } = new List<PosSaleItem>();
 
@@ -32,7 +36,9 @@ public sealed class PosSale : AuditableEntity
         Guid completedBy,
         string clientRequestId,
         IReadOnlyCollection<PosSaleItemInput> items,
-        DateTimeOffset completedAt)
+        DateTimeOffset completedAt,
+        PaymentMethodCode paymentMethod = PaymentMethodCode.CASH,
+        decimal? amountPaid = null)
     {
         if (id == Guid.Empty)
         {
@@ -65,6 +71,7 @@ public sealed class PosSale : AuditableEntity
             Status = PosSaleStatus.COMPLETED,
             CompletedBy = completedBy,
             CompletedAt = completedAt,
+            PaymentMethod = paymentMethod,
             CreatedAt = completedAt,
             CreatedBy = completedBy
         };
@@ -88,6 +95,14 @@ public sealed class PosSale : AuditableEntity
         }
 
         sale.TotalAmount = sale.Items.Sum(item => item.LineTotal);
+        var paid = amountPaid ?? sale.TotalAmount;
+        if (!Enum.IsDefined(paymentMethod) || paid != sale.TotalAmount || paid < 0m)
+        {
+            throw new ArgumentException("Payment method and paid amount must match the sale total.", nameof(amountPaid));
+        }
+
+        sale.AmountPaid = paid;
+        sale.PaymentStatus = PaymentStatus.PAID;
         return sale;
     }
 }

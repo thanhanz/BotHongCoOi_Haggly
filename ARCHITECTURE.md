@@ -20,9 +20,9 @@ stall, stock items, adjustments, ledger reads, optimistic concurrency, PostgreSQ
 persistence, and vendor API endpoints.
 
 The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
-and Finance. Negotiation, Sales, Payments, and Finance currently have Domain
-model types only; their Application use cases, API endpoints, and persistence
-mappings have not yet been implemented.
+and Finance. POS Sales and POS revenue now have Application, Infrastructure,
+and API slices; online ordering, general Payments, Negotiation, and broader
+Finance reporting remain future workflows.
 
 ## Technology actually used
 
@@ -111,9 +111,9 @@ are:
 | Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
 | Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
-| Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
+| Sales | `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | POS completion and history implemented; online ordering remains scaffold-only |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Domain model scaffold only |
-| Finance | `RevenueLedger`, `RevenueEntryType` | Domain model scaffold only |
+| Finance | `RevenueLedger`, `RevenueEntryType` | POS sale revenue ledger implemented; broader reporting remains scaffold-only |
 
 Negotiation is currently a top-level Domain module under
 `Modules/Negotiation`; it is not nested under `Modules/Sales`.
@@ -182,21 +182,24 @@ non-deleted products.
 `Haggly.Infrastructure` contains:
 
 - `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
-  Catalog, and Inventory repositories, the design-time context factory, and
-  Identity, Markets, Catalog, and Inventory migrations.
+  Catalog, Inventory, Sales, and Finance repositories, the design-time context
+  factory, and their migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity,
-  Markets, Catalog, and Inventory reads.
+  Markets, Catalog, Inventory, and POS Sales reads. EF Core remains the
+  transactional write adapter for POS completion and its inventory/revenue
+  ledger updates.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
-mappings for Identity, Markets, Catalog, and Inventory. The migrations currently
-include `InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`,
-`CreateProducts`, `CreateProductStalls`, and `CreateInventoryEntities`.
+mappings for Identity, Markets, Catalog, continuous Inventory, POS Sales, and
+POS Finance revenue. The migrations include the continuous-inventory refactor
+and the POS/revenue persistence migration.
 Product and ProductStall are mapped to `catalog.products` and
-`catalog.product_stalls`; Inventory is mapped to the `inventory` schema.
-Negotiation, Sales, Payments, and Finance remain unmapped.
+`catalog.product_stalls`; Inventory is mapped to `inventory`, POS sales to
+`sales`, and POS revenue to `finance`. Online Sales, Payments, and Negotiation
+remain unmapped beyond the POS payment snapshot.
 
 ### API
 
@@ -258,6 +261,14 @@ require the `VendorOnly` policy:
 | `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/items/{inventoryItemId}` | Read one inventory item |
 | `POST` | `/api/v1/vendor/stalls/{stallId}/inventory/adjustments` | Apply a signed stock adjustment with `expectedVersion` |
 | `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/ledger` | Filter and page ledger entries |
+
+Vendor POS routes are grouped under `/api/v1/vendor/stalls/{stallId}/pos-sales`
+and require the `VendorOnly` policy:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Complete an idempotent sale and deduct inventory atomically |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Page the stall's completed POS history |
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
@@ -328,8 +339,8 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Application, Infrastructure, and API slices for Negotiation, Sales,
-  Payments, and Finance.
+- Complete Application, Infrastructure, and API slices for Negotiation, online
+  Sales, and the broader Payments/Finance workflows.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its

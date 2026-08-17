@@ -16,7 +16,7 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
     {
         var itemIds = lines.Select(line => line.InventoryItemId).ToArray();
         var items = await dbContext.InventoryItems
-            .Include(item => item.Inventory)
+            .Include(item => item.Inventory)!.ThenInclude(inventory => inventory!.Stall)
             .Include(item => item.ProductStall)!.ThenInclude(productStall => productStall!.Product)
             .Where(item => item.Inventory!.StallId == stallId && itemIds.Contains(item.Id))
             .ToDictionaryAsync(item => item.Id, cancellationToken);
@@ -36,6 +36,19 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
         }
 
         var snapshots = new List<InventorySaleItemSnapshot>(lines.Count);
+        var inventory = items.Values.Select(item => item.Inventory).FirstOrDefault();
+        if (inventory?.Stall is null
+            || inventory.Stall.Status != Haggly.Domain.Modules.Markets.StallStatus.ACTIVE
+            || inventory.Stall.DeletedAt is not null)
+        {
+            throw new PosSaleNotFoundException("The stall was not found.");
+        }
+
+        if (inventory.Stall.VendorId != actorId)
+        {
+            throw new PosSaleForbiddenException("Only the stall owner can record a POS sale.");
+        }
+
         foreach (var line in lines)
         {
             if (!items.TryGetValue(line.InventoryItemId, out var item))

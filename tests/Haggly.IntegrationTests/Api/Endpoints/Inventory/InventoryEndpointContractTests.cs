@@ -21,7 +21,8 @@ public sealed class InventoryEndpointContractTests
     {
         using var app = CreateApp();
         app.MapInventoryEndpoints();
-        var endpoint = GetRoutes(app).Single(route => route.RoutePattern.RawText == InventoryRoutes.Prefix + suffix
+        var expectedRoute = (InventoryRoutes.Prefix + suffix).TrimEnd('/');
+        var endpoint = GetRoutes(app).Single(route => route.RoutePattern.RawText?.TrimEnd('/') == expectedRoute
             && route.Metadata.GetMetadata<HttpMethodMetadata>()!.HttpMethods.Contains(method));
         Assert.Contains(endpoint.Metadata.OfType<IAuthorizeData>(), data => data.Policy == IdentityPolicies.VendorOnly);
     }

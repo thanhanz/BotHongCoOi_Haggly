@@ -1,5 +1,6 @@
 using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Sales;
+using Haggly.Domain.Modules.Payments;
 
 namespace Haggly.Application.Modules.Sales.Dtos;
 
@@ -12,6 +13,9 @@ public sealed record PosSaleDto(
     decimal TotalAmount,
     Guid CompletedBy,
     DateTimeOffset CompletedAt,
+    PaymentMethodCode PaymentMethod,
+    PaymentStatus PaymentStatus,
+    decimal AmountPaid,
     IReadOnlyList<PosSaleItemDto> Items)
 {
     public static PosSaleDto From(PosSale sale)
@@ -24,6 +28,9 @@ public sealed record PosSaleDto(
             sale.TotalAmount,
             sale.CompletedBy,
             sale.CompletedAt,
+            sale.PaymentMethod,
+            sale.PaymentStatus,
+            sale.AmountPaid,
             sale.Items.Select(PosSaleItemDto.From).ToArray());
 }
 
