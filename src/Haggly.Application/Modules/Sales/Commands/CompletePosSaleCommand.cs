@@ -12,4 +12,5 @@ public sealed record CompletePosSaleCommand(
 public sealed record PosSaleLineInput(
     Guid InventoryItemId,
     decimal Quantity,
-    long ExpectedVersion);
+    long ExpectedInventoryVersion,
+    long ExpectedProductStallVersion);

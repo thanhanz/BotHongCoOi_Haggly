@@ -31,6 +31,7 @@ public sealed class CompletePosSaleHandlerTests
                 ProductUnit.KG,
                 45_000m,
                 2.5m,
+                0L,
                 0L)]
         };
         var repository = new FakePosSaleCommandRepository();
@@ -46,7 +47,7 @@ public sealed class CompletePosSaleHandlerTests
                 stallId,
                 actorId,
                 "client-001",
-                [new PosSaleLineInput(listingId, 2.5m, 0L)]),
+                [new PosSaleLineInput(listingId, 2.5m, 0L, 0L)]),
             CancellationToken.None);
 
         Assert.Equal(PosSaleStatus.COMPLETED, result.Status);
@@ -86,7 +87,7 @@ public sealed class CompletePosSaleHandlerTests
                 existing.StallId,
                 existing.CompletedBy,
                 "client-001",
-                [new PosSaleLineInput(Guid.NewGuid(), 5m, 0L)]),
+                [new PosSaleLineInput(Guid.NewGuid(), 5m, 0L, 0L)]),
             CancellationToken.None);
 
         Assert.Equal(existing.Id, result.Id);
@@ -112,7 +113,7 @@ public sealed class CompletePosSaleHandlerTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "client-001",
-                [new PosSaleLineInput(Guid.NewGuid(), 1m, 0L)]),
+                [new PosSaleLineInput(Guid.NewGuid(), 1m, 0L, 0L)]),
             CancellationToken.None));
     }
 

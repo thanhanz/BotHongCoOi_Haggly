@@ -48,7 +48,7 @@ public static class PosSaleValidation
                 throw new PosSaleValidationException("Sale quantity must be greater than zero.");
             }
 
-            if (item.ExpectedVersion < 0)
+            if (item.ExpectedInventoryVersion < 0 || item.ExpectedProductStallVersion < 0)
             {
                 throw new PosSaleValidationException("Expected version cannot be negative.");
             }

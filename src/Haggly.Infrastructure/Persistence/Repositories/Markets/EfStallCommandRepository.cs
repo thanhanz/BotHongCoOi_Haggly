@@ -2,6 +2,7 @@ using Haggly.Application.Abstractions.Markets;
 using Haggly.Domain.Modules.Identity;
 using Haggly.Domain.Modules.Markets;
 using Microsoft.EntityFrameworkCore;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 
 namespace Haggly.Infrastructure.Persistence.Repositories.Markets;
 
@@ -31,6 +32,12 @@ public sealed class EfStallCommandRepository(HagglyDbContext dbContext)
     public Task AddAsync(Stall stall, CancellationToken cancellationToken)
     {
         dbContext.Stalls.Add(stall);
+        return Task.CompletedTask;
+    }
+
+    public Task AddInventoryAsync(DomainInventory inventory, CancellationToken cancellationToken)
+    {
+        dbContext.Inventories.Add(inventory);
         return Task.CompletedTask;
     }
 

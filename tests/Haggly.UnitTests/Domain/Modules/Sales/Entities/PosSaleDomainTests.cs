@@ -38,7 +38,7 @@ public sealed class PosSaleDomainTests
         Assert.Equal(112_500m, sale.TotalAmount);
         Assert.Equal(CompletedAt, sale.CompletedAt);
         var item = Assert.Single(sale.Items);
-        Assert.Equal(listingId, item.DailyProductListingId);
+        Assert.Equal(listingId, item.InventoryItemId);
         Assert.Equal(112_500m, item.LineTotal);
     }
 

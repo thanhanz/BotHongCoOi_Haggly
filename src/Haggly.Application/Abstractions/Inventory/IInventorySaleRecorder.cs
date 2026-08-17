@@ -16,7 +16,8 @@ public interface IInventorySaleRecorder
 public sealed record InventorySaleLine(
     Guid InventoryItemId,
     decimal Quantity,
-    long ExpectedVersion);
+    long ExpectedInventoryVersion,
+    long ExpectedProductStallVersion);
 
 public sealed record InventorySaleItemSnapshot(
     Guid InventoryItemId,
@@ -24,4 +25,5 @@ public sealed record InventorySaleItemSnapshot(
     ProductUnit SellingUnitSnapshot,
     decimal UnitPrice,
     decimal Quantity,
-    long Version);
+    long InventoryVersion,
+    long ProductStallVersion);

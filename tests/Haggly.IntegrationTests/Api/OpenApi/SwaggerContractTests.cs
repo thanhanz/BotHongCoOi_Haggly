@@ -50,6 +50,6 @@ public sealed class SwaggerContractTests
         Assert.Equal("/swagger", root.Headers.Location?.OriginalString);
         Assert.Contains("Haggly API", document);
         Assert.Contains("/api/v1/identity/login", document);
-        Assert.Contains("inventory-sessions/open", document);
+        Assert.Contains("/inventory/items", document);
     }
 }

@@ -1,223 +1,79 @@
-using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Inventory;
 using Xunit;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 
 namespace Haggly.UnitTests.Domain.Modules.Inventory.Entities;
 
 public sealed class InventoryDomainTests
 {
-    private static readonly DateTimeOffset OccurredAt =
-        new(2026, 8, 15, 1, 30, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset Now = new(2026, 8, 17, 2, 30, 0, TimeSpan.Zero);
 
     [Fact]
-    public void CreateOpeningListing_WhenValuesAreValid_InitializesQuantitiesAndCreatesOpeningLedger()
+    public void Create_ValidStall_CreatesContinuousInventory()
     {
-        var sessionId = Guid.NewGuid();
+        var stallId = Guid.NewGuid();
+        var inventory = DomainInventory.Create(stallId, Guid.NewGuid(), Now);
+        Assert.Equal(stallId, inventory.StallId);
+        Assert.Empty(inventory.Items);
+    }
+
+    [Fact]
+    public void AddItem_ValidQuantity_InitializesStockAndOpeningLedger()
+    {
+        var inventory = CreateInventory();
+        var item = inventory.AddItem(Guid.NewGuid(), 10.5m, Guid.NewGuid(), Now);
+        Assert.Equal(10.5m, item.CurrentQuantity);
+        Assert.Equal(10.5m, item.AvailableQuantity);
+        Assert.Equal(InventoryTransactionType.OPENING, Assert.Single(item.InventoryLedgers).TransactionType);
+    }
+
+    [Fact]
+    public void AddItem_DuplicateProductStall_ThrowsInvalidOperationException()
+    {
+        var inventory = CreateInventory();
         var productStallId = Guid.NewGuid();
-        var actorId = Guid.NewGuid();
-
-        var listing = DailyProductListing.Open(
-            sessionId,
-            productStallId,
-            productNameSnapshot: "Tomato",
-            sellingUnitSnapshot: ProductUnit.KG,
-            publicUnitPrice: 45_000m,
-            openingQuantity: 25.5m,
-            actorId,
-            OccurredAt);
-
-        Assert.Equal(25.5m, listing.OpeningQuantity);
-        Assert.Equal(25.5m, listing.CurrentQuantity);
-        Assert.Equal(0m, listing.ReservedQuantity);
-        Assert.Equal(25.5m, listing.AvailableQuantity);
-        Assert.Equal(DailyListingStatus.AVAILABLE, listing.Status);
-        Assert.Equal(0L, listing.Version);
-
-        var ledger = Assert.Single(listing.InventoryLedgers);
-        Assert.Equal(InventoryTransactionType.OPENING, ledger.TransactionType);
-        Assert.Equal(25.5m, ledger.QuantityDelta);
-        Assert.Equal(0m, ledger.QuantityBefore);
-        Assert.Equal(25.5m, ledger.QuantityAfter);
-        Assert.Equal(actorId, ledger.PerformedBy);
-        Assert.Equal(OccurredAt, ledger.OccurredAt);
-    }
-
-    [Theory]
-    [InlineData(-1, 10)]
-    [InlineData(1, -1)]
-    public void CreateOpeningListing_WhenQuantityOrPriceIsNegative_ThrowsArgumentOutOfRangeException(
-        decimal openingQuantity,
-        decimal publicUnitPrice)
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => DailyProductListing.Open(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Tomato",
-            ProductUnit.KG,
-            publicUnitPrice,
-            openingQuantity,
-            Guid.NewGuid(),
-            OccurredAt));
-    }
-
-    [Fact]
-    public void RefreshAvailableQuantity_WhenListingIsHidden_PreservesHiddenStatus()
-    {
-        var listing = CreateListing(openingQuantity: 10m);
-        listing.Hide();
-        listing.UpdateReservedQuantity(3m);
-        
-        Assert.Equal(7m, listing.AvailableQuantity);
-        Assert.Equal(DailyListingStatus.HIDDEN, listing.Status);
-    }
-
-    [Fact]
-    public void AdjustQuantity_WhenDeltaIsValid_IncrementsVersionAndCreatesAdjustmentLedger()
-    {
-        var actorId = Guid.NewGuid();
-        var listing = CreateListing(openingQuantity: 10m);
-
-        var ledger = listing.AdjustQuantity(
-            quantityDelta: -2.5m,
-            actorId: actorId,
-            occurredAt: OccurredAt,
-            reason: "Damaged stock");
-
-        Assert.Equal(7.5m, listing.CurrentQuantity);
-        Assert.Equal(7.5m, listing.AvailableQuantity);
-        Assert.Equal(1L, listing.Version);
-        Assert.Equal(InventoryTransactionType.ADJUSTMENT, ledger.TransactionType);
-        Assert.Equal(-2.5m, ledger.QuantityDelta);
-        Assert.Equal(10m, ledger.QuantityBefore);
-        Assert.Equal(7.5m, ledger.QuantityAfter);
-        Assert.Equal(actorId, ledger.PerformedBy);
-        Assert.Equal("Damaged stock", ledger.Reason);
-        Assert.Equal(OccurredAt, ledger.OccurredAt);
-    }
-
-    [Fact]
-    public void AdjustQuantity_WhenDeltaIsZero_ThrowsArgumentOutOfRangeException()
-    {
-        var listing = CreateListing(openingQuantity: 10m);
-
-        Assert.Throws<ArgumentOutOfRangeException>(() => listing.AdjustQuantity(
-            quantityDelta: 0m,
-            actorId: Guid.NewGuid(),
-            occurredAt: OccurredAt,
-            reason: "No change"));
-    }
-
-    [Theory]
-    [InlineData(-11, 0)]
-    [InlineData(-6, 5)]
-    public void AdjustQuantity_WhenResultIsNegativeOrBelowReserved_ThrowsInvalidOperationException(
-        decimal quantityDelta,
-        decimal reservedQuantity)
-    {
-        var listing = CreateListing(openingQuantity: 10m);
-        if (reservedQuantity > 0m)
-        {
-            listing.UpdateReservedQuantity(reservedQuantity);
-        }
-
-        Assert.Throws<InvalidOperationException>(() => listing.AdjustQuantity(
-            quantityDelta: quantityDelta,
-            actorId: Guid.NewGuid(),
-            occurredAt: OccurredAt,
-            reason: "Invalid adjustment"));
-    }
-
-    [Fact]
-    public void ChangePrice_WhenPriceChanges_IncrementsVersionAndCreatesPriceLedger()
-    {
-        var actorId = Guid.NewGuid();
-        var listing = CreateListing(openingQuantity: 10m, publicUnitPrice: 45_000m);
-
-        var ledger = listing.ChangePrice(50_000m, actorId, OccurredAt);
-
-        Assert.Equal(50_000m, listing.PublicUnitPrice);
-        Assert.Equal(1L, listing.Version);
-        Assert.Equal(InventoryTransactionType.PRICE_CHANGE, ledger.TransactionType);
-        Assert.Equal(45_000m, ledger.UnitPriceBefore);
-        Assert.Equal(50_000m, ledger.UnitPriceAfter);
-        Assert.Equal(actorId, ledger.PerformedBy);
-        Assert.Equal(OccurredAt, ledger.OccurredAt);
-    }
-
-    [Fact]
-    public void Hide_WhenCalled_PreservesQuantitiesAndMarksListingHidden()
-    {
-        var listing = CreateListing(openingQuantity: 10m);
-        listing.UpdateReservedQuantity(2m);
-
-        listing.Hide();
-
-        Assert.Equal(DailyListingStatus.HIDDEN, listing.Status);
-        Assert.Equal(10m, listing.CurrentQuantity);
-        Assert.Equal(2m, listing.ReservedQuantity);
-        Assert.Equal(8m, listing.AvailableQuantity);
-    }
-
-    [Fact]
-    public void Close_WhenSessionIsOpen_RecordsClosedAuditAndChangesStatus()
-    {
-        var closedBy = Guid.NewGuid();
-        var session = InventorySession.Open(
-            Guid.NewGuid(),
-            new DateOnly(2026, 8, 15),
-            OccurredAt,
-            Guid.NewGuid(),
-            notes: "Morning stock count");
-
-        var closedAt = OccurredAt.AddHours(8);
-        session.Close(closedBy, closedAt);
-
-        Assert.Equal(InventorySessionStatus.CLOSED, session.Status);
-        Assert.Equal(closedAt, session.ClosedAt);
-        Assert.Equal(closedBy, session.ClosedBy);
-    }
-
-    [Fact]
-    public void Close_WhenSessionIsAlreadyClosed_ThrowsInvalidOperationException()
-    {
-        var session = InventorySession.Open(
-            Guid.NewGuid(),
-            new DateOnly(2026, 8, 15),
-            OccurredAt,
-            Guid.NewGuid(),
-            notes: null);
-        session.Close(Guid.NewGuid(), OccurredAt.AddHours(8));
-
+        inventory.AddItem(productStallId, 1m, Guid.NewGuid(), Now);
         Assert.Throws<InvalidOperationException>(() =>
-        {
-            session.Close(Guid.NewGuid(), OccurredAt.AddHours(9));
-        });
+            inventory.AddItem(productStallId, 1m, Guid.NewGuid(), Now));
     }
 
     [Fact]
-    public void EnsureOpen_WhenSessionIsClosed_ThrowsInvalidOperationException()
+    public void UpdateReservedQuantity_ValidQuantity_ComputesAvailableQuantity()
     {
-        var session = InventorySession.Open(
-            Guid.NewGuid(),
-            new DateOnly(2026, 8, 15),
-            OccurredAt,
-            Guid.NewGuid(),
-            notes: null);
-        session.Close(Guid.NewGuid(), OccurredAt.AddHours(8));
-
-        Assert.Throws<InvalidOperationException>(session.EnsureOpen);
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.UpdateReservedQuantity(4m);
+        Assert.Equal(6m, item.AvailableQuantity);
+        Assert.Equal(1, item.Version);
     }
 
-    private static DailyProductListing CreateListing(
-        decimal openingQuantity,
-        decimal publicUnitPrice = 45_000m)
-        => DailyProductListing.Open(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Tomato",
-            ProductUnit.KG,
-            publicUnitPrice,
-            openingQuantity,
-            Guid.NewGuid(),
-            OccurredAt);
+    [Fact]
+    public void AdjustQuantity_ResultBelowReserved_ThrowsInvalidOperationException()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.UpdateReservedQuantity(6m);
+        Assert.Throws<InvalidOperationException>(() =>
+            item.AdjustQuantity(-5m, Guid.NewGuid(), Now, "Spoilage"));
+    }
+
+    [Fact]
+    public void RecordSale_QuantityAvailable_DecrementsStockAndCreatesLedger()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        var ledger = item.RecordSale(3m, Guid.NewGuid(), Guid.NewGuid(), Now);
+        Assert.Equal(7m, item.CurrentQuantity);
+        Assert.Equal(-3m, ledger.QuantityDelta);
+        Assert.Equal(InventoryTransactionType.POS_SALE, ledger.TransactionType);
+    }
+
+    [Fact]
+    public void RecordSale_QuantityExceedsAvailable_ThrowsInvalidOperationException()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.UpdateReservedQuantity(8m);
+        Assert.Throws<InvalidOperationException>(() =>
+            item.RecordSale(3m, Guid.NewGuid(), Guid.NewGuid(), Now));
+    }
+
+    private static DomainInventory CreateInventory()
+        => DomainInventory.Create(Guid.NewGuid(), Guid.NewGuid(), Now);
 }

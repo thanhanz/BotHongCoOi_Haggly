@@ -1,3 +1,4 @@
+using Haggly.Domain.Modules.Catalog;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Markets;
 using Haggly.Infrastructure.Persistence;
@@ -5,156 +6,59 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Xunit;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 
 namespace Haggly.UnitTests.Infrastructure.Persistence.Configurations.Inventory;
 
 public sealed class InventoryPersistenceModelTests
 {
     [Fact]
-    public void MapInventoryEntities_WhenModelIsBuilt_UsesInventorySchemaAndTables()
+    public void ConfigureInventory_UsesContinuousTablesAndUniqueRelationships()
     {
         using var context = CreateContext();
-
-        AssertTable(context, typeof(InventorySession), "inventory_sessions");
-        AssertTable(context, typeof(DailyProductListing), "daily_product_listings");
-        AssertTable(context, typeof(InventoryLedger), "inventory_ledgers");
+        var inventory = context.Model.FindEntityType(typeof(DomainInventory))!;
+        var item = context.Model.FindEntityType(typeof(InventoryItem))!;
+        Assert.Equal("inventories", inventory.GetTableName());
+        Assert.Equal("inventory_items", item.GetTableName());
+        Assert.Contains(inventory.GetIndexes(), index => index.IsUnique
+            && index.Properties.Single().Name == nameof(DomainInventory.StallId));
+        Assert.Contains(item.GetIndexes(), index => index.IsUnique
+            && index.Properties.Select(p => p.Name).SequenceEqual(
+                [nameof(InventoryItem.InventoryId), nameof(InventoryItem.ProductStallId)]));
     }
 
     [Fact]
-    public void ConfigureInventoryEntities_WhenModelIsBuilt_UsesUniqueIndexes()
+    public void ConfigureInventoryItem_UsesQuantityConstraintAndConcurrencyToken()
     {
         using var context = CreateContext();
-
-        var session = context.Model.FindEntityType(typeof(InventorySession))!;
-        var listing = context.Model.FindEntityType(typeof(DailyProductListing))!;
-
-        Assert.Contains(session.GetIndexes(), index =>
-            index.IsUnique
-            && index.Properties.Select(property => property.Name)
-                .SequenceEqual([nameof(InventorySession.StallId), nameof(InventorySession.BusinessDate)]));
-        Assert.Contains(listing.GetIndexes(), index =>
-            index.IsUnique
-            && index.Properties.Select(property => property.Name)
-                .SequenceEqual([
-                    nameof(DailyProductListing.InventorySessionId),
-                    nameof(DailyProductListing.ProductStallId)]));
+        var item = context.GetService<IDesignTimeModel>().Model.FindEntityType(typeof(InventoryItem))!;
+        Assert.Contains(item.GetCheckConstraints(), constraint => constraint.Name == "CK_inventory_items_quantity_bounds");
+        Assert.True(item.FindProperty(nameof(InventoryItem.Version))!.IsConcurrencyToken);
+        Assert.Null(item.FindProperty(nameof(InventoryItem.AvailableQuantity)));
     }
 
     [Fact]
-    public void ConfigureInventoryEntities_WhenModelIsBuilt_UsesPrecisionAndStringEnums()
+    public void ConfigureProductStall_UsesCurrentPriceAndConcurrencyToken()
     {
         using var context = CreateContext();
-
-        var listing = context.Model.FindEntityType(typeof(DailyProductListing))!;
-        var ledger = context.Model.FindEntityType(typeof(InventoryLedger))!;
-
-        AssertPrecision(listing, nameof(DailyProductListing.PublicUnitPrice), 18, 2);
-        AssertPrecision(listing, nameof(DailyProductListing.OpeningQuantity), 18, 3);
-        AssertPrecision(listing, nameof(DailyProductListing.CurrentQuantity), 18, 3);
-        AssertPrecision(listing, nameof(DailyProductListing.ReservedQuantity), 18, 3);
-        AssertPrecision(listing, nameof(DailyProductListing.AvailableQuantity), 18, 3);
-        AssertPrecision(ledger, nameof(InventoryLedger.QuantityDelta), 18, 3);
-        AssertPrecision(ledger, nameof(InventoryLedger.QuantityBefore), 18, 3);
-        AssertPrecision(ledger, nameof(InventoryLedger.QuantityAfter), 18, 3);
-        AssertPrecision(ledger, nameof(InventoryLedger.UnitPriceBefore), 18, 2);
-        AssertPrecision(ledger, nameof(InventoryLedger.UnitPriceAfter), 18, 2);
-
-        Assert.Equal(
-            typeof(string),
-            listing.FindProperty(nameof(DailyProductListing.Status))!.GetProviderClrType());
-        Assert.Equal(
-            typeof(string),
-            ledger.FindProperty(nameof(InventoryLedger.TransactionType))!.GetProviderClrType());
-        Assert.Equal(
-            typeof(string),
-            context.Model.FindEntityType(typeof(InventorySession))!
-                .FindProperty(nameof(InventorySession.Status))!
-                .GetProviderClrType());
+        var productStall = context.Model.FindEntityType(typeof(ProductStall))!;
+        Assert.NotNull(productStall.FindProperty(nameof(ProductStall.CurrentUnitPrice)));
+        Assert.True(productStall.FindProperty(nameof(ProductStall.Version))!.IsConcurrencyToken);
+        Assert.Null(productStall.FindProperty("DefaultUnitPrice"));
     }
 
     [Fact]
-    public void ConfigureDailyListing_WhenModelIsBuilt_UsesVersionAsConcurrencyToken()
+    public void ConfigureInventoryRelationships_UseRestrictiveDeletes()
     {
         using var context = CreateContext();
-
-        var version = context.Model.FindEntityType(typeof(DailyProductListing))!
-            .FindProperty(nameof(DailyProductListing.Version))!;
-
-        Assert.True(version.IsConcurrencyToken);
-        Assert.Equal(ValueGenerated.Never, version.ValueGenerated);
-    }
-
-    [Fact]
-    public void ConfigureInventoryEntities_WhenModelIsBuilt_UsesRestrictiveDeletes()
-    {
-        using var context = CreateContext();
-
-        var session = context.Model.FindEntityType(typeof(InventorySession))!;
-        var listing = context.Model.FindEntityType(typeof(DailyProductListing))!;
-        var ledger = context.Model.FindEntityType(typeof(InventoryLedger))!;
-
-        Assert.Equal(
-            DeleteBehavior.Restrict,
-            session.GetForeignKeys().Single(foreignKey =>
-                foreignKey.PrincipalEntityType.ClrType == typeof(Stall)).DeleteBehavior);
-        Assert.Equal(
-            DeleteBehavior.Restrict,
-            listing.GetForeignKeys().Single(foreignKey =>
-                foreignKey.PrincipalEntityType.ClrType == typeof(InventorySession)).DeleteBehavior);
-        Assert.Equal(
-            DeleteBehavior.Restrict,
-            listing.GetForeignKeys().Single(foreignKey =>
-                foreignKey.PrincipalEntityType.ClrType == typeof(Haggly.Domain.Modules.Catalog.ProductStall)).DeleteBehavior);
-        Assert.All(ledger.GetForeignKeys(), foreignKey =>
-            Assert.Equal(DeleteBehavior.Restrict, foreignKey.DeleteBehavior));
-    }
-
-    [Fact]
-    public void ConfigureDailyListing_WhenModelIsBuilt_UsesQuantityCheckConstraints()
-    {
-        using var context = CreateContext();
-
-        var listing = context.GetService<IDesignTimeModel>().Model
-            .FindEntityType(typeof(DailyProductListing))!;
-        var constraintNames = listing.GetCheckConstraints().Select(constraint => constraint.Name).ToArray();
-
-        Assert.Contains("CK_daily_product_listings_quantity_bounds", constraintNames);
-        Assert.Contains("CK_daily_product_listings_available_quantity_bounds", constraintNames);
-    }
-
-    [Fact]
-    public void ConfigureInventoryEntities_WhenModelIsBuilt_DoesNotDiscoverReservationGraph()
-    {
-        using var context = CreateContext();
-
-        Assert.Null(context.Model.FindEntityType(typeof(InventoryReservation)));
+        var inventory = context.Model.FindEntityType(typeof(DomainInventory))!;
+        var item = context.Model.FindEntityType(typeof(InventoryItem))!;
+        Assert.Equal(DeleteBehavior.Restrict,
+            inventory.GetForeignKeys().Single(fk => fk.PrincipalEntityType.ClrType == typeof(Stall)).DeleteBehavior);
+        Assert.All(item.GetForeignKeys(), fk => Assert.Equal(DeleteBehavior.Restrict, fk.DeleteBehavior));
     }
 
     private static HagglyDbContext CreateContext()
-    {
-        var options = new DbContextOptionsBuilder<HagglyDbContext>()
-            .UseNpgsql("Host=localhost;Database=haggly;Username=postgres;Password=postgres")
-            .Options;
-
-        return new HagglyDbContext(options);
-    }
-
-    private static void AssertTable(DbContext context, Type entityType, string tableName)
-    {
-        var metadata = context.Model.FindEntityType(entityType)!;
-
-        Assert.Equal(tableName, metadata.GetTableName());
-        Assert.Equal("inventory", metadata.GetSchema());
-    }
-
-    private static void AssertPrecision(
-        Microsoft.EntityFrameworkCore.Metadata.IReadOnlyEntityType entityType,
-        string propertyName,
-        int precision,
-        int scale)
-    {
-        var property = entityType.FindProperty(propertyName)!;
-        Assert.Equal(precision, property.GetPrecision());
-        Assert.Equal(scale, property.GetScale());
-    }
+        => new(new DbContextOptionsBuilder<HagglyDbContext>()
+            .UseNpgsql("Host=localhost;Database=haggly;Username=postgres;Password=postgres").Options);
 }

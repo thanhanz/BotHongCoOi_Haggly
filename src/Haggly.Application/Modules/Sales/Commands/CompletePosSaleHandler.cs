@@ -43,7 +43,8 @@ public sealed class CompletePosSaleHandler(
                     .Select(item => new InventorySaleLine(
                         item.InventoryItemId,
                         item.Quantity,
-                        item.ExpectedVersion))
+                        item.ExpectedInventoryVersion,
+                        item.ExpectedProductStallVersion))
                     .ToArray(),
                 occurredAt,
                 transactionCancellationToken);

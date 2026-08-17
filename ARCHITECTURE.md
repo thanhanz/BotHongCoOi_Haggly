@@ -15,8 +15,8 @@ registration, login, JWT authentication, authorization policies, vendor
 administration, and the current-user endpoint. Markets provides market and
 stall CRUD use cases, PostgreSQL persistence, and API endpoints. Catalog
 provides Category and Product creation and authenticated reads, PostgreSQL
-persistence, and API endpoints. Inventory provides daily sessions, listing
-snapshots, stock adjustments, ledger reads, optimistic concurrency, PostgreSQL
+persistence, and API endpoints. Inventory provides one continuous inventory per
+stall, stock items, adjustments, ledger reads, optimistic concurrency, PostgreSQL
 persistence, and vendor API endpoints.
 
 The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
@@ -109,7 +109,7 @@ are:
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
 | Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
-| Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
+| Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Domain model scaffold only |
@@ -253,14 +253,11 @@ require the `VendorOnly` policy:
 
 | Method | Route | Behavior |
 |---|---|---|
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/open` | Open today's session and optionally create listings |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current` | Read today's session |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/previous` | Read the latest earlier session |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current/close` | Close today's session |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-listings` | Add a listing |
-| `PATCH` | `/api/v1/vendor/stalls/{stallId}/inventory-listings/{listingId}` | Change price or visibility with `expectedVersion` |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-adjustments` | Apply a signed stock adjustment with `expectedVersion` |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-ledger` | Filter and page ledger entries |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory` | Read the continuous inventory and its items |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory/items` | Add a configured stall product with current quantity |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/items/{inventoryItemId}` | Read one inventory item |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory/adjustments` | Apply a signed stock adjustment with `expectedVersion` |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/ledger` | Filter and page ledger entries |
 
 Successful Identity responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In

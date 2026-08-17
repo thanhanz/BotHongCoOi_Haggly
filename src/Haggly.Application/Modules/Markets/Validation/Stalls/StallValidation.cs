@@ -8,6 +8,8 @@ internal static class StallValidation
     public static void Validate(CreateStallCommand command)
     {
         ValidateIds(command.MarketId, command.VendorId);
+        if (command.ActorUserId == Guid.Empty)
+            throw new StallValidationException("A valid actor ID is required.");
         ValidateFields(command.Code, command.Name, command.LocationDescription, command.PhoneNumber);
     }
 

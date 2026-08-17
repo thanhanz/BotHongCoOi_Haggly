@@ -21,6 +21,20 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
             .Where(item => item.Inventory!.StallId == stallId && itemIds.Contains(item.Id))
             .ToDictionaryAsync(item => item.Id, cancellationToken);
 
+        // Price and selling unit are sale inputs. Lock each ProductStall row and
+        // reload it so a concurrent Catalog update cannot commit between the
+        // expected-version check and the immutable sale snapshot.
+        foreach (var productStall in items.Values
+                     .Select(item => item.ProductStall)
+                     .Where(value => value is not null)
+                     .DistinctBy(value => value!.Id))
+        {
+            await dbContext.Database.ExecuteSqlInterpolatedAsync(
+                $"SELECT 1 FROM catalog.product_stalls WHERE \"Id\" = {productStall!.Id} FOR UPDATE",
+                cancellationToken);
+            await dbContext.Entry(productStall).ReloadAsync(cancellationToken);
+        }
+
         var snapshots = new List<InventorySaleItemSnapshot>(lines.Count);
         foreach (var line in lines)
         {
@@ -28,8 +42,10 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
                 throw new PosSaleNotFoundException("The inventory item was not found.");
             if (item.ProductStall is null || !item.ProductStall.IsActive)
                 throw new PosSaleConflictException("The stall product is not available for sale.");
-            if (item.Version != line.ExpectedVersion)
+            if (item.Version != line.ExpectedInventoryVersion)
                 throw new PosSaleConflictException("The inventory item was changed by another request. Refresh and retry.");
+            if (item.ProductStall.Version != line.ExpectedProductStallVersion)
+                throw new PosSaleConflictException("The stall product price or configuration changed. Refresh and retry.");
 
             try
             {
@@ -47,7 +63,8 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
                 item.ProductStall.SellingUnit,
                 item.ProductStall.CurrentUnitPrice,
                 line.Quantity,
-                item.Version));
+                item.Version,
+                item.ProductStall.Version));
         }
 
         return snapshots;
