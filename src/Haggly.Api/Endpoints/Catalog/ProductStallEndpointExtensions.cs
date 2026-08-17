@@ -38,7 +38,7 @@ public static class ProductStallEndpointExtensions
     {
         var actor = CurrentUserId(context);
         var result = await sender.Send(new CreateProductStallCommand(stallId, request.ProductId, actor, request.DisplayName,
-            request.SellingUnit, request.MinimumOrderQuantity, request.DefaultUnitPrice, request.IsNegotiable), ct);
+            request.SellingUnit, request.MinimumOrderQuantity, request.CurrentUnitPrice, request.IsNegotiable), ct);
         return Results.Created($"{ProductStallRoutes.Prefix.Replace("{stallId:guid}", stallId.ToString())}/{result.Id}",
             ApiResponse<ProductStallDto>.Create(result, "Product added to stall successfully."));
     }
@@ -46,7 +46,8 @@ public static class ProductStallEndpointExtensions
     private static async Task<IResult> UpdateAsync(Guid stallId, Guid id, UpdateProductStallRequest request, HttpContext context, ISender sender, CancellationToken ct)
     {
         var result = await sender.Send(new UpdateProductStallCommand(stallId, id, CurrentUserId(context), request.DisplayName,
-            request.SellingUnit, request.MinimumOrderQuantity, request.DefaultUnitPrice, request.IsNegotiable, request.IsActive), ct);
+            request.SellingUnit, request.MinimumOrderQuantity, request.CurrentUnitPrice, request.IsNegotiable,
+            request.IsActive, request.ExpectedVersion), ct);
         return Results.Ok(ApiResponse<ProductStallDto>.Create(result, "Stall product updated successfully."));
     }
 

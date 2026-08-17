@@ -43,7 +43,7 @@ public sealed class DapperCategoryQueryTests
         await SeedAsync(inactive);
         await SeedAsync(deleted);
 
-        var result = await sut.GetPageAsync(new CategoryListFilter(1, 100), CancellationToken.None);
+        var result = await sut.GetPageAsync(new CategoryListFilter(1, 1000), CancellationToken.None);
         var categories = result.Items;
 
         Assert.Contains(categories, category => category.Id == first.Id);

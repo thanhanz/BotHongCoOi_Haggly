@@ -4,6 +4,8 @@ using Haggly.Application.Modules.Markets.Dtos.Stalls;
 using Haggly.Application.Modules.Markets.Exceptions.Stalls;
 using Haggly.Domain.Modules.Markets;
 using Xunit;
+using Haggly.Application.Common.Time;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 
 namespace Haggly.UnitTests.Application.Modules.Markets.Handlers.Stalls;
 
@@ -19,15 +21,16 @@ public sealed class StallCommandHandlerTests
             ExistingMarketIds = [marketId],
             ExistingVendorIds = [vendorId]
         };
-        var handler = new CreateStallHandler(repository);
+        var handler = new CreateStallHandler(repository, new FixedClock());
 
         var result = await handler.Handle(
-            new CreateStallCommand(marketId, vendorId, "S-001", "Fresh Stall"),
+            new CreateStallCommand(marketId, vendorId, Guid.NewGuid(), "S-001", "Fresh Stall"),
             CancellationToken.None);
 
         Assert.Equal("S-001", result.Code);
         Assert.Equal(StallStatus.PENDING, result.Status);
         Assert.Single(repository.Stalls);
+        Assert.Single(repository.Inventories);
     }
 
     [Fact]
@@ -36,11 +39,11 @@ public sealed class StallCommandHandlerTests
         var handler = new CreateStallHandler(new FakeStallCommandRepository
         {
             ExistingVendorIds = [Guid.NewGuid()]
-        });
+        }, new FixedClock());
 
         await Assert.ThrowsAsync<StallNotFoundException>(() =>
             handler.Handle(
-                new CreateStallCommand(Guid.NewGuid(), Guid.NewGuid(), "S-001", "Stall"),
+                new CreateStallCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "S-001", "Stall"),
                 CancellationToken.None));
     }
 
@@ -51,11 +54,11 @@ public sealed class StallCommandHandlerTests
         var handler = new CreateStallHandler(new FakeStallCommandRepository
         {
             ExistingMarketIds = [marketId]
-        });
+        }, new FixedClock());
 
         await Assert.ThrowsAsync<StallNotFoundException>(() =>
             handler.Handle(
-                new CreateStallCommand(marketId, Guid.NewGuid(), "S-001", "Stall"),
+                new CreateStallCommand(marketId, Guid.NewGuid(), Guid.NewGuid(), "S-001", "Stall"),
                 CancellationToken.None));
     }
 
@@ -112,6 +115,7 @@ public sealed class StallCommandHandlerTests
     private sealed class FakeStallCommandRepository : IStallCommandRepository
     {
         public List<Stall> Stalls { get; set; } = [];
+        public List<DomainInventory> Inventories { get; } = [];
         public HashSet<Guid> ExistingMarketIds { get; set; } = [];
         public HashSet<Guid> ExistingVendorIds { get; set; } = [];
         public int SaveChangesCalls { get; private set; }
@@ -142,10 +146,22 @@ public sealed class StallCommandHandlerTests
             return Task.CompletedTask;
         }
 
+        public Task AddInventoryAsync(DomainInventory inventory, CancellationToken cancellationToken)
+        {
+            Inventories.Add(inventory);
+            return Task.CompletedTask;
+        }
+
         public Task SaveChangesAsync(CancellationToken cancellationToken)
         {
             SaveChangesCalls++;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FixedClock : IBusinessClock
+    {
+        public DateTimeOffset GetNow() => new(2026, 8, 17, 3, 30, 0, TimeSpan.Zero);
+        public DateOnly GetBusinessDate() => new(2026, 8, 17);
     }
 }

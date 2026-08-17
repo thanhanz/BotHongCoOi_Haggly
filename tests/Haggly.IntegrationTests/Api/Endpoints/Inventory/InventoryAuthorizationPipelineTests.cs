@@ -43,7 +43,7 @@ public sealed class InventoryAuthorizationPipelineTests
             .Features.Get<IServerAddressesFeature>()!
             .Addresses.Single();
         using var client = new HttpClient { BaseAddress = new Uri(address) };
-        var path = $"{InventoryRoutes.Prefix.Replace("{stallId:guid}", Guid.NewGuid().ToString())}{InventoryRoutes.CurrentSession}";
+        var path = InventoryRoutes.Prefix.Replace("{stallId:guid}", Guid.NewGuid().ToString());
 
         var missing = await client.GetAsync(path);
         var token = app.Services

@@ -1,6 +1,4 @@
 using Dapper;
-using Haggly.Domain.Modules.Catalog;
-using Haggly.Domain.Modules.Inventory;
 using Haggly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -11,152 +9,61 @@ namespace Haggly.IntegrationTests.Infrastructure.Persistence;
 public sealed class InventoryPersistenceBoundaryTests
 {
     [Fact]
-    public async Task InventorySession_WhenBusinessDateIsDuplicated_RejectsSecondRow()
-    {
-        var scenario = await InventoryIntegrationScenarioFactory.CreateAsync();
-        await using var dbContext = CreateDbContext();
-        var businessDate = new DateOnly(2026, 8, 15);
-
-        dbContext.InventorySessions.Add(InventorySession.Open(
-            scenario.StallId,
-            businessDate,
-            DateTimeOffset.UtcNow,
-            scenario.OwnerId,
-            null));
-        await dbContext.SaveChangesAsync();
-
-        dbContext.InventorySessions.Add(InventorySession.Open(
-            scenario.StallId,
-            businessDate,
-            DateTimeOffset.UtcNow,
-            scenario.OwnerId,
-            null));
-
-        var exception = await Assert.ThrowsAsync<DbUpdateException>(
-            () => dbContext.SaveChangesAsync());
-
-        Assert.Equal(
-            PostgresErrorCodes.UniqueViolation,
-            (exception.InnerException as PostgresException)?.SqlState);
-    }
-
-    [Fact]
-    public async Task InventoryListing_WhenCheckConstraintIsViolated_RejectsNegativeQuantity()
+    public async Task Inventory_DuplicateStall_RejectsSecondInventory()
     {
         var scenario = await InventoryIntegrationScenarioFactory.CreateAsync();
         await using var connection = new NpgsqlConnection(IntegrationTestDatabase.ConnectionString);
         await connection.OpenAsync();
-        var sessionId = Guid.NewGuid();
-        await connection.ExecuteAsync(
+        var exception = await Assert.ThrowsAsync<PostgresException>(() => connection.ExecuteAsync(
             """
-            INSERT INTO inventory.inventory_sessions
-                ("Id", "StallId", "BusinessDate", "OpenedAt", "OpenedBy", "Status", "CreatedAt")
-            VALUES
-                (@SessionId, @StallId, @BusinessDate, @OpenedAt, @OwnerId, 'OPEN', @OpenedAt);
-            """,
-            new
-            {
-                SessionId = sessionId,
-                scenario.StallId,
-                BusinessDate = new DateOnly(2026, 8, 16).ToDateTime(TimeOnly.MinValue),
-                OpenedAt = DateTimeOffset.UtcNow,
-                scenario.OwnerId
-            });
+            INSERT INTO inventory.inventories ("Id", "StallId", "CreatedAt")
+            VALUES (@Id, @StallId, @Now);
+            """, new { Id = Guid.NewGuid(), scenario.StallId, Now = DateTimeOffset.UtcNow }));
+        Assert.Equal(PostgresErrorCodes.UniqueViolation, exception.SqlState);
+    }
 
-        var exception = await Assert.ThrowsAsync<PostgresException>(() =>
-            connection.ExecuteAsync(
-                """
-                INSERT INTO inventory.daily_product_listings
-                    ("Id", "InventorySessionId", "ProductStallId", "ProductNameSnapshot",
-                     "SellingUnitSnapshot", "PublicUnitPrice", "OpeningQuantity", "CurrentQuantity",
-                     "ReservedQuantity", "AvailableQuantity", "Status", "Version", "CreatedAt")
-                VALUES
-                    (@ListingId, @SessionId, @ProductStallId, 'Invalid', 'KG', 10.00,
-                     -1.000, 0.000, 0.000, 0.000, 'AVAILABLE', 0, @CreatedAt);
-                """,
-                new
-                {
-                    ListingId = Guid.NewGuid(),
-                    SessionId = sessionId,
-                    scenario.ProductStallId,
-                    CreatedAt = DateTimeOffset.UtcNow
-                }));
-
+    [Fact]
+    public async Task InventoryItem_ReservedExceedsCurrent_RejectsRow()
+    {
+        var scenario = await InventoryIntegrationScenarioFactory.CreateAsync();
+        await using var connection = new NpgsqlConnection(IntegrationTestDatabase.ConnectionString);
+        await connection.OpenAsync();
+        var exception = await Assert.ThrowsAsync<PostgresException>(() => connection.ExecuteAsync(
+            """
+            INSERT INTO inventory.inventory_items
+                ("Id", "InventoryId", "ProductStallId", "CurrentQuantity", "ReservedQuantity", "Version", "CreatedAt")
+            VALUES (@Id, @InventoryId, @ProductStallId, 1, 2, 0, @Now);
+            """, new { Id = Guid.NewGuid(), scenario.InventoryId, scenario.ProductStallId, Now = DateTimeOffset.UtcNow }));
         Assert.Equal(PostgresErrorCodes.CheckViolation, exception.SqlState);
     }
 
     [Fact]
-    public async Task DailyProductListing_WhenTwoContextsUpdateSameVersion_RejectsStaleSave()
+    public async Task InventoryItem_TwoContextsUpdateSameVersion_RejectsStaleSave()
     {
         var scenario = await InventoryIntegrationScenarioFactory.CreateAsync();
-        var session = InventorySession.Open(
-            scenario.StallId,
-            new DateOnly(2026, 8, 17),
-            DateTimeOffset.UtcNow,
-            scenario.OwnerId,
-            null);
-        var listing = DailyProductListing.Open(
-            session.Id,
-            scenario.ProductStallId,
-            "Integration Tomato",
-            ProductUnit.KG,
-            45m,
-            10m,
-            scenario.OwnerId,
-            session.OpenedAt);
-        session.DailyProductListings.Add(listing);
-
-        await using (var seedContext = CreateDbContext())
+        var itemId = Guid.NewGuid();
+        await using (var connection = new NpgsqlConnection(IntegrationTestDatabase.ConnectionString))
         {
-            seedContext.InventorySessions.Add(session);
-            await seedContext.SaveChangesAsync();
+            await connection.OpenAsync();
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO inventory.inventory_items
+                    ("Id", "InventoryId", "ProductStallId", "CurrentQuantity", "ReservedQuantity", "Version", "CreatedAt")
+                VALUES (@ItemId, @InventoryId, @ProductStallId, 10, 0, 0, @Now);
+                """, new { ItemId = itemId, scenario.InventoryId, scenario.ProductStallId, Now = DateTimeOffset.UtcNow });
         }
 
         await using var firstContext = CreateDbContext();
         await using var secondContext = CreateDbContext();
-        var first = await firstContext.DailyProductListings
-            .Include(value => value.InventoryLedgers)
-            .SingleAsync(value => value.Id == listing.Id);
-        var second = await secondContext.DailyProductListings
-            .Include(value => value.InventoryLedgers)
-            .SingleAsync(value => value.Id == listing.Id);
-
-        Assert.Equal(0L, firstContext.Entry(first).Property(value => value.Version).OriginalValue);
-        Assert.Equal(0L, secondContext.Entry(second).Property(value => value.Version).OriginalValue);
-        var storedVersion = await firstContext.Database.SqlQuery<long>(
-                $"SELECT \"Version\" AS \"Value\" FROM inventory.daily_product_listings WHERE \"Id\" = {listing.Id}")
-            .SingleAsync();
-        Assert.Equal(0L, storedVersion);
-
-        first.AdjustQuantity(1m, scenario.OwnerId, DateTimeOffset.UtcNow, "First update");
+        var first = await firstContext.InventoryItems.Include(item => item.InventoryLedgers).SingleAsync(item => item.Id == itemId);
+        var second = await secondContext.InventoryItems.Include(item => item.InventoryLedgers).SingleAsync(item => item.Id == itemId);
+        first.AdjustQuantity(1m, scenario.OwnerId, DateTimeOffset.UtcNow, "First");
         await firstContext.SaveChangesAsync();
-
-        second.AdjustQuantity(1m, scenario.OwnerId, DateTimeOffset.UtcNow, "Stale update");
-        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(
-            () => secondContext.SaveChangesAsync());
-    }
-
-    [Fact]
-    public async Task InventoryQuantityColumns_WhenModelIsMigrated_UseThreeDecimalPlaces()
-    {
-        await using var connection = new NpgsqlConnection(IntegrationTestDatabase.ConnectionString);
-        await connection.OpenAsync();
-
-        var scale = await connection.ExecuteScalarAsync<short>(
-            """
-            SELECT numeric_scale
-            FROM information_schema.columns
-            WHERE table_schema = 'inventory'
-              AND table_name = 'daily_product_listings'
-              AND column_name = 'OpeningQuantity';
-            """);
-
-        Assert.Equal((short)3, scale);
+        second.AdjustQuantity(1m, scenario.OwnerId, DateTimeOffset.UtcNow, "Stale");
+        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => secondContext.SaveChangesAsync());
     }
 
     private static HagglyDbContext CreateDbContext()
-        => new(
-            new DbContextOptionsBuilder<HagglyDbContext>()
-                .UseNpgsql(IntegrationTestDatabase.ConnectionString)
-                .Options);
+        => new(new DbContextOptionsBuilder<HagglyDbContext>()
+            .UseNpgsql(IntegrationTestDatabase.ConnectionString).Options);
 }

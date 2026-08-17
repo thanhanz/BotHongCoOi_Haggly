@@ -15,7 +15,8 @@ internal sealed class ProductStallConfiguration : IEntityTypeConfiguration<Produ
         builder.Property(x => x.DisplayName).HasMaxLength(200);
         builder.Property(x => x.SellingUnit).HasConversion<string>().HasMaxLength(32).IsRequired();
         builder.Property(x => x.MinimumOrderQuantity).HasPrecision(18, 3).IsRequired();
-        builder.Property(x => x.DefaultUnitPrice).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.CurrentUnitPrice).HasPrecision(18, 2).IsRequired();
+        builder.Property(x => x.Version).IsConcurrencyToken().ValueGeneratedNever().IsRequired();
         builder.ConfigureSoftDeletable();
         builder.HasQueryFilter(x => x.DeletedAt == null);
         builder.HasOne(x => x.Stall).WithMany().HasForeignKey(x => x.StallId).OnDelete(DeleteBehavior.Restrict);

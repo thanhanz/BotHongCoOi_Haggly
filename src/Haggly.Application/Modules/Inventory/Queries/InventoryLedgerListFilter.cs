@@ -4,8 +4,7 @@ namespace Haggly.Application.Modules.Inventory.Queries;
 
 public sealed record InventoryLedgerListFilter(
     Guid StallId,
-    DateOnly? BusinessDate,
-    Guid? ListingId,
+    Guid? InventoryItemId,
     InventoryTransactionType? TransactionType,
     int Page,
     int PageSize);

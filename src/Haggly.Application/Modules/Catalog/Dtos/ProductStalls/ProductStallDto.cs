@@ -9,9 +9,10 @@ public sealed record ProductStallDto(
     string? DisplayName,
     ProductUnit SellingUnit, 
     decimal MinimumOrderQuantity, 
-    decimal DefaultUnitPrice,
+    decimal CurrentUnitPrice,
     bool IsNegotiable, 
-    bool IsActive)
+    bool IsActive,
+    long Version)
 {
     public static ProductStallDto From(ProductStall value) 
       => new(
@@ -21,7 +22,8 @@ public sealed record ProductStallDto(
           value.DisplayName, 
           value.SellingUnit, 
           value.MinimumOrderQuantity, 
-          value.DefaultUnitPrice,
+          value.CurrentUnitPrice,
           value.IsNegotiable, 
-          value.IsActive);
+          value.IsActive,
+          value.Version);
 }

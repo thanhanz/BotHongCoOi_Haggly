@@ -34,7 +34,7 @@ public sealed class ProductStallApiIntegrationTests
         using var client = CreateClient(app);
         var response = await SendAsync(app.Services, client, HttpMethod.Post, $"/api/v1/stalls/{owner.StallId}/products",
             owner.UserId, new { productId = owner.ProductId, sellingUnit = ProductUnit.KG,
-                minimumOrderQuantity = 1m, defaultUnitPrice = 25m, isNegotiable = true });
+                minimumOrderQuantity = 1m, currentUnitPrice = 25m, isNegotiable = true });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var body = await response.Content.ReadAsStringAsync();
@@ -54,7 +54,7 @@ public sealed class ProductStallApiIntegrationTests
 
         var response = await SendAsync(app.Services, client, HttpMethod.Post, $"/api/v1/stalls/{owner.StallId}/products",
             Guid.NewGuid(), new { productId = owner.ProductId, sellingUnit = ProductUnit.KG,
-                minimumOrderQuantity = 1m, defaultUnitPrice = 25m, isNegotiable = false });
+                minimumOrderQuantity = 1m, currentUnitPrice = 25m, isNegotiable = false });
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -67,12 +67,12 @@ public sealed class ProductStallApiIntegrationTests
         using var client = CreateClient(app);
         var created = await SendAsync(app.Services, client, HttpMethod.Post, $"/api/v1/stalls/{owner.StallId}/products",
             owner.UserId, new { productId = owner.ProductId, sellingUnit = ProductUnit.KG,
-                minimumOrderQuantity = 1m, defaultUnitPrice = 25m, isNegotiable = false });
+                minimumOrderQuantity = 1m, currentUnitPrice = 25m, isNegotiable = false });
         var createdJson = await created.Content.ReadFromJsonAsync<ApiEnvelope>();
 
         var response = await SendAsync(app.Services, client, HttpMethod.Patch,
             $"/api/v1/stalls/{owner.StallId}/products/{createdJson!.Data.Id}", owner.UserId,
-            new { defaultUnitPrice = 30m, isActive = false });
+            new { currentUnitPrice = 30m, isActive = false, expectedVersion = 0L });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("30", await response.Content.ReadAsStringAsync());
