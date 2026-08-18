@@ -46,6 +46,7 @@ public partial class Program
         app.MapProductStallEndpoints();
         app.MapInventoryEndpoints();
         app.MapPosSaleEndpoints();
+        app.MapOrderEndpoints();
 
         app.Run();
     }
