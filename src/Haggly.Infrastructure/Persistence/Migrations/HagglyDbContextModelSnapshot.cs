@@ -913,6 +913,232 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.ToTable("stalls", "markets");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BuyerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<DateTimeOffset?>("PaymentDueAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("PlacedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderNo")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<decimal>("TotalPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("TotalToCharge")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuyerId", "PlacedAt");
+
+                    b.HasIndex("OrderNo")
+                        .IsUnique();
+
+                    b.ToTable("orders", "sales", t =>
+                        {
+                            t.HasCheckConstraint("CK_orders_amount_bounds", "\"TotalToCharge\" >= 0 AND \"TotalPaid\" >= 0 AND \"TotalPaid\" <= \"TotalToCharge\"");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.OrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("FinalQuantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)");
+
+                    b.Property<decimal>("FinalUnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("InventoryItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsNegotiated")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ProductNameSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("PublicUnitPriceSnapshot")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("SellingUnitSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("StallFulfillmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StallFulfillmentId", "InventoryItemId")
+                        .IsUnique();
+
+                    b.ToTable("order_items", "sales", t =>
+                        {
+                            t.HasCheckConstraint("CK_order_items_amount_bounds", "\"PublicUnitPriceSnapshot\" >= 0 AND \"FinalUnitPrice\" >= 0 AND \"FinalQuantity\" > 0 AND \"LineTotal\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.StallFulfillment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("FinalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("FulfillmentNo")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("PickedUpAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PickupConfirmedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PickupCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset?>("PreparedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ReadyAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("StallId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FulfillmentNo")
+                        .IsUnique();
+
+                    b.HasIndex("OrderId", "StallId")
+                        .IsUnique();
+
+                    b.ToTable("stall_fulfillments", "sales", t =>
+                        {
+                            t.HasCheckConstraint("CK_stall_fulfillments_amount_bounds", "\"Subtotal\" >= 0 AND \"FinalAmount\" >= 0 AND \"PaidAmount\" >= 0 AND \"PaidAmount\" <= \"FinalAmount\"");
+                        });
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.PosSale", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1211,6 +1437,56 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.Order", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Identity.BuyerProfile", "Buyer")
+                        .WithMany()
+                        .HasPrincipalKey("UserId")
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.OrderItem", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Inventory.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Sales.StallFulfillment", "StallFulfillment")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("StallFulfillmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InventoryItem");
+
+                    b.Navigation("StallFulfillment");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.StallFulfillment", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Markets.Stall", "Stall")
+                        .WithMany()
+                        .HasForeignKey("StallId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Sales.Order", "Order")
+                        .WithMany("StallFulfillments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stall");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.PosSaleItem", b =>
                 {
                     b.HasOne("Haggly.Domain.Modules.Sales.PosSale", "PosSale")
@@ -1272,6 +1548,16 @@ namespace Haggly.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.PosSale", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.Order", b =>
+                {
+                    b.Navigation("StallFulfillments");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Sales.StallFulfillment", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

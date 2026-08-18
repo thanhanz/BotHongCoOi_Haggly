@@ -34,6 +34,9 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<InventoryLedger> InventoryLedgers => Set<InventoryLedger>();
 
     // Sales
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<StallFulfillment> StallFulfillments => Set<StallFulfillment>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<PosSale> PosSales => Set<PosSale>();
     public DbSet<PosSaleItem> PosSaleItems => Set<PosSaleItem>();
 
