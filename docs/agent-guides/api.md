@@ -16,3 +16,6 @@
   `/swagger/v1/swagger.json` with JWT bearer authentication support.
 - Identity Application exceptions are translated to Problem Details by
   `ApiExceptionHandler`; endpoints do not catch and translate them individually.
+- Buyer order endpoints use `/api/v1/orders` for create, list, detail, and
+  cancellation operations and require the `identity:buyer` policy. Cart APIs
+  are intentionally not exposed in the current order slice.

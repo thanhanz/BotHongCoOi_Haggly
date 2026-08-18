@@ -95,7 +95,7 @@ lines by `posSaleId`. Both endpoints require the owning vendor.
 
 1. Identity profiles and vendor-owned stall APIs.
 2. Public market and stall discovery.
-3. Buyer cart and multi-stall orders.
+3. Buyer cart APIs (order APIs implemented; cart deferred).
 4. Negotiation.
 5. Payment and pickup.
 6. Revenue and reporting APIs.
@@ -239,12 +239,20 @@ Rules:
 
 ## 6. Buyer cart and multi-stall order APIs
 
+The buyer order slice is implemented. Cart APIs remain intentionally deferred.
+
+Deferred cart routes:
+
 ```http
 GET    /api/v1/cart
 POST   /api/v1/cart/items
 PUT    /api/v1/cart/items/{itemId}
 DELETE /api/v1/cart/items/{itemId}
+```
 
+Implemented order routes:
+
+```http
 POST /api/v1/orders
 GET  /api/v1/orders
 GET  /api/v1/orders/{orderId}
