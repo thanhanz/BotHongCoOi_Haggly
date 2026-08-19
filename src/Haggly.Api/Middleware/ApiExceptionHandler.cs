@@ -129,6 +129,15 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Order not found", exception.Message),
             OrderConflictException
                 => (StatusCodes.Status409Conflict, "Order conflict", exception.Message),
+
+            CartValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            CartForbiddenException
+                => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
+            CartNotFoundException
+                => (StatusCodes.Status404NotFound, "Cart resource not found", exception.Message),
+            CartConflictException
+                => (StatusCodes.Status409Conflict, "Cart conflict", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

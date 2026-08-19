@@ -71,6 +71,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         services.AddScoped<IOrderCommandRepository, EfOrderCommandRepository>();
         services.AddScoped<ICartCommandRepository, EfCartCommandRepository>();
+        services.AddScoped<ICartCheckoutUnitOfWork, EfCartCheckoutUnitOfWork>();
 
         services.AddScoped<IPosSaleQuery, DapperPosSaleQuery>();
         services.AddScoped<IOrderQuery, DapperOrderQuery>();
