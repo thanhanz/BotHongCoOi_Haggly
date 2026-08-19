@@ -3,6 +3,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Haggly.Api;
 using Haggly.Api.Endpoints.Catalog;
+using Haggly.Api.Responses;
+using Haggly.Application.Modules.Catalog.Dtos.Categories;
 using Haggly.Domain.Modules.Identity;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.Persistence;
@@ -25,7 +27,7 @@ public sealed class CategoryApiIntegrationTests
     [InlineData(RoleCode.VENDOR)]
     [InlineData(RoleCode.MARKET_ADMIN)]
     [InlineData(RoleCode.PLATFORM_ADMIN)]
-    public async Task HttpPipeline_WhenContributorCreatesCategory_PersistsAndReturnsCreated(RoleCode role)
+    public async Task HttpPipeline_WhenContributorCreatesCategory_ReturnsCreatedCategory(RoleCode role)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -58,6 +60,8 @@ public sealed class CategoryApiIntegrationTests
         var token = app.Services
             .GetRequiredService<Haggly.Application.Abstractions.Identity.IIdentityTokenService>()
             .CreateAccessToken(new User { Email = $"{role}@example.com" }, [role]);
+
+        //Create a new one
         using var createRequest = new HttpRequestMessage(HttpMethod.Post, "/api/v1/categories")
         {
             Content = JsonContent.Create(new
@@ -70,12 +74,15 @@ public sealed class CategoryApiIntegrationTests
         createRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
 
         var created = await client.SendAsync(createRequest);
-        using var listRequest = new HttpRequestMessage(HttpMethod.Get, "/api/v1/categories?page=1&pageSize=100");
-        listRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
-        var categories = await client.SendAsync(listRequest);
+        var response = await created.Content.ReadFromJsonAsync<ApiResponse<CategoryDto>>();
 
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
-        Assert.Equal(HttpStatusCode.OK, categories.StatusCode);
-        Assert.Contains(slug, await categories.Content.ReadAsStringAsync());
+        Assert.NotNull(response);
+        Assert.True(response.Success);
+        Assert.Equal("Category created successfully.", response.Message);
+        Assert.Equal("Integration Category", response.Data.Name);
+        Assert.Equal(slug, response.Data.Slug);
+        Assert.Equal(0, response.Data.DisplayOrder);
+        Assert.Equal($"/api/v1/categories/{response.Data.Id}", created.Headers.Location?.OriginalString);
     }
 }

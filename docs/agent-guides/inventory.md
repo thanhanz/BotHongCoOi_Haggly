@@ -1,8 +1,8 @@
 # Inventory module guide
 
 This guide records the continuous Inventory slice implemented in the current
-workspace. Reservations and online-order coordination remain deferred to the
-Sales workflow.
+workspace. Buyer cart/order coordination is implemented in Sales; Inventory
+reservation remains deferred.
 
 ## Responsibilities
 
@@ -43,6 +43,10 @@ the time of a completed sale.
 - `IInventorySaleRecorder` is the Sales-facing port. It verifies stall ownership,
   checks both InventoryItem and ProductStall versions, snapshots current catalog
   data, and records `POS_SALE` atomically with the sale.
+- Sales cart commands use the read-only `ICartCatalog` port to compare requested
+  quantity with `CurrentQuantity - ReservedQuantity`. Cart add/update/checkout
+  do not reserve or deduct stock; checkout repeats the availability check before
+  creating an Order.
 
 ## HTTP routes
 

@@ -12,10 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Haggly.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(HagglyDbContext))]
-    partial class HagglyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819083134_CreateCarts")]
+    partial class CreateCarts
     {
         /// <inheritdoc />
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
