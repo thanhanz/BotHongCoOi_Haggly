@@ -7,7 +7,10 @@ using System.Text;
 using Dapper;
 using Haggly.Api;
 using Haggly.Api.Endpoints.Sales;
+using Haggly.Api.Responses;
+using Haggly.Application.Modules.Sales.Dtos;
 using Haggly.Domain.Modules.Identity;
+using Haggly.Domain.Modules.Sales;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.Persistence;
 using Haggly.IntegrationTests.Infrastructure.Persistence;
@@ -69,9 +72,16 @@ public sealed class OrderApiIntegrationTests
             Content = JsonContent.Create(new { reason = "Buyer changed their mind" })
         };
         cancel.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
         using var cancelled = await client.SendAsync(cancel);
+        var cancelledResponse = await cancelled.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
+
         Assert.Equal(HttpStatusCode.OK, cancelled.StatusCode);
-        Assert.Contains("CANCELLED", await cancelled.Content.ReadAsStringAsync());
+        Assert.NotNull(cancelledResponse);
+        Assert.True(cancelledResponse.Success);
+        Assert.Equal(OrderStatus.CANCELLED, cancelledResponse.Data.Status);
+        Assert.Equal("Buyer changed their mind", cancelledResponse.Data.CancellationReason);
+        Assert.NotNull(cancelledResponse.Data.CancelledAt);
 
         var db = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
         await using var connection = await db.OpenConnectionAsync(CancellationToken.None);
