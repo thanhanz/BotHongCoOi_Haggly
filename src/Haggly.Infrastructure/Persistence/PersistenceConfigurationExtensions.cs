@@ -75,6 +75,8 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IPosSaleQuery, DapperPosSaleQuery>();
         services.AddScoped<IOrderQuery, DapperOrderQuery>();
         services.AddScoped<IOrderCatalog, DapperOrderCatalog>();
+        services.AddScoped<ICartQuery, DapperCartQuery>();
+        services.AddScoped<ICartCatalog, DapperCartCatalog>();
         services.AddScoped<IRevenueSaleRecorder, EfRevenueSaleRecorder>();
 
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
