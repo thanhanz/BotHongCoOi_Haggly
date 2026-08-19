@@ -1,85 +1,79 @@
 # Inventory module guide
 
-This guide records the Inventory slice that is currently implemented. It is
-intentionally limited to verified repository behavior; reservations and order
-coordination remain part of the later Sales workflow.
+This guide records the continuous Inventory slice implemented in the current
+workspace. Buyer cart/order coordination is implemented in Sales; Inventory
+reservation remains deferred.
 
 ## Responsibilities
 
-Inventory owns a vendor stall's daily session, product-listing snapshots,
-stock quantities, availability/status transitions, price changes, and the
-append-only inventory ledger. Catalog owns product identity and stall-product
-configuration. Sales will own reservations and fulfillment.
+Inventory owns one stock aggregate per stall, its InventoryItems, quantity
+invariants, optimistic concurrency, and the append-only quantity ledger.
+Catalog owns ProductStall selling unit, current price, activation, negotiation,
+and product identity. Sales stores immutable name, unit, and price snapshots at
+the time of a completed sale.
 
 ## Layer map
 
-- Domain: `src/Haggly.Domain/Modules/Inventory` contains
-  `InventorySession`, `DailyProductListing`, `InventoryLedger`, and the
-  inventory enums and state transitions.
-- Application: `src/Haggly.Application/Modules/Inventory` contains commands,
-  queries, handlers, DTOs, validation, exceptions, the business clock port,
-  and Inventory persistence/reference-query ports.
-- Infrastructure: `src/Haggly.Infrastructure/Persistence/Configurations/Inventory`
-  contains the EF mappings; `Repositories/Inventory` contains write-side
-  adapters; `Queries/Inventory/DapperInventoryQuery.cs` contains read-side
-  session and ledger queries.
-- API: `src/Haggly.Api/Endpoints/Inventory` exposes the vendor routes and keeps
-  HTTP request/response mapping separate from business decisions.
+- Domain: `src/Haggly.Domain/Modules/Inventory` contains `Inventory`,
+  `InventoryItem`, `InventoryLedger`, and reservation types.
+- Application: `src/Haggly.Application/Modules/Inventory` contains add, read,
+  adjustment, and ledger use cases plus ownership checks and persistence ports.
+- Infrastructure: EF configurations and repositories are under
+  `Persistence/Configurations/Inventory` and `Repositories/Inventory`; Dapper
+  reads are in `Queries/Inventory/DapperInventoryQuery.cs`.
+- API: `src/Haggly.Api/Endpoints/Inventory` exposes vendor-only continuous
+  inventory routes.
 
 ## Verified business rules
 
-- A stall has at most one session for a business date. The database also
-  enforces the unique `(StallId, BusinessDate)` constraint.
-- Business date comes from `IBusinessClock`, configured for
-  `Asia/Ho_Chi_Minh` with the Windows time-zone fallback.
-- Opening a listing snapshots product name and selling unit, initializes
-  current/available quantities, and creates an opening ledger entry.
-- `AvailableQuantity` is derived as `CurrentQuantity - ReservedQuantity`.
-  Negative quantities and reservations above current stock are rejected.
-- Listing mutations require the current `Version` as `expectedVersion`.
-  `Version` starts at zero and is incremented by domain mutations; EF maps it
-  as an optimistic-concurrency token.
-- Price changes and quantity adjustments append ledger entries. Ledger rows
-  are immutable and are normalized to inserts when appended to a tracked
-  listing.
-- Sessions transition from `OPEN` to `CLOSED`; closed sessions cannot be
-  mutated.
-- Application access checks require an active, non-deleted stall owned by the
-  authenticated approved vendor, and active stall-product records for new
-  listings.
+- Stall creation also creates its Inventory in the same EF unit of work.
+- The database enforces one Inventory per Stall and one InventoryItem per
+  ProductStall.
+- InventoryItem stores `CurrentQuantity` and `ReservedQuantity`.
+  `AvailableQuantity` is calculated as current minus reserved and is not stored.
+- Quantities cannot be negative and reserved quantity cannot exceed current
+  quantity. Adjustments cannot reduce current quantity below reserved stock.
+- InventoryItem `Version` is an EF concurrency token and increments on quantity
+  mutations.
+- ProductStall owns `SellingUnit`, `CurrentUnitPrice`, and its own concurrency
+  `Version`. POS submission checks both expected versions before snapshotting
+  price/unit/name and deducting stock.
+- Quantity changes append immutable InventoryLedger rows. Current product data
+  is not duplicated in InventoryItem.
+- `IInventorySaleRecorder` is the Sales-facing port. It verifies stall ownership,
+  checks both InventoryItem and ProductStall versions, snapshots current catalog
+  data, and records `POS_SALE` atomically with the sale.
+- Sales cart commands use the read-only `ICartCatalog` port to compare requested
+  quantity with `CurrentQuantity - ReservedQuantity`. Cart add/update/checkout
+  do not reserve or deduct stock; checkout repeats the availability check before
+  creating an Order.
 
 ## HTTP routes
 
-All routes require the `VendorOnly` policy and are grouped under
-`/api/v1/vendor/stalls/{stallId}`:
+All routes require `VendorOnly` and use
+`/api/v1/vendor/stalls/{stallId}/inventory`:
 
-| Method | Route | Purpose |
+| Method | Suffix | Purpose |
 |---|---|---|
-| `POST` | `/inventory-sessions/open` | Open today's session and optionally create listings |
-| `GET` | `/inventory-sessions/current` | Read today's session |
-| `GET` | `/inventory-sessions/previous` | Read the latest earlier session |
-| `POST` | `/inventory-sessions/current/close` | Close today's session |
-| `POST` | `/inventory-listings` | Add a listing to the open session |
-| `PATCH` | `/inventory-listings/{listingId}` | Change public price or visibility |
-| `POST` | `/inventory-adjustments` | Apply a signed stock adjustment |
-| `GET` | `/inventory-ledger` | Filter and page ledger entries |
-
-Application exceptions are translated by `ApiExceptionHandler` to the shared
-Problem Details contract. Swagger includes the Inventory routes in the
-Development document.
+| `GET` | `` | Read inventory and items |
+| `POST` | `/items` | Add an item with current quantity |
+| `GET` | `/items/{inventoryItemId}` | Read one item |
+| `POST` | `/adjustments` | Apply a signed adjustment |
+| `GET` | `/ledger` | Filter and page quantity history |
 
 ## Persistence and verification
 
-Inventory persistence is introduced by the
-`CreateInventoryEntities` migration. Quantity columns use `decimal(18,3)`;
-prices use `decimal(18,2)`. EF handles writes and Dapper handles session and
-ledger reads. Real boundary tests require PostgreSQL at the connection
-configured by `HAGGLY_TEST_CONNECTION_STRING` or the repository's default
-`localhost:5433` test database.
+`RefactorContinuousInventory` backfills one Inventory per existing Stall,
+selects the latest listing for each stall product as current InventoryItem
+state, remaps historical ledgers, and moves latest current price to
+ProductStall. Because daily records are consolidated, rollback requires a
+pre-migration database backup.
 
-Focused checks:
+Focused commands:
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Inventory"
+dotnet build tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
+dotnet build tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
+dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-build --filter "FullyQualifiedName~Inventory"
 ```

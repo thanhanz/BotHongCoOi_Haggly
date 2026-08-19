@@ -6,6 +6,7 @@ namespace Haggly.IntegrationTests.Infrastructure.Persistence;
 internal sealed record InventoryIntegrationScenario(
     Guid OwnerId,
     Guid StallId,
+    Guid InventoryId,
     Guid ProductStallId,
     Guid ProductId);
 
@@ -19,6 +20,7 @@ internal static class InventoryIntegrationScenarioFactory
         var categoryId = Guid.NewGuid();
         var productId = Guid.NewGuid();
         var productStallId = Guid.NewGuid();
+        var inventoryId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
 
         var dbContext = new DapperDbContext(IntegrationTestDatabase.CreateConfiguration());
@@ -45,6 +47,11 @@ internal static class InventoryIntegrationScenarioFactory
             VALUES
                 (@StallId, @MarketId, @OwnerId, @StallCode, 'Inventory Stall', 'ACTIVE', @Now);
 
+            INSERT INTO inventory.inventories
+                ("Id", "StallId", "CreatedAt", "CreatedBy")
+            VALUES
+                (@InventoryId, @StallId, @Now, @OwnerId);
+
             INSERT INTO catalog.categories
                 ("Id", "Name", "Slug", "DisplayOrder", "Status", "CreatedAt")
             VALUES
@@ -57,10 +64,10 @@ internal static class InventoryIntegrationScenarioFactory
 
             INSERT INTO catalog.product_stalls
                 ("Id", "StallId", "ProductId", "DisplayName", "SellingUnit",
-                 "MinimumOrderQuantity", "DefaultUnitPrice", "IsNegotiable", "IsActive", "CreatedAt")
+                 "MinimumOrderQuantity", "CurrentUnitPrice", "IsNegotiable", "IsActive", "Version", "CreatedAt")
             VALUES
                 (@ProductStallId, @StallId, @ProductId, 'Integration Tomato', 'KG',
-                 1.000, 45.00, FALSE, TRUE, @Now);
+                 1.000, 45.00, FALSE, TRUE, 0, @Now);
             """,
             new
             {
@@ -70,6 +77,7 @@ internal static class InventoryIntegrationScenarioFactory
                 CategoryId = categoryId,
                 ProductId = productId,
                 ProductStallId = productStallId,
+                InventoryId = inventoryId,
                 Email = $"{ownerId}@integration.test",
                 MarketCode = $"market-{marketId:N}",
                 StallCode = $"stall-{stallId:N}",
@@ -78,6 +86,6 @@ internal static class InventoryIntegrationScenarioFactory
                 Now = now
             });
 
-        return new(ownerId, stallId, productStallId, productId);
+        return new(ownerId, stallId, inventoryId, productStallId, productId);
     }
 }

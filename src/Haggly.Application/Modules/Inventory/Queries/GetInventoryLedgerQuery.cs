@@ -8,8 +8,7 @@ namespace Haggly.Application.Modules.Inventory.Queries;
 public sealed record GetInventoryLedgerQuery(
     Guid StallId,
     Guid ownerId,
-    DateOnly? BusinessDate,
-    Guid? ListingId,
+    Guid? InventoryItemId,
     InventoryTransactionType? TransactionType,
     int Page,
     int PageSize) : IRequest<PagedResult<InventoryLedgerDto>>;

@@ -5,8 +5,8 @@ namespace Haggly.Application.Modules.Inventory.Commands;
 
 public sealed record AdjustInventoryCommand(
     Guid StallId,
-    Guid ListingId,
+    Guid InventoryItemId,
     Guid ActorUserId,
     decimal QuantityDelta,
     string Reason,
-    long ExpectedVersion) : IRequest<DailyProductListingDto>;
+    long ExpectedVersion) : IRequest<InventoryItemDto>;

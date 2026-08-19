@@ -4,11 +4,13 @@ using Haggly.Application.Modules.Markets.Dtos.Stalls;
 using Haggly.Application.Modules.Markets.Exceptions.Stalls;
 using Haggly.Application.Modules.Markets.Validation.Stalls;
 using Haggly.Domain.Modules.Markets;
+using Haggly.Application.Common.Time;
+using DomainInventory = Haggly.Domain.Modules.Inventory.Inventory;
 using MediatR;
 
 namespace Haggly.Application.Modules.Markets.Commands.Stalls;
 
-public sealed class CreateStallHandler(IStallCommandRepository repository)
+public sealed class CreateStallHandler(IStallCommandRepository repository, IBusinessClock businessClock)
     : IRequestHandler<CreateStallCommand, StallDto>
 {
     public async Task<StallDto> Handle(
@@ -38,6 +40,9 @@ public sealed class CreateStallHandler(IStallCommandRepository repository)
         };
 
         await repository.AddAsync(stall, cancellationToken);
+        await repository.AddInventoryAsync(
+            DomainInventory.Create(stall.Id, command.ActorUserId, businessClock.GetNow()),
+            cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
 
         return StallDto.From(stall);

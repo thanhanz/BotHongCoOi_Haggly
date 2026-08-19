@@ -4,40 +4,35 @@ namespace Haggly.Domain.Modules.Inventory;
 
 public sealed class InventoryLedger : ImmutableEntity
 {
-    public Guid DailyProductListingId { get; private set; }
-    public Guid InventorySessionId { get; private set; }
+    public Guid InventoryItemId { get; private set; }
+    public Guid InventoryId { get; private set; }
     public InventoryTransactionType TransactionType { get; private set; }
     public decimal QuantityDelta { get; private set; }
     public decimal QuantityBefore { get; private set; }
     public decimal QuantityAfter { get; private set; }
-    public decimal? UnitPriceBefore { get; private set; }
-    public decimal? UnitPriceAfter { get; private set; }
     public string ReferenceType { get; private set; } = string.Empty;
     public Guid? ReferenceId { get; private set; }
     public string? Reason { get; private set; }
     public Guid? PerformedBy { get; private set; }
     public DateTimeOffset OccurredAt { get; private set; } = DateTimeOffset.UtcNow;
 
-    public DailyProductListing? DailyProductListing { get; private set; }
-    public InventorySession? InventorySession { get; private set; }
+    public InventoryItem? InventoryItem { get; private set; }
+    public Inventory? Inventory { get; private set; }
 
-    internal static InventoryLedger CreateOpeningStockEntry(
-        Guid dailyProductListingId,
-        Guid inventorySessionId,
+    internal static InventoryLedger CreateInitialStockEntry(
+        Guid inventoryItemId,
+        Guid inventoryId,
         decimal quantityAfter,
-        decimal unitPriceAfter,
         Guid performedBy,
         DateTimeOffset occurredAt)
         => new()
         {
-            DailyProductListingId = dailyProductListingId,
-            InventorySessionId = inventorySessionId,
+            InventoryItemId = inventoryItemId,
+            InventoryId = inventoryId,
             TransactionType = InventoryTransactionType.OPENING,
             QuantityDelta = quantityAfter,
-            QuantityBefore = 0m,
             QuantityAfter = quantityAfter,
-            UnitPriceAfter = unitPriceAfter,
-            ReferenceType = nameof(InventorySession),
+            ReferenceType = nameof(InventoryItem),
             PerformedBy = performedBy,
             OccurredAt = occurredAt,
             CreatedAt = occurredAt,
@@ -45,8 +40,8 @@ public sealed class InventoryLedger : ImmutableEntity
         };
 
     internal static InventoryLedger CreateAdjustment(
-        Guid dailyProductListingId,
-        Guid inventorySessionId,
+        Guid inventoryItemId,
+        Guid inventoryId,
         decimal quantityDelta,
         decimal quantityBefore,
         decimal quantityAfter,
@@ -55,13 +50,13 @@ public sealed class InventoryLedger : ImmutableEntity
         string reason)
         => new()
         {
-            DailyProductListingId = dailyProductListingId,
-            InventorySessionId = inventorySessionId,
+            InventoryItemId = inventoryItemId,
+            InventoryId = inventoryId,
             TransactionType = InventoryTransactionType.ADJUSTMENT,
             QuantityDelta = quantityDelta,
             QuantityBefore = quantityBefore,
             QuantityAfter = quantityAfter,
-            ReferenceType = nameof(DailyProductListing),
+            ReferenceType = nameof(InventoryItem),
             Reason = reason,
             PerformedBy = performedBy,
             OccurredAt = occurredAt,
@@ -69,24 +64,25 @@ public sealed class InventoryLedger : ImmutableEntity
             CreatedBy = performedBy
         };
 
-    internal static InventoryLedger CreatePriceChange(
-        Guid dailyProductListingId,
-        Guid inventorySessionId,
+    internal static InventoryLedger CreateSale(
+        Guid inventoryItemId,
+        Guid inventoryId,
         decimal quantity,
-        decimal unitPriceBefore,
-        decimal unitPriceAfter,
+        decimal quantityBefore,
+        decimal quantityAfter,
+        Guid saleId,
         Guid performedBy,
         DateTimeOffset occurredAt)
         => new()
         {
-            DailyProductListingId = dailyProductListingId,
-            InventorySessionId = inventorySessionId,
-            TransactionType = InventoryTransactionType.PRICE_CHANGE,
-            QuantityBefore = quantity,
-            QuantityAfter = quantity,
-            UnitPriceBefore = unitPriceBefore,
-            UnitPriceAfter = unitPriceAfter,
-            ReferenceType = nameof(DailyProductListing),
+            InventoryItemId = inventoryItemId,
+            InventoryId = inventoryId,
+            TransactionType = InventoryTransactionType.POS_SALE,
+            QuantityDelta = -quantity,
+            QuantityBefore = quantityBefore,
+            QuantityAfter = quantityAfter,
+            ReferenceType = "POS_SALE",
+            ReferenceId = saleId,
             PerformedBy = performedBy,
             OccurredAt = occurredAt,
             CreatedAt = occurredAt,

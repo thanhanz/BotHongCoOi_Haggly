@@ -15,9 +15,9 @@ public sealed class AdjustInventoryHandler(
     IInventoryReferenceQuery references,
     IInventoryUnitOfWork unitOfWork,
     IBusinessClock businessClock)
-    : IRequestHandler<AdjustInventoryCommand, DailyProductListingDto>
+    : IRequestHandler<AdjustInventoryCommand, InventoryItemDto>
 {
-    public async Task<DailyProductListingDto> Handle(
+    public async Task<InventoryItemDto> Handle(
         AdjustInventoryCommand command,
         CancellationToken cancellationToken)
     {
@@ -31,20 +31,16 @@ public sealed class AdjustInventoryHandler(
 
         return await unitOfWork.ExecuteInTransactionAsync(async transactionCancellationToken =>
         {
-            var listing = await repository.FindListingAsync(
+            var item = await repository.FindItemAsync(
                 stall.Id,
-                command.ListingId,
+                command.InventoryItemId,
                 transactionCancellationToken)
-                ?? throw new InventoryNotFoundException("The listing was not found.");
-
-            var session = listing.InventorySession
-                ?? throw new InventoryNotFoundException("The listing session was not found.");
-            EnsureSessionIsOpen(session);
-            EnsureExpectedVersion(listing, command.ExpectedVersion);
+                ?? throw new InventoryNotFoundException("The inventory item was not found.");
+            EnsureExpectedVersion(item, command.ExpectedVersion);
 
             try
             {
-                listing.AdjustQuantity(
+                item.AdjustQuantity(
                     command.QuantityDelta,
                     command.ActorUserId,
                     occurredAt,
@@ -56,25 +52,13 @@ public sealed class AdjustInventoryHandler(
             }
 
             await repository.SaveChangesAsync(transactionCancellationToken);
-            return DailyProductListingDto.From(listing);
+            return InventoryItemDto.From(item);
         }, cancellationToken);
     }
 
-    private static void EnsureSessionIsOpen(InventorySession session)
+    private static void EnsureExpectedVersion(InventoryItem item, long expectedVersion)
     {
-        try
-        {
-            session.EnsureOpen();
-        }
-        catch (InvalidOperationException exception)
-        {
-            throw new InventoryConflictException(exception.Message);
-        }
-    }
-
-    private static void EnsureExpectedVersion(DailyProductListing listing, long expectedVersion)
-    {
-        if (listing.Version != expectedVersion)
+        if (item.Version != expectedVersion)
         {
             throw new InventoryConflictException(
                 "The listing was changed by another request. Refresh and retry.");

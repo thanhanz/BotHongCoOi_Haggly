@@ -24,6 +24,53 @@ public sealed class StallFulfillment : AuditableEntity
     public Stall? Stall { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+    internal static StallFulfillment Create(
+        Guid orderId,
+        Guid stallId,
+        Guid actorId,
+        DateTimeOffset occurredAt)
+    {
+        if (orderId == Guid.Empty)
+        {
+            throw new ArgumentException("A valid order ID is required.", nameof(orderId));
+        }
+
+        if (stallId == Guid.Empty)
+        {
+            throw new ArgumentException("A valid stall ID is required.", nameof(stallId));
+        }
+
+        return new StallFulfillment
+        {
+            OrderId = orderId,
+            StallId = stallId,
+            FulfillmentNo = $"FUL-{orderId:N}-{stallId:N}".ToUpperInvariant(),
+            Status = StallFulfillmentStatus.NEGOTIATING,
+            CreatedAt = occurredAt,
+            CreatedBy = actorId
+        };
+    }
+
+    internal void Cancel(string reason, DateTimeOffset cancelledAt)
+    {
+        if (Status is StallFulfillmentStatus.PICKED_UP or StallFulfillmentStatus.CANCELLED)
+        {
+            throw new InvalidOperationException(
+                "A picked-up or cancelled fulfillment cannot be cancelled.");
+        }
+
+        Status = StallFulfillmentStatus.CANCELLED;
+        CancelledAt = cancelledAt;
+        CancellationReason = reason.Trim();
+        UpdatedAt = cancelledAt;
+        foreach (var item in OrderItems.Where(item => item.Status == OrderItemStatus.ACTIVE))
+        {
+            item.Status = OrderItemStatus.CANCELLED;
+        }
+
+        RecalculateAmounts();
+    }
+
     public void RecalculateAmounts()
     {
         Subtotal = OrderItems

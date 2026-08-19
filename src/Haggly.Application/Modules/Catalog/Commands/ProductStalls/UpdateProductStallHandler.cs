@@ -25,15 +25,13 @@ public sealed class UpdateProductStallHandler(IProductStallCommandRepository rep
             throw new ProductStallNotFoundException("The product was not found in this stall.");
         if (c.SellingUnit is not null && !Enum.IsDefined(c.SellingUnit.Value))
             throw new ProductStallValidationException("A valid product unit is required.");
-        if (c.MinimumOrderQuantity is <= 0 || c.DefaultUnitPrice is < 0)
+        if (c.MinimumOrderQuantity is <= 0 || c.CurrentUnitPrice is < 0 || c.ExpectedVersion < 0)
             throw new ProductStallValidationException("Quantity and price are invalid.");
+        if (value.Version != c.ExpectedVersion)
+            throw new ProductStallConflictException("The stall product was changed by another request. Refresh and retry.");
         
-        if (c.DisplayName is not null) value.DisplayName = c.DisplayName.Trim();
-        if (c.SellingUnit is not null) value.SellingUnit = c.SellingUnit.Value;
-        if (c.MinimumOrderQuantity is not null) value.MinimumOrderQuantity = c.MinimumOrderQuantity.Value;
-        if (c.DefaultUnitPrice is not null) value.DefaultUnitPrice = c.DefaultUnitPrice.Value;
-        if (c.IsNegotiable is not null) value.IsNegotiable = c.IsNegotiable.Value;
-        if (c.IsActive is not null) value.IsActive = c.IsActive.Value;
+        value.UpdateConfiguration(c.DisplayName, c.SellingUnit, c.MinimumOrderQuantity,
+            c.CurrentUnitPrice, c.IsNegotiable, c.IsActive);
         
         await repository.SaveChangesAsync(ct); 
         return ProductStallDto.From(value);

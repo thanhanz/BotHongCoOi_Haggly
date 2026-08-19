@@ -4,13 +4,10 @@ namespace Haggly.Api.Endpoints.Inventory;
 
 public static class InventoryRoutes
 {
-    public const string Prefix = ApiRoutes.Version1 + "/vendor/stalls/{stallId:guid}";
-    public const string OpenSession = "/inventory-sessions/open";
-    public const string CurrentSession = "/inventory-sessions/current";
-    public const string PreviousSession = "/inventory-sessions/previous";
-    public const string CloseSession = "/inventory-sessions/current/close";
-    public const string Listings = "/inventory-listings";
-    public const string ListingById = "/inventory-listings/{listingId:guid}";
-    public const string Adjustments = "/inventory-adjustments";
-    public const string Ledger = "/inventory-ledger";
+    public const string Prefix = ApiRoutes.Version1 + "/vendor/stalls/{stallId:guid}/inventory";
+    public const string Root = "";
+    public const string Items = "/items";
+    public const string ItemById = "/items/{inventoryItemId:guid}";
+    public const string Adjustments = "/adjustments";
+    public const string Ledger = "/ledger";
 }

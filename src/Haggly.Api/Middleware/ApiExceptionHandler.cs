@@ -7,6 +7,7 @@ using Haggly.Application.Modules.Catalog.Exceptions.Categories;
 using Haggly.Application.Modules.Catalog.Exceptions.Products;
 using Haggly.Application.Modules.Catalog.Exceptions.ProductStalls;
 using Haggly.Application.Modules.Inventory.Exceptions;
+using Haggly.Application.Modules.Sales.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,7 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status401Unauthorized, "Authentication failed", exception.Message),
             RegistrationConflictException
                 => (StatusCodes.Status409Conflict, "Registration conflict", exception.Message),
+            
             VendorQueryValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             VendorCommandValidationException
@@ -64,24 +66,28 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Vendor not found", exception.Message),
             VendorTransitionConflictException
                 => (StatusCodes.Status409Conflict, "Vendor conflict", exception.Message),
+            
             MarketValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             MarketConflictException
                 => (StatusCodes.Status409Conflict, "Market conflict", exception.Message),
             MarketNotFoundException
                 => (StatusCodes.Status404NotFound, "Market not found", exception.Message),
+            
             StallValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             StallConflictException
                 => (StatusCodes.Status409Conflict, "Stall conflict", exception.Message),
             StallNotFoundException
                 => (StatusCodes.Status404NotFound, "Stall not found", exception.Message),
+            
             CategoryValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             CategoryConflictException
                 => (StatusCodes.Status409Conflict, "Category conflict", exception.Message),
             CategoryNotFoundException
                 => (StatusCodes.Status404NotFound, "Category not found", exception.Message),
+            
             ProductValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             ProductConflictException
@@ -96,6 +102,7 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status409Conflict, "Product-stall conflict", exception.Message),
             ProductStallNotFoundException
                 => (StatusCodes.Status404NotFound, "Stall product not found", exception.Message),
+            
             InventoryValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             InventoryForbiddenException
@@ -104,6 +111,33 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Inventory resource not found", exception.Message),
             InventoryConflictException
                 => (StatusCodes.Status409Conflict, "Inventory conflict", exception.Message),
+            
+            PosSaleValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            PosSaleForbiddenException
+                => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
+            PosSaleNotFoundException
+                => (StatusCodes.Status404NotFound, "POS sale resource not found", exception.Message),
+            PosSaleConflictException
+                => (StatusCodes.Status409Conflict, "POS sale conflict", exception.Message),
+            
+            OrderValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            OrderForbiddenException
+                => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
+            OrderNotFoundException
+                => (StatusCodes.Status404NotFound, "Order not found", exception.Message),
+            OrderConflictException
+                => (StatusCodes.Status409Conflict, "Order conflict", exception.Message),
+
+            CartValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            CartForbiddenException
+                => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
+            CartNotFoundException
+                => (StatusCodes.Status404NotFound, "Cart resource not found", exception.Message),
+            CartConflictException
+                => (StatusCodes.Status409Conflict, "Cart conflict", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

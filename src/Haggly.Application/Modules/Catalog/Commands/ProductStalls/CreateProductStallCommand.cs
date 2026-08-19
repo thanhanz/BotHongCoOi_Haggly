@@ -11,5 +11,5 @@ public sealed record CreateProductStallCommand(
     string? DisplayName,
     ProductUnit SellingUnit, 
     decimal MinimumOrderQuantity, 
-    decimal DefaultUnitPrice,
+    decimal CurrentUnitPrice,
     bool IsNegotiable) : IRequest<ProductStallDto>;

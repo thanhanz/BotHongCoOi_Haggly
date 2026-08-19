@@ -7,13 +7,13 @@ namespace Haggly.UnitTests.Infrastructure.Persistence.Migrations;
 public sealed class InventoryMigrationTests
 {
     [Fact]
-    public void GetMigrations_WhenInventoryMigrationExists_ContainsCreateInventoryEntities()
+    public void GetMigrations_WhenContinuousInventoryMigrationExists_ContainsRefactorMigration()
     {
         using var context = CreateContext();
 
         Assert.Contains(
             context.Database.GetMigrations(),
-            migration => migration.Contains("CreateInventoryEntities", StringComparison.Ordinal));
+            migration => migration.Contains("RefactorContinuousInventory", StringComparison.Ordinal));
     }
 
     private static HagglyDbContext CreateContext()

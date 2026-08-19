@@ -9,20 +9,22 @@ must not be read as implemented functionality.
 Haggly is a .NET 10 modular-monolith scaffold for a digital Vietnamese market.
 The MVP domain is divided into business modules, while the executable
 application is currently delivered as one API and one relational database.
-The completed vertical slices are Identity, Markets, Catalog, and Inventory.
-Identity provides
+The completed vertical slices are Identity, Markets, Catalog, Inventory, and
+the current executable portions of Sales. Identity provides
 registration, login, JWT authentication, authorization policies, vendor
 administration, and the current-user endpoint. Markets provides market and
 stall CRUD use cases, PostgreSQL persistence, and API endpoints. Catalog
 provides Category and Product creation and authenticated reads, PostgreSQL
-persistence, and API endpoints. Inventory provides daily sessions, listing
-snapshots, stock adjustments, ledger reads, optimistic concurrency, PostgreSQL
+persistence, and API endpoints. Inventory provides one continuous inventory per
+stall, stock items, adjustments, ledger reads, optimistic concurrency, PostgreSQL
 persistence, and vendor API endpoints.
 
 The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
-and Finance. Negotiation, Sales, Payments, and Finance currently have Domain
-model types only; their Application use cases, API endpoints, and persistence
-mappings have not yet been implemented.
+and Finance. Sales currently implements buyer carts, cart checkout into
+multi-stall negotiating orders, buyer order reads/cancellation, and vendor POS;
+POS revenue is also implemented. Inventory reservation, negotiation, payment,
+pickup/fulfillment transitions, general Payments, and broader Finance reporting
+remain future workflows.
 
 ## Technology actually used
 
@@ -109,11 +111,11 @@ are:
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
 | Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
-| Inventory | `InventorySession`, `InventoryLedger`, `InventoryReservation`, `DailyProductListing`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
+| Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
-| Sales | `Order`, `OrderItem`, `StallFulfillment`, related enums | Domain model scaffold only |
+| Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Domain model scaffold only |
-| Finance | `RevenueLedger`, `RevenueEntryType` | Domain model scaffold only |
+| Finance | `RevenueLedger`, `RevenueEntryType` | POS sale revenue ledger implemented; broader reporting remains scaffold-only |
 
 Negotiation is currently a top-level Domain module under
 `Modules/Negotiation`; it is not nested under `Modules/Sales`.
@@ -182,21 +184,26 @@ non-deleted products.
 `Haggly.Infrastructure` contains:
 
 - `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
-  Catalog, and Inventory repositories, the design-time context factory, and
-  Identity, Markets, Catalog, and Inventory migrations.
+  Catalog, Inventory, Sales, and Finance repositories, the design-time context
+  factory, and their migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity,
-  Markets, Catalog, and Inventory reads.
+  Markets, Catalog, Inventory, Cart, Order, and POS Sales reads. EF Core remains
+  the transactional write adapter for cart/order changes, cart checkout, POS
+  completion, and POS inventory/revenue ledger updates.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
-mappings for Identity, Markets, Catalog, and Inventory. The migrations currently
-include `InitialIdentity`, `CreateMarketAndStallEntities`, `CreateCategories`,
-`CreateProducts`, `CreateProductStalls`, and `CreateInventoryEntities`.
+mappings for Identity, Markets, Catalog, continuous Inventory, Cart, Order,
+POS Sales, and POS Finance revenue. The migrations include the
+continuous-inventory refactor, POS/revenue persistence, Sales orders, and buyer
+carts.
 Product and ProductStall are mapped to `catalog.products` and
-`catalog.product_stalls`; Inventory is mapped to the `inventory` schema.
-Negotiation, Sales, Payments, and Finance remain unmapped.
+`catalog.product_stalls`; Inventory is mapped to `inventory`, POS sales to
+`sales`, Cart and Order are mapped to `sales`, and POS revenue to `finance`.
+Inventory reservations, Payments, and Negotiation remain unmapped beyond the
+existing domain scaffolds and POS payment snapshot.
 
 ### API
 
@@ -253,16 +260,49 @@ require the `VendorOnly` policy:
 
 | Method | Route | Behavior |
 |---|---|---|
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/open` | Open today's session and optionally create listings |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current` | Read today's session |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/previous` | Read the latest earlier session |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-sessions/current/close` | Close today's session |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-listings` | Add a listing |
-| `PATCH` | `/api/v1/vendor/stalls/{stallId}/inventory-listings/{listingId}` | Change price or visibility with `expectedVersion` |
-| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory-adjustments` | Apply a signed stock adjustment with `expectedVersion` |
-| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory-ledger` | Filter and page ledger entries |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory` | Read the continuous inventory and its items |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory/items` | Add a configured stall product with current quantity |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/items/{inventoryItemId}` | Read one inventory item |
+| `POST` | `/api/v1/vendor/stalls/{stallId}/inventory/adjustments` | Apply a signed stock adjustment with `expectedVersion` |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/inventory/ledger` | Filter and page ledger entries |
 
-Successful Identity responses use `ApiResponse<T>`. Application exceptions and
+Vendor POS routes are grouped under `/api/v1/vendor/stalls/{stallId}/pos-sales`
+and require the `VendorOnly` policy:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Complete an idempotent sale and deduct inventory atomically |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Page the stall's completed POS history |
+| `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales/{posSaleId}` | Return one POS sale with its item details |
+
+Buyer cart routes are grouped under `/api/v1/cart` and require the `BuyerOnly`
+policy:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `GET` | `/api/v1/cart` | Return the current buyer cart enriched with live stall, product, offering, and remaining Inventory data |
+| `POST` | `/api/v1/cart/items` | Add an InventoryItem, creating the buyer cart when necessary |
+| `PUT` | `/api/v1/cart/items/{cartItemId}` | Replace the cart item's requested quantity and notes |
+| `DELETE` | `/api/v1/cart/items/{cartItemId}` | Remove one cart item |
+| `DELETE` | `/api/v1/cart` | Clear the buyer cart |
+| `POST` | `/api/v1/cart/checkout` | Revalidate all lines, create a negotiating multi-stall Order, and clear the cart transactionally |
+
+Buyer order routes are grouped under `/api/v1/orders` and require the
+`BuyerOnly` policy:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `POST` | `/api/v1/orders` | Create a negotiating multi-stall Order directly from submitted InventoryItem lines |
+| `GET` | `/api/v1/orders` | Page the authenticated buyer's orders |
+| `GET` | `/api/v1/orders/{orderId}` | Return an owned Order with fulfillments and item snapshots |
+| `POST` | `/api/v1/orders/{orderId}/cancel` | Cancel an eligible owned Order |
+
+Cart availability uses `CurrentQuantity - ReservedQuantity`. Cart lines do not
+reserve or deduct Inventory, so add/update and checkout validate current stock
+but do not provide final stock protection. Checkout creates the Order and clears
+the cart in one EF Core transaction.
+
+Successful endpoint responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
 Development, Swagger UI is available at `/swagger`, and `/` redirects to it.
 
@@ -296,8 +336,9 @@ and repositories are adapters, not business-rule owners.
 
 `Haggly.UnitTests` is organized by production boundary: `Domain`, `Application`,
 and `Infrastructure`, with module-specific folders under the relevant boundary.
-It covers current Identity, Markets, and Inventory behavior, JWT services,
-persistence configuration, EF Core model metadata, migrations, and row mappers.
+It covers current Identity, Markets, Catalog, Inventory, Sales Cart/Order/POS
+Application behavior, JWT services, persistence configuration, EF Core model
+metadata, migrations, and row mappers.
 
 `Haggly.IntegrationTests` is organized under `Api` and `Infrastructure`. It
 covers authentication and authorization behavior, Identity, Markets, and
@@ -331,8 +372,8 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Application, Infrastructure, and API slices for Negotiation, Sales,
-  Payments, and Finance.
+- Complete Inventory reservation, Negotiation, payment, fulfillment/pickup, and
+  broader Payments/Finance workflows around the existing Cart and Order slices.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its

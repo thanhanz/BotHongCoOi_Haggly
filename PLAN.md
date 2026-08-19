@@ -44,17 +44,61 @@ DELETE /api/v1/markets/stalls/{id}
 
 These routes are currently administrative CRUD endpoints with soft deletes.
 
-## Planned implementation order
+### Catalog and stall-product APIs
+
+```http
+POST /api/v1/categories
+GET  /api/v1/categories
+GET  /api/v1/categories/{id}
+
+POST /api/v1/products
+GET  /api/v1/products
+GET  /api/v1/products/{id}
+
+POST  /api/v1/stalls/{stallId}/products
+GET   /api/v1/stalls/{stallId}/products
+GET   /api/v1/stalls/{stallId}/products/{id}
+PATCH /api/v1/stalls/{stallId}/products/{id}
+```
+
+Category and product reads use Dapper query adapters. Product-stall writes are
+owner-authorized and preserve catalog identity separately from stall-specific
+pricing and availability.
+
+### Continuous inventory APIs
+
+```http
+GET  /api/v1/vendor/stalls/{stallId}/inventory
+POST /api/v1/vendor/stalls/{stallId}/inventory/items
+GET  /api/v1/vendor/stalls/{stallId}/inventory/items/{inventoryItemId}
+POST /api/v1/vendor/stalls/{stallId}/inventory/adjustments
+GET  /api/v1/vendor/stalls/{stallId}/inventory/ledger
+```
+
+Inventory quantity mutations are synchronous and transactional. They update
+the current inventory item and append an immutable inventory ledger entry.
+
+### Vendor POS APIs
+
+```http
+POST /api/v1/vendor/stalls/{stallId}/pos-sales
+GET  /api/v1/vendor/stalls/{stallId}/pos-sales
+GET  /api/v1/vendor/stalls/{stallId}/pos-sales/{posSaleId}
+```
+
+POS completion is idempotent and atomically deducts inventory, creates the POS
+sale, records the inventory ledger entry, and records the revenue ledger entry.
+POS history uses a Dapper header-only query; the detail endpoint loads item
+lines by `posSaleId`. Both endpoints require the owning vendor.
+
+## Remaining implementation order
 
 1. Identity profiles and vendor-owned stall APIs.
 2. Public market and stall discovery.
-3. Catalog and product-stall management.
-4. Daily inventory sessions and listings.
-5. Vendor POS.
-6. Buyer cart and multi-stall orders.
-7. Negotiation.
-8. Payment and pickup.
-9. Revenue and reporting.
+3. Buyer cart APIs (order APIs implemented; cart deferred).
+4. Negotiation.
+5. Payment and pickup.
+6. Revenue and reporting APIs.
 
 Each slice should be implemented vertically through Domain, Application,
 Infrastructure, API, and focused tests. Cross-module workflows belong to one
@@ -131,7 +175,7 @@ Public results include only non-deleted active markets and active stalls owned
 by approved, active vendors. Administrative status and audit fields should not
 be exposed in public projections unless required by the client.
 
-## 3. Catalog and product APIs
+## 3. Catalog and product APIs (implemented)
 
 ### Vendor product management
 
@@ -158,48 +202,57 @@ Rules:
 - Vendors can manage only products associated with their own stalls.
 - Deactivated products remain in history but are excluded from active browsing.
 
-## 4. Daily inventory APIs
+## 4. Continuous inventory APIs (implemented)
 
 ```http
-POST /api/v1/vendor/stalls/{stallId}/inventory-sessions/open
-GET  /api/v1/vendor/stalls/{stallId}/inventory-sessions/current
-PUT  /api/v1/vendor/inventory-listings/{listingId}
-POST /api/v1/vendor/inventory/adjustments
-GET  /api/v1/vendor/inventory/ledger
+GET  /api/v1/vendor/stalls/{stallId}/inventory
+POST /api/v1/vendor/stalls/{stallId}/inventory/items
+GET  /api/v1/vendor/stalls/{stallId}/inventory/items/{inventoryItemId}
+POST /api/v1/vendor/stalls/{stallId}/inventory/adjustments
+GET  /api/v1/vendor/stalls/{stallId}/inventory/ledger
 ```
 
 Rules:
 
-- Only one open inventory session exists per stall and business day.
-- Opening quantity, current quantity, reserved quantity, and available
-  quantity are distinct values.
+- Current quantity, reserved quantity, and available quantity are distinct
+  values.
 - Current quantity cannot become negative.
 - Every adjustment records actor, timestamp, reason, and before/after values.
 - Online orders and offline POS sales use the same inventory source.
 
-## 5. Vendor POS APIs
+## 5. Vendor POS APIs (implemented)
 
 ```http
-POST /api/v1/vendor/pos/sales
-GET  /api/v1/vendor/pos/sales
-GET  /api/v1/vendor/pos/sales/{saleId}
+POST /api/v1/vendor/stalls/{stallId}/pos-sales
+GET  /api/v1/vendor/stalls/{stallId}/pos-sales
+GET  /api/v1/vendor/stalls/{stallId}/pos-sales/{posSaleId}
 ```
 
 Rules:
 
-- The vendor may sell only from an open inventory session for their stall.
-- A POS sale immediately decreases available inventory.
-- The sale creates an inventory ledger entry and payment record.
+- The vendor may sell only inventory belonging to their stall.
+- A POS sale immediately decreases current and available inventory.
+- The sale creates inventory and revenue ledger entries in the same transaction.
+- Repeating the same client request ID returns the existing sale without
+  applying inventory changes twice.
 - The sale cannot exceed available quantity.
 
 ## 6. Buyer cart and multi-stall order APIs
+
+The buyer order slice is implemented. Cart APIs remain intentionally deferred.
+
+Deferred cart routes:
 
 ```http
 GET    /api/v1/cart
 POST   /api/v1/cart/items
 PUT    /api/v1/cart/items/{itemId}
 DELETE /api/v1/cart/items/{itemId}
+```
 
+Implemented order routes:
+
+```http
 POST /api/v1/orders
 GET  /api/v1/orders
 GET  /api/v1/orders/{orderId}
@@ -265,7 +318,7 @@ Rules:
 - A fulfillment cannot be picked up twice.
 - An order is completed only after all active stall fulfillments are picked up.
 
-## 9. Revenue and reporting APIs
+## 9. Revenue and reporting APIs (remaining)
 
 ```http
 GET /api/v1/vendor/reports/sales?from=&to=&stallId=
@@ -278,6 +331,8 @@ GET /api/v1/admin/audit-log?entityType=&entityId=&from=&to=
 Rules:
 
 - Vendors see only their own stall data.
+- POS revenue ledger persistence is implemented; reporting projections remain
+  to be added.
 - Revenue belongs to a stall and is reduced by refunds.
 - Reports are projections over orders, payments, inventory ledgers, and revenue
   entries; they do not become a second source of truth.

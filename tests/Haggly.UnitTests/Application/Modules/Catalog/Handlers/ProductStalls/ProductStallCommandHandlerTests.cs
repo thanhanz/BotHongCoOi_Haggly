@@ -38,15 +38,32 @@ public sealed class ProductStallCommandHandlerTests
         Assert.Single(repository.Added);
     }
 
+    [Fact]
+    public async Task HandleUpdate_WhenExpectedVersionIsStale_ThrowsConflictException()
+    {
+        var owner = Guid.NewGuid();
+        var stall = new Stall { VendorId = owner };
+        var productStall = ProductStall.Create(
+            stall.Id, Guid.NewGuid(), null, ProductUnit.KG, 1m, 45m, false);
+        productStall.UpdateConfiguration(null, null, null, 50m, null, null);
+        var repository = new FakeProductStallCommandRepository { Stall = stall, Existing = productStall };
+
+        await Assert.ThrowsAsync<ProductStallConflictException>(() =>
+            new UpdateProductStallHandler(repository).Handle(
+                new UpdateProductStallCommand(stall.Id, productStall.Id, owner, null,
+                    null, null, 55m, null, null, ExpectedVersion: 0), CancellationToken.None));
+    }
+
     private sealed class FakeProductStallCommandRepository : IProductStallCommandRepository
     {
         public Stall? Stall { get; init; }
         public Product? Product { get; init; }
+        public ProductStall? Existing { get; init; }
         public List<ProductStall> Added { get; } = [];
         public Task<Stall?> FindActiveStallAsync(Guid id, CancellationToken _) => Task.FromResult(Stall);
         public Task<Product?> FindActiveProductAsync(Guid id, CancellationToken _) => Task.FromResult(Product);
         public Task<bool> ExistsAsync(Guid stallId, Guid productId, CancellationToken _) => Task.FromResult(false);
-        public Task<ProductStall?> FindActiveAsync(Guid id, CancellationToken _) => Task.FromResult<ProductStall?>(null);
+        public Task<ProductStall?> FindActiveAsync(Guid id, CancellationToken _) => Task.FromResult(Existing);
         public Task AddAsync(ProductStall value, CancellationToken _) { Added.Add(value); return Task.CompletedTask; }
         public Task SaveChangesAsync(CancellationToken _) => Task.CompletedTask;
     }
