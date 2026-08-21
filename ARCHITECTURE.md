@@ -33,8 +33,11 @@ remain future workflows.
 - Entity Framework Core `10.0.10` with the Npgsql PostgreSQL provider `10.0.3`.
 - Dapper `2.1.79` for read-side query adapters backed by PostgreSQL.
 - MassTransit `8.5.10` with the RabbitMQ transport; the API currently
-  registers a publisher-only bus connection. Payment messages, consumers, and
-  the planned Dapper outbox are not implemented yet.
+  registers a publisher-only bus connection. A PostgreSQL outbox schema,
+  transaction-aware Dapper outbox processor, and explicit domain-event type
+  registry are implemented. The processor uses the framework `System.Text.Json` serializer
+  directly. Concrete payment messages, consumers, and the
+  outbox dispatcher are not implemented yet.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.
