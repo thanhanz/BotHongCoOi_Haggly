@@ -4,7 +4,6 @@ using Haggly.Domain.Common.Events.V1;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using System.Text.Json;
 
 namespace Haggly.Infrastructure.Messaging.Outbox;
@@ -16,21 +15,6 @@ public sealed class DapperOutboxProcessor(
     TimeProvider timeProvider) : IOutboxProcessor
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
-
-    private const string InsertEventSql =
-        """
-        INSERT INTO messaging.outbox_messages
-            ("Id",
-             "EventType",
-             "Payload",
-             "CorrelationId",
-             "OccurredAt",
-             "CreatedAt",
-             "ProcessedAt")
-        VALUES
-            (@Id, @EventType, CAST(@Payload AS jsonb), @CorrelationId,
-             @OccurredAt, @CreatedAt, NULL);
-        """;
 
     private const string QueryPendingEventsSql =
         """
@@ -57,41 +41,6 @@ public sealed class DapperOutboxProcessor(
         WHERE "Id" = @Id;
         """;
 
-    public async Task WriteAsync<TEvent>(
-        TEvent domainEvent,
-        CancellationToken cancellationToken = default)
-        where TEvent : class, IDomainEvent
-    {
-        ArgumentNullException.ThrowIfNull(domainEvent);
-        if (domainEvent.EventId == Guid.Empty)
-            throw new ArgumentException("A valid event ID is required.", nameof(domainEvent));
-        if (domainEvent.CorrelationId == Guid.Empty)
-            throw new ArgumentException("A valid correlation ID is required.", nameof(domainEvent));
-
-        var currentTransaction = dbContext.Database.CurrentTransaction
-            ?? throw new InvalidOperationException(
-                "An active database transaction is required to write an outbox message.");
-        var eventType = eventTypes.GetEventType(domainEvent.GetType());
-        var payload = JsonSerializer.Serialize(domainEvent, JsonOptions);
-        var createdAt = timeProvider.GetUtcNow();
-        var connection = dbContext.Database.GetDbConnection();
-
-        await connection.ExecuteAsync(new CommandDefinition(
-          InsertEventSql,
-            new
-            {
-                Id = Guid.NewGuid(),
-                EventType = eventType,
-                Payload = payload,
-                domainEvent.CorrelationId,
-                domainEvent.OccurredAt,
-                CreatedAt = createdAt
-            },
-            currentTransaction.GetDbTransaction(),
-            cancellationToken: cancellationToken));
-    }
-
-    
     //TODO: This function need to optimize about the performance
     public async Task<int> ProcessPendingAsync(
         int batchSize,
