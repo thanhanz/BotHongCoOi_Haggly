@@ -32,14 +32,17 @@ remain future workflows.
 - ASP.NET Core Web SDK with Minimal API endpoint mapping.
 - Entity Framework Core `10.0.10` with the Npgsql PostgreSQL provider `10.0.3`.
 - Dapper `2.1.79` for read-side query adapters backed by PostgreSQL.
+- MassTransit `8.5.10` with the RabbitMQ transport; the API currently
+  registers a publisher-only bus connection. Payment messages, consumers, and
+  the planned Dapper outbox are not implemented yet.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.
 - xUnit `2.9.3` with the Microsoft .NET test SDK.
 - PostgreSQL 17 for local development through `docker-compose.yml`.
 
-The repository does not currently reference FluentValidation, FluentAssertions,
-Testcontainers, OpenTelemetry, or a messaging provider. They remain possible
+The repository does not currently reference FluentValidation,
+FluentAssertions, Testcontainers, or OpenTelemetry. They remain possible
 future choices, not current architectural dependencies.
 
 ## Current solution structure
@@ -192,6 +195,9 @@ non-deleted products.
   completion, and POS inventory/revenue ledger updates.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
+- `Messaging/RabbitMqOptions`, MassTransit RabbitMQ registration, and the
+  broker-facing implementation of the Application integration-event publisher
+  port. There are no concrete integration events or consumers yet.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
@@ -312,7 +318,8 @@ current bearer configuration accepts HMAC-SHA256 tokens with zero clock skew.
 
 ## Persistence and runtime topology
 
-The runtime is a single ASP.NET Core process backed by one PostgreSQL database:
+The runtime is a single ASP.NET Core process backed by PostgreSQL and a
+configured RabbitMQ connection:
 
 ```text
 HTTP client
@@ -321,16 +328,19 @@ HTTP client
 Haggly.Api
     |-- Haggly.Application use cases
     |-- Haggly.Infrastructure authentication and persistence
+    |-- MassTransit publisher bus
     `-- Haggly.Domain model
-    |
-    v
-PostgreSQL (local: localhost:5433, database: haggly)
+    |                         |
+    v                         v
+PostgreSQL                RabbitMQ
+(local: localhost:5433)   (local: localhost:5672)
 ```
 
-The local database is defined in `docker-compose.yml`. The development
-configuration uses the `HagglyDatabase` connection-string name. Database
-business behavior must remain owned by the relevant module; EF Core mappings
-and repositories are adapters, not business-rule owners.
+The local PostgreSQL database and RabbitMQ broker are defined in
+`docker-compose.yml`. The development configuration uses the
+`HagglyDatabase` connection-string name and the `RabbitMq` configuration
+section. Database business behavior must remain owned by the relevant module;
+EF Core mappings and repositories are adapters, not business-rule owners.
 
 ## Testing structure
 
