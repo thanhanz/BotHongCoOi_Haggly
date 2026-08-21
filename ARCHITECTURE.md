@@ -123,7 +123,7 @@ are:
 | Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
-| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Domain model scaffold only |
+| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Payment initiation slice implemented through Domain, Application, PostgreSQL persistence, and transactional outbox; provider processing and API deferred |
 | Finance | `RevenueLedger`, `RevenueEntryType` | POS sale revenue ledger implemented; broader reporting remains scaffold-only |
 
 Negotiation is currently a top-level Domain module under
@@ -193,7 +193,7 @@ non-deleted products.
 `Haggly.Infrastructure` contains:
 
 - `Persistence/HagglyDbContext`, EF Core configurations, Identity, Markets,
-  Catalog, Inventory, Sales, and Finance repositories, the design-time context
+  Catalog, Inventory, Sales, Payments, and Finance repositories, the design-time context
   factory, and their migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity,
   Markets, Catalog, Inventory, Cart, Order, and POS Sales reads. EF Core remains
@@ -202,20 +202,22 @@ non-deleted products.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
   `AspNetPasswordHasher`.
 - `Messaging/RabbitMqOptions`, MassTransit RabbitMQ registration, and the
-  broker-facing implementation of the Application integration-event publisher
-  port. There are no concrete integration events or consumers yet.
+  broker-facing implementation of the Application domain-event publisher port,
+  the Dapper outbox writer/processor, and the hosted outbox publisher. The V1
+  `PaymentRequested` event is registered; consumers are deferred.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
 mappings for Identity, Markets, Catalog, continuous Inventory, Cart, Order,
-POS Sales, and POS Finance revenue. The migrations include the
+POS Sales, Payments, and POS Finance revenue. The migrations include the
 continuous-inventory refactor, POS/revenue persistence, Sales orders, and buyer
 carts.
 Product and ProductStall are mapped to `catalog.products` and
 `catalog.product_stalls`; Inventory is mapped to `inventory`, POS sales to
 `sales`, Cart and Order are mapped to `sales`, and POS revenue to `finance`.
-Inventory reservations, Payments, and Negotiation remain unmapped beyond the
-existing domain scaffolds and POS payment snapshot.
+Inventory reservations and Negotiation remain unmapped. Payments maps the
+initial `payments.payments` table; transaction/allocation/provider persistence
+remains deferred.
 
 ### API
 
