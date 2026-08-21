@@ -17,7 +17,7 @@ public sealed class DapperOutboxProcessor(
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-    private const string InsertSql =
+    private const string InsertEventSql =
         """
         INSERT INTO messaging.outbox_messages
             ("Id",
@@ -32,7 +32,7 @@ public sealed class DapperOutboxProcessor(
              @OccurredAt, @CreatedAt, NULL);
         """;
 
-    private const string ReadPendingSql =
+    private const string QueryPendingEventsSql =
         """
         SELECT "Id", "EventType", "Payload"::text AS "Payload"
         FROM messaging.outbox_messages
@@ -41,7 +41,8 @@ public sealed class DapperOutboxProcessor(
         LIMIT @BatchSize;
         """;
 
-    private const string MarkProcessedSql =
+
+    private const string UpdateProcessedSql =
         """
         UPDATE messaging.outbox_messages
         SET "ProcessedAt" = @ProcessedAt,
@@ -49,7 +50,7 @@ public sealed class DapperOutboxProcessor(
         WHERE "Id" = @Id;
         """;
 
-    private const string RecordErrorSql =
+    private const string UpdateErrorSql =
         """
         UPDATE messaging.outbox_messages
         SET "ErrorMessage" = @ErrorMessage
@@ -76,7 +77,7 @@ public sealed class DapperOutboxProcessor(
         var connection = dbContext.Database.GetDbConnection();
 
         await connection.ExecuteAsync(new CommandDefinition(
-            InsertSql,
+          InsertEventSql,
             new
             {
                 Id = Guid.NewGuid(),
@@ -90,17 +91,23 @@ public sealed class DapperOutboxProcessor(
             cancellationToken: cancellationToken));
     }
 
+    
+    //TODO: This function need to optimize about the performance
     public async Task<int> ProcessPendingAsync(
-        int batchSize = 100,
+        int batchSize,
         CancellationToken cancellationToken = default)
     {
+      
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(batchSize);
 
         var connection = dbContext.Database.GetDbConnection();
+        
+        //Query un_processed (processed_at is null) events
         var messages = await connection.QueryAsync<PendingOutboxMessage>(new CommandDefinition(
-            ReadPendingSql,
+          QueryPendingEventsSql,
             new { BatchSize = batchSize },
             cancellationToken: cancellationToken));
+        
         var processedCount = 0;
 
         foreach (var message in messages)
@@ -110,14 +117,14 @@ public sealed class DapperOutboxProcessor(
             try
             {
                 var clrType = eventTypes.GetClrType(message.EventType);
-                var domainEvent = JsonSerializer.Deserialize(message.Payload, clrType, JsonOptions)
-                    as IDomainEvent
+                var domainEvent = JsonSerializer.Deserialize(message.Payload, clrType, JsonOptions) as IDomainEvent
                     ?? throw new JsonException(
                         $"Payload for '{message.EventType}' could not be deserialized as a domain event.");
 
                 await publisher.PublishAsync(domainEvent, cancellationToken);
+                
                 await connection.ExecuteAsync(new CommandDefinition(
-                    MarkProcessedSql,
+                  UpdateProcessedSql,
                     new { message.Id, ProcessedAt = timeProvider.GetUtcNow() },
                     cancellationToken: cancellationToken));
                 processedCount++;
@@ -129,7 +136,7 @@ public sealed class DapperOutboxProcessor(
                     ? exception.Message
                     : exception.Message[..2000];
                 await connection.ExecuteAsync(new CommandDefinition(
-                    RecordErrorSql,
+                    UpdateErrorSql,
                     new { message.Id, ErrorMessage = errorMessage },
                     cancellationToken: cancellationToken));
             }
