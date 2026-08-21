@@ -8,4 +8,8 @@ public interface IOutboxProcessor
         TEvent domainEvent,
         CancellationToken cancellationToken = default)
         where TEvent : class, IDomainEvent;
+
+    Task<int> ProcessPendingAsync(
+        int batchSize = 100,
+        CancellationToken cancellationToken = default);
 }

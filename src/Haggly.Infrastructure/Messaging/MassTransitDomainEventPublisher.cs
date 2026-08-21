@@ -7,9 +7,11 @@ namespace Haggly.Infrastructure.Messaging;
 public sealed class MassTransitDomainEventPublisher(IPublishEndpoint publishEndpoint)
     : IDomainEventPublisher
 {
-    public Task PublishAsync<TEvent>(
-        TEvent integrationEvent,
+    public Task PublishAsync(
+        IDomainEvent domainEvent,
         CancellationToken cancellationToken = default)
-        where TEvent : class, IDomainEvent
-        => publishEndpoint.Publish(integrationEvent, cancellationToken);
+    {
+        ArgumentNullException.ThrowIfNull(domainEvent);
+        return publishEndpoint.Publish(domainEvent, domainEvent.GetType(), cancellationToken);
+    }
 }

@@ -1,4 +1,5 @@
 using Dapper;
+using Haggly.Application.Common.Messaging;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
@@ -27,7 +28,7 @@ public sealed class DapperOutboxProcessorTests
         var stored = await connection.QuerySingleAsync<StoredOutboxMessage>(
             """
             SELECT "Id", "EventType", "Payload"::text AS "Payload",
-                   "CorrelationId", "OccurredAt", "CreatedAt", "ProcessedAt"
+                   "CorrelationId", "OccurredAt", "CreatedAt", "ProcessedAt", "ErrorMessage"
             FROM messaging.outbox_messages
             WHERE "CorrelationId" = @CorrelationId;
             """,
@@ -81,14 +82,77 @@ public sealed class DapperOutboxProcessorTests
         Assert.Contains("active database transaction", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static DapperOutboxProcessor CreateProcessor(HagglyDbContext dbContext)
+    [Fact]
+    public async Task ProcessPendingAsync_WhenPublishSucceeds_SetsProcessedAt()
+    {
+        var domainEvent = CreateEvent();
+        var publisher = new RecordingDomainEventPublisher();
+        await InsertOutboxMessageAsync(domainEvent, publisher);
+        await using var dbContext = CreateDbContext();
+        var processor = CreateProcessor(dbContext, publisher);
+
+        var processedCount = await processor.ProcessPendingAsync(10, CancellationToken.None);
+
+        var stored = await ReadOutboxMessageAsync(domainEvent.CorrelationId);
+        Assert.Contains(domainEvent, publisher.PublishedEvents.OfType<TestOutboxEvent>());
+        Assert.Equal(publisher.PublishedEvents.Count, processedCount);
+        Assert.NotNull(stored.ProcessedAt);
+        Assert.Null(stored.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task ProcessPendingAsync_WhenPublishFails_StoresErrorAndLeavesMessagePending()
+    {
+        var domainEvent = CreateEvent();
+        var publisher = new RecordingDomainEventPublisher(new InvalidOperationException("broker unavailable"));
+        await InsertOutboxMessageAsync(domainEvent, publisher);
+        await using var dbContext = CreateDbContext();
+        var processor = CreateProcessor(dbContext, publisher);
+
+        var processedCount = await processor.ProcessPendingAsync(10, CancellationToken.None);
+
+        var stored = await ReadOutboxMessageAsync(domainEvent.CorrelationId);
+        Assert.Equal(0, processedCount);
+        Assert.Null(stored.ProcessedAt);
+        Assert.Contains("broker unavailable", stored.ErrorMessage, StringComparison.Ordinal);
+    }
+
+    private static DapperOutboxProcessor CreateProcessor(
+        HagglyDbContext dbContext,
+        IDomainEventPublisher? publisher = null)
         => new(
             dbContext,
             new DomainEventTypeRegistry(
             [
                 DomainEventTypeRegistration.For<TestOutboxEvent>("tests.outbox-event.v1")
             ]),
+            publisher ?? new RecordingDomainEventPublisher(),
             TimeProvider.System);
+
+    private static async Task InsertOutboxMessageAsync(
+        TestOutboxEvent domainEvent,
+        IDomainEventPublisher publisher)
+    {
+        await using var dbContext = CreateDbContext();
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        await CreateProcessor(dbContext, publisher).WriteAsync(domainEvent, CancellationToken.None);
+        await transaction.CommitAsync(CancellationToken.None);
+    }
+
+    private static async Task<StoredOutboxMessage> ReadOutboxMessageAsync(Guid correlationId)
+    {
+        await using var connection = await new DapperDbContext(
+            IntegrationTestDatabase.CreateConfiguration())
+            .OpenConnectionAsync(CancellationToken.None);
+        return await connection.QuerySingleAsync<StoredOutboxMessage>(
+            """
+            SELECT "Id", "EventType", "Payload"::text AS "Payload",
+                   "CorrelationId", "OccurredAt", "CreatedAt", "ProcessedAt", "ErrorMessage"
+            FROM messaging.outbox_messages
+            WHERE "CorrelationId" = @CorrelationId;
+            """,
+            new { CorrelationId = correlationId });
+    }
 
     private static HagglyDbContext CreateDbContext()
         => new(new DbContextOptionsBuilder<HagglyDbContext>()
@@ -111,5 +175,23 @@ public sealed class DapperOutboxProcessorTests
         Guid CorrelationId,
         DateTime OccurredAt,
         DateTime CreatedAt,
-        DateTime? ProcessedAt);
+        DateTime? ProcessedAt,
+        string? ErrorMessage);
+
+    private sealed class RecordingDomainEventPublisher(Exception? exception = null)
+        : IDomainEventPublisher
+    {
+        public List<IDomainEvent> PublishedEvents { get; } = [];
+
+        public Task PublishAsync(
+            IDomainEvent domainEvent,
+            CancellationToken cancellationToken = default)
+        {
+            if (exception is not null)
+                throw exception;
+
+            PublishedEvents.Add(domainEvent);
+            return Task.CompletedTask;
+        }
+    }
 }
