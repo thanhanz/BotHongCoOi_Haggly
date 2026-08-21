@@ -17,9 +17,9 @@ public sealed class DapperOutboxProcessorTests
         var domainEvent = CreateEvent();
         await using var dbContext = CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var processor = CreateProcessor(dbContext);
+        var writer = CreateWriter(dbContext);
 
-        await processor.WriteAsync(domainEvent, CancellationToken.None);
+        await writer.WriteAsync(domainEvent, CancellationToken.None);
         await transaction.CommitAsync(CancellationToken.None);
 
         await using var connection = await new DapperDbContext(
@@ -51,9 +51,9 @@ public sealed class DapperOutboxProcessorTests
         var domainEvent = CreateEvent();
         await using var dbContext = CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        var processor = CreateProcessor(dbContext);
+        var writer = CreateWriter(dbContext);
 
-        await processor.WriteAsync(domainEvent, CancellationToken.None);
+        await writer.WriteAsync(domainEvent, CancellationToken.None);
         await transaction.RollbackAsync(CancellationToken.None);
 
         await using var connection = await new DapperDbContext(
@@ -74,10 +74,10 @@ public sealed class DapperOutboxProcessorTests
     public async Task WriteAsync_WithoutActiveTransaction_ThrowsInvalidOperationException()
     {
         await using var dbContext = CreateDbContext();
-        var processor = CreateProcessor(dbContext);
+        var writer = CreateWriter(dbContext);
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            processor.WriteAsync(CreateEvent(), CancellationToken.None));
+            writer.WriteAsync(CreateEvent(), CancellationToken.None));
 
         Assert.Contains("active database transaction", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -87,7 +87,7 @@ public sealed class DapperOutboxProcessorTests
     {
         var domainEvent = CreateEvent();
         var publisher = new RecordingDomainEventPublisher();
-        await InsertOutboxMessageAsync(domainEvent, publisher);
+        await InsertOutboxMessageAsync(domainEvent);
         await using var dbContext = CreateDbContext();
         var processor = CreateProcessor(dbContext, publisher);
 
@@ -105,7 +105,7 @@ public sealed class DapperOutboxProcessorTests
     {
         var domainEvent = CreateEvent();
         var publisher = new RecordingDomainEventPublisher(new InvalidOperationException("broker unavailable"));
-        await InsertOutboxMessageAsync(domainEvent, publisher);
+        await InsertOutboxMessageAsync(domainEvent);
         await using var dbContext = CreateDbContext();
         var processor = CreateProcessor(dbContext, publisher);
 
@@ -129,13 +129,20 @@ public sealed class DapperOutboxProcessorTests
             publisher ?? new RecordingDomainEventPublisher(),
             TimeProvider.System);
 
-    private static async Task InsertOutboxMessageAsync(
-        TestOutboxEvent domainEvent,
-        IDomainEventPublisher publisher)
+    private static DapperOutboxWriter CreateWriter(HagglyDbContext dbContext)
+        => new(
+            dbContext,
+            new DomainEventTypeRegistry(
+            [
+                DomainEventTypeRegistration.For<TestOutboxEvent>("tests.outbox-event.v1")
+            ]),
+            TimeProvider.System);
+
+    private static async Task InsertOutboxMessageAsync(TestOutboxEvent domainEvent)
     {
         await using var dbContext = CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
-        await CreateProcessor(dbContext, publisher).WriteAsync(domainEvent, CancellationToken.None);
+        await CreateWriter(dbContext).WriteAsync(domainEvent, CancellationToken.None);
         await transaction.CommitAsync(CancellationToken.None);
     }
 

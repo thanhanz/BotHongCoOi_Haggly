@@ -1,5 +1,4 @@
 using Haggly.Application.Common.Messaging;
-using Haggly.Domain.Common.Events.V1;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,12 +35,6 @@ public sealed class OutboxBackgroundServiceTests
     {
         public int BatchSize { get; private set; }
         public int CallCount { get; private set; }
-
-        public Task WriteAsync<TEvent>(
-            TEvent domainEvent,
-            CancellationToken cancellationToken = default)
-            where TEvent : class, IDomainEvent
-            => Task.CompletedTask;
 
         public Task<int> ProcessPendingAsync(
             int batchSize = 100,
