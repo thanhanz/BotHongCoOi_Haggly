@@ -36,8 +36,9 @@ remain future workflows.
   registers a publisher-only bus connection. A PostgreSQL outbox schema,
   transaction-aware Dapper outbox processor, and explicit domain-event type
   registry are implemented. The processor uses the framework `System.Text.Json` serializer
-  directly. Concrete payment messages, consumers, and the
-  outbox dispatcher are not implemented yet.
+  directly. The processor can publish bounded batches manually and records
+  success or failure on each row. Concrete payment messages, consumers, and
+  scheduled background dispatch are not implemented yet.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.
