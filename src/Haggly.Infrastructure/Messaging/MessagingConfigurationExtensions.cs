@@ -1,6 +1,7 @@
 using Haggly.Application.Common.Messaging;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
+using Haggly.Application.Modules.Payments.Events.V1;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,11 +46,12 @@ public static class MessagingConfigurationExtensions
         });
 
         services.AddScoped<IDomainEventPublisher, MassTransitDomainEventPublisher>();
-        
+        services.AddScoped<IOutboxWriter, DapperOutboxWriter>();
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
         services.AddHostedService<OutboxBackgroundService>();
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));
+        services.AddDomainEvent<PaymentRequested>("payments.payment-requested.v1");
         return services;
     }
 
