@@ -1,4 +1,6 @@
 using Haggly.Application.Common.Messaging;
+using Haggly.Infrastructure.Messaging.Outbox;
+using Haggly.Infrastructure.Messaging.Serialization;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,19 @@ public static class MessagingConfigurationExtensions
         });
 
         services.AddScoped<IDomainEventPublisher, MassTransitDomainEventPublisher>();
+        
+        services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
+        services.AddSingleton(provider => new DomainEventTypeRegistry(
+            provider.GetServices<DomainEventTypeRegistration>()));
+        return services;
+    }
+
+    public static IServiceCollection AddDomainEvent<TEvent>(
+        this IServiceCollection services,
+        string eventType)
+        where TEvent : class, Haggly.Domain.Common.Events.V1.IDomainEvent
+    {
+        services.AddSingleton(DomainEventTypeRegistration.For<TEvent>(eventType));
         return services;
     }
 }
