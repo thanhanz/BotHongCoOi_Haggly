@@ -37,8 +37,10 @@ remain future workflows.
   transaction-aware Dapper outbox processor, and explicit domain-event type
   registry are implemented. The processor uses the framework `System.Text.Json` serializer
   directly. The processor can publish bounded batches manually and records
-  success or failure on each row. Concrete payment messages, consumers, and
-  scheduled background dispatch are not implemented yet.
+  success or failure on each row. A configurable hosted service runs this
+  processor periodically in the API process. Concrete payment messages,
+  consumers, inbox deduplication, and multi-instance row claiming are not
+  implemented yet.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.

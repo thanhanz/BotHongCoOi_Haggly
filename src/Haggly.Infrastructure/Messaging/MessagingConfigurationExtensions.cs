@@ -20,6 +20,12 @@ public static class MessagingConfigurationExtensions
                 "RabbitMq configuration requires host, port, virtual host, username, and password.")
             .ValidateOnStart();
 
+        services.AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection(OutboxOptions.SectionName))
+            .Validate(options => options.IsValid(),
+                "Enabled Outbox configuration requires a positive interval and batch size.")
+            .ValidateOnStart();
+
         services.AddMassTransit(configurator =>
         {
             configurator.UsingRabbitMq((context, rabbitMq) =>
@@ -41,6 +47,7 @@ public static class MessagingConfigurationExtensions
         services.AddScoped<IDomainEventPublisher, MassTransitDomainEventPublisher>();
         
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
+        services.AddHostedService<OutboxBackgroundService>();
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));
         return services;
