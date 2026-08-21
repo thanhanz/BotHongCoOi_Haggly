@@ -6,6 +6,7 @@ using Haggly.Api.Endpoints.Markets;
 using Haggly.Api.Endpoints.Catalog;
 using Haggly.Api.Endpoints.Inventory;
 using Haggly.Api.Endpoints.Sales;
+using Haggly.Infrastructure.Messaging;
 
 public partial class Program
 {
@@ -14,6 +15,7 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddPersistence(builder.Configuration);
+        builder.Services.AddMessaging(builder.Configuration);
         builder.Services.AddTokenServices(builder.Configuration);
         builder.Services.AddApiServices();
 
