@@ -2,6 +2,7 @@ using Haggly.Application.Common.Messaging;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Application.Modules.Payments.Events.V1;
+using Haggly.Infrastructure.Messaging.Consumers;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,8 @@ public static class MessagingConfigurationExtensions
 
         services.AddMassTransit(configurator =>
         {
+            configurator.AddConsumer<PaymentRequestedMassTransitConsumer>();
+
             configurator.UsingRabbitMq((context, rabbitMq) =>
             {
                 var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
@@ -42,12 +45,17 @@ public static class MessagingConfigurationExtensions
                         host.Username(options.Username);
                         host.Password(options.Password);
                     });
+
+                rabbitMq.ConfigureEndpoints(context);
             });
         });
 
         services.AddScoped<IDomainEventPublisher, MassTransitDomainEventPublisher>();
         services.AddScoped<IOutboxWriter, DapperOutboxWriter>();
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
+
+        services.AddScoped<IDomainEventConsumer<PaymentRequested>, ProcessPaymentRequestedConsumer>();
+        
         services.AddHostedService<OutboxBackgroundService>();
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));

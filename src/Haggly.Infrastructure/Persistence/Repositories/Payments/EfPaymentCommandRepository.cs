@@ -9,6 +9,13 @@ namespace Haggly.Infrastructure.Persistence.Repositories.Payments;
 public sealed class EfPaymentCommandRepository(HagglyDbContext dbContext)
     : IPaymentCommandRepository
 {
+    public Task<Payment?> FindByIdAsync(
+        Guid paymentId,
+        CancellationToken cancellationToken)
+        => dbContext.Payments.SingleOrDefaultAsync(
+            payment => payment.Id == paymentId,
+            cancellationToken);
+
     public Task<PaymentOrderSnapshot?> FindOrderAsync(
         Guid orderId,
         CancellationToken cancellationToken)
@@ -32,6 +39,14 @@ public sealed class EfPaymentCommandRepository(HagglyDbContext dbContext)
     public Task AddAsync(Payment payment, CancellationToken cancellationToken)
     {
         dbContext.Payments.Add(payment);
+        return Task.CompletedTask;
+    }
+
+    public Task AddTransactionAsync(
+        PaymentTransaction transaction,
+        CancellationToken cancellationToken)
+    {
+        dbContext.PaymentTransactions.Add(transaction);
         return Task.CompletedTask;
     }
 

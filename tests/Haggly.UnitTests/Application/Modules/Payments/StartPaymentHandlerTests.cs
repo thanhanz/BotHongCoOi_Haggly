@@ -122,6 +122,11 @@ public sealed class StartPaymentHandlerTests
         public List<Payment> Payments { get; } = [];
         public int SaveCount { get; private set; }
 
+        public Task<Payment?> FindByIdAsync(Guid paymentId, CancellationToken cancellationToken)
+            => Task.FromResult(
+                Payments.Concat(ExistingPayment is null ? [] : [ExistingPayment])
+                    .SingleOrDefault(payment => payment.Id == paymentId));
+
         public Task<PaymentOrderSnapshot?> FindOrderAsync(Guid orderId, CancellationToken cancellationToken)
             => Task.FromResult(Order?.OrderId == orderId ? Order : null);
 
@@ -133,6 +138,11 @@ public sealed class StartPaymentHandlerTests
             Payments.Add(payment);
             return Task.CompletedTask;
         }
+
+        public Task AddTransactionAsync(
+            PaymentTransaction transaction,
+            CancellationToken cancellationToken)
+            => Task.CompletedTask;
 
         public Task SaveChangesAsync(CancellationToken cancellationToken)
         {
