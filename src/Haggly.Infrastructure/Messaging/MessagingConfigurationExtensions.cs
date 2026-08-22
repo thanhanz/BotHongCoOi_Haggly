@@ -30,7 +30,12 @@ public static class MessagingConfigurationExtensions
 
         services.AddMassTransit(configurator =>
         {
-            configurator.AddConsumer<PaymentRequestedMassTransitConsumer>();
+            configurator.AddConsumer<PaymentRequestedMassTransitConsumer,
+                PaymentRequestedConsumerDefinition>();
+
+            //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
+            //Ex: PaymentRequested -> payment-requested
+            configurator.SetKebabCaseEndpointNameFormatter();
 
             configurator.UsingRabbitMq((context, rabbitMq) =>
             {
@@ -46,6 +51,13 @@ public static class MessagingConfigurationExtensions
                         host.Password(options.Password);
                     });
 
+                rabbitMq.Message<PaymentRequested>(message =>
+                    message.SetEntityName(PaymentMessagingNames.PaymentRequestedExchange));
+                rabbitMq.Message<PaymentSucceeded>(message =>
+                    message.SetEntityName(PaymentMessagingNames.PaymentSucceededExchange));
+                rabbitMq.Message<PaymentFailed>(message =>
+                    message.SetEntityName(PaymentMessagingNames.PaymentFailedExchange));
+
                 rabbitMq.ConfigureEndpoints(context);
             });
         });
@@ -60,9 +72,9 @@ public static class MessagingConfigurationExtensions
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));
         
-        services.AddDomainEvent<PaymentRequested>("payments.payment-requested.v1");
-        services.AddDomainEvent<PaymentSucceeded>("payments.payment-succeeded.v1");
-        services.AddDomainEvent<PaymentFailed>("payments.payment-failed.v1");
+        services.AddDomainEvent<PaymentRequested>(PaymentMessagingNames.PaymentRequestedExchange);
+        services.AddDomainEvent<PaymentSucceeded>(PaymentMessagingNames.PaymentSucceededExchange);
+        services.AddDomainEvent<PaymentFailed>(PaymentMessagingNames.PaymentFailedExchange);
         return services;
     }
 

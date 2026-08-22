@@ -1,0 +1,11 @@
+namespace Haggly.Infrastructure.Messaging;
+
+public static class PaymentMessagingNames
+{
+    public const string PaymentRequestedExchange = "payments.payment-requested.v1";
+    public const string PaymentSucceededExchange = "payments.payment-succeeded.v1";
+    public const string PaymentFailedExchange = "payments.payment-failed.v1";
+
+    public const string PaymentRequestedQueue = "haggly-payments-payment-requested-v1";
+    public const string PaymentRequestedErrorQueue = PaymentRequestedQueue + "_error";
+}
