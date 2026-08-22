@@ -47,6 +47,12 @@ remain future workflows.
 - xUnit `2.9.3` with the Microsoft .NET test SDK.
 - PostgreSQL 17 for local development through `docker-compose.yml`.
 
+Runtime timestamps are represented as `DateTimeOffset`, created from UTC
+clocks (`TimeProvider.GetUtcNow()`/`DateTimeOffset.UtcNow`), normalized to
+offset `+00:00` at application boundaries, and persisted as PostgreSQL
+`timestamp with time zone`. Local time zones are used only when deriving a
+business calendar date for display or daily business rules.
+
 The repository does not currently reference FluentValidation,
 FluentAssertions, Testcontainers, or OpenTelemetry. They remain possible
 future choices, not current architectural dependencies.
