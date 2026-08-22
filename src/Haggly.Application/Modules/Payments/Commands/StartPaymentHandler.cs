@@ -22,7 +22,9 @@ public sealed class StartPaymentHandler(
         CancellationToken cancellationToken)
     {
         if (command.OrderId == Guid.Empty)
-            throw new ArgumentException("A valid order ID is required.", nameof(command));
+            throw new PaymentValidationException("A valid order ID is required.");
+        if (command.BuyerId == Guid.Empty)
+            throw new PaymentValidationException("A valid buyer ID is required.");
 
         return unitOfWork.ExecuteInTransactionAsync(async transactionCancellationToken =>
         {
@@ -31,6 +33,8 @@ public sealed class StartPaymentHandler(
                 transactionCancellationToken)
                 ?? throw new PaymentNotFoundException("The order was not found.");
 
+            if (order.BuyerId != command.BuyerId)
+                throw new PaymentForbiddenException("The order belongs to another buyer.");
             if (order.Status is not OrderStatus.AGREED and not OrderStatus.PAYMENT_PENDING)
                 throw new PaymentConflictException("The order is not ready for payment.");
             if (order.Amount <= 0)

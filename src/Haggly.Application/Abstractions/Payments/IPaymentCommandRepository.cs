@@ -20,6 +20,7 @@ public interface IPaymentCommandRepository
 
 public sealed record PaymentOrderSnapshot(
     Guid OrderId,
+    Guid BuyerId,
     OrderStatus Status,
     decimal Amount,
     string Currency);

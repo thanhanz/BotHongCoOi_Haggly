@@ -16,6 +16,7 @@ public sealed class EfPaymentCommandRepository(HagglyDbContext dbContext)
             .Where(order => order.Id == orderId)
             .Select(order => new PaymentOrderSnapshot(
                 order.Id,
+                order.BuyerId,
                 order.Status,
                 order.TotalToCharge,
                 order.Currency))

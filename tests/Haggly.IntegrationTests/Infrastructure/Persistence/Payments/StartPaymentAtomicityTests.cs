@@ -21,11 +21,11 @@ public sealed class StartPaymentAtomicityTests
     [Fact]
     public async Task Handle_WhenPaymentAndOutboxSucceed_CommitsBothRecords()
     {
-        var orderId = await CreateAgreedOrderAsync();
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
         await using var dbContext = CreateDbContext();
         var handler = CreateHandler(dbContext, CreateWriter(dbContext));
 
-        var result = await handler.Handle(new StartPaymentCommand(orderId), CancellationToken.None);
+        var result = await handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None);
 
         await using var connection = await OpenConnectionAsync();
         Assert.Equal(1, await connection.ExecuteScalarAsync<int>(
@@ -39,12 +39,12 @@ public sealed class StartPaymentAtomicityTests
     [Fact]
     public async Task Handle_WhenOutboxWriteFails_RollsBackPaymentRecord()
     {
-        var orderId = await CreateAgreedOrderAsync();
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
         await using var dbContext = CreateDbContext();
         var handler = CreateHandler(dbContext, new FailingOutboxWriter());
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            handler.Handle(new StartPaymentCommand(orderId), CancellationToken.None));
+            handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None));
 
         await using var connection = await OpenConnectionAsync();
         Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
@@ -70,7 +70,7 @@ public sealed class StartPaymentAtomicityTests
             ]),
             TimeProvider.System);
 
-    private static async Task<Guid> CreateAgreedOrderAsync()
+    private static async Task<(Guid OrderId, Guid BuyerId)> CreateAgreedOrderAsync()
     {
         var buyerId = Guid.NewGuid();
         var orderId = Guid.NewGuid();
@@ -102,7 +102,7 @@ public sealed class StartPaymentAtomicityTests
                 OrderNo = $"ORD-{orderId:N}".ToUpperInvariant(),
                 Now
             });
-        return orderId;
+        return (orderId, buyerId);
     }
 
     private static HagglyDbContext CreateDbContext()

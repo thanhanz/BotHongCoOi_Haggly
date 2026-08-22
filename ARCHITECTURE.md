@@ -123,7 +123,7 @@ are:
 | Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
-| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Payment initiation slice implemented through Domain, Application, PostgreSQL persistence, and transactional outbox; provider processing and API deferred |
+| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Payment initiation implemented through Domain, Application, PostgreSQL persistence, transactional outbox, and buyer API; provider processing deferred |
 | Finance | `RevenueLedger`, `RevenueEntryType` | POS sale revenue ledger implemented; broader reporting remains scaffold-only |
 
 Negotiation is currently a top-level Domain module under
@@ -224,6 +224,10 @@ remains deferred.
 `src/Haggly.Api/Program.cs` composes the application by registering persistence,
 token services, and API services. The request pipeline uses exception handling,
 authentication, and authorization middleware.
+
+Payments exposes buyer-authorized `POST /api/v1/payments`. It validates Order
+ownership and eligibility, atomically creates a pending Payment plus
+`PaymentRequested`, and returns `202 Accepted`.
 
 Identity routes are grouped under `/api/v1/identity`:
 

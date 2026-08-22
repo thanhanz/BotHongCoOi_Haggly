@@ -20,16 +20,17 @@ public sealed class StartPaymentHandlerTests
     public async Task Handle_WhenOrderIsAgreed_CreatesPendingPaymentAndWritesRequestedEvent()
     {
         var orderId = Guid.NewGuid();
+        var buyerId = Guid.NewGuid();
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(orderId, OrderStatus.AGREED, 300_000m, "VND")
+            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
         };
         var outbox = new FakeOutboxWriter();
         var unitOfWork = new FakePaymentUnitOfWork();
         var handler = new StartPaymentHandler(
             repository, outbox, unitOfWork, new FixedBusinessClock(Now));
 
-        var result = await handler.Handle(new StartPaymentCommand(orderId), CancellationToken.None);
+        var result = await handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None);
 
         var payment = Assert.Single(repository.Payments);
         var requested = Assert.IsType<PaymentRequested>(Assert.Single(outbox.Events));
@@ -47,9 +48,10 @@ public sealed class StartPaymentHandlerTests
     public async Task Handle_WhenOrderIsNotEligible_ThrowsPaymentConflictException()
     {
         var orderId = Guid.NewGuid();
+        var buyerId = Guid.NewGuid();
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(orderId, OrderStatus.NEGOTIATING, 300_000m, "VND")
+            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.NEGOTIATING, 300_000m, "VND")
         };
         var handler = new StartPaymentHandler(
             repository,
@@ -58,7 +60,32 @@ public sealed class StartPaymentHandlerTests
             new FixedBusinessClock(Now));
 
         await Assert.ThrowsAsync<PaymentConflictException>(() =>
-            handler.Handle(new StartPaymentCommand(orderId), CancellationToken.None));
+            handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_WhenOrderBelongsToAnotherBuyer_ThrowsPaymentForbiddenException()
+    {
+        var orderId = Guid.NewGuid();
+        var repository = new FakePaymentCommandRepository
+        {
+            Order = new PaymentOrderSnapshot(
+                orderId,
+                Guid.NewGuid(),
+                OrderStatus.AGREED,
+                300_000m,
+                "VND")
+        };
+        var handler = new StartPaymentHandler(
+            repository,
+            new FakeOutboxWriter(),
+            new FakePaymentUnitOfWork(),
+            new FixedBusinessClock(Now));
+
+        await Assert.ThrowsAsync<PaymentForbiddenException>(() =>
+            handler.Handle(
+                new StartPaymentCommand(orderId, Guid.NewGuid()),
+                CancellationToken.None));
     }
 
     private sealed class FakePaymentCommandRepository : IPaymentCommandRepository

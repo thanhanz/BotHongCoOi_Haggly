@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Haggly.Application.Modules.Payments.Commands;
 
-public sealed record StartPaymentCommand(Guid OrderId) : IRequest<PaymentDto>;
+public sealed record StartPaymentCommand(Guid OrderId, Guid BuyerId) : IRequest<PaymentDto>;
