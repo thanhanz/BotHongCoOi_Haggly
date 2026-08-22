@@ -37,8 +37,8 @@ Evidence rules:
 | Mode | Operating rule |
 |---|---|
 | Explain, review, diagnose | Inspect and report; do not modify code unless asked. |
-| Bug fix | Identify the failing path and owning rule, add a regression test, make the smallest fix. |
-| New behavior | Find the requirement and business rule, then implement one vertical slice. |
+| Bug fix | Identify the failing path and owning rule, add the smallest regression test, make the smallest fix. |
+| New behavior | Find the requirement and business rule, then implement one vertical slice using the root risk-based test policy. |
 | Refactor | Preserve observable behavior, establish coverage first, avoid feature work. |
 | API change | Inspect business owner, application contract, validation, authorization, OpenAPI, integration tests. |
 | Persistence change | Inspect ownership, application port, mapping/query, transaction, migration, integration tests. |
@@ -136,10 +136,21 @@ Discover verification rather than trusting stale commands. Inspect:
 - CI workflows and repository scripts;
 - the relevant test projects.
 
-Confirm every project referenced by a solution or command exists. Run the
-narrowest relevant build/test first, then broaden in proportion to risk.
+Confirm every project referenced by a solution or command exists. Run commands
+sequentially and stop at the first failure so its cause remains clear. For local
+verification:
 
-Preferred full ladder when the workspace supports it:
+1. Build the smallest affected project to catch compilation and nullable errors.
+2. Run the new or directly affected test.
+3. Run the affected test class or module filter.
+4. Run integration tests only for a real boundary or measured integration risk.
+
+Do not invent a lint command when the repository has none. Use the configured
+build and analyzers as the compilation/type check. Leave the complete unit and
+integration suites to pull-request or release CI unless the user explicitly
+requests them locally.
+
+Full CI/release ladder when the workspace supports it:
 
 ```powershell
 dotnet restore Haggly.slnx
@@ -157,6 +168,17 @@ dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
 Use real boundary tests for EF Core, Dapper, database constraints,
 transactions, authentication, and external adapters. Mocks cannot prove
 provider behavior.
+
+Add end-to-end, concurrency, load, or stress tests only for a named critical
+journey or measured risk with an explicit acceptance criterion. Do not disable
+xUnit parallelism for fast unit tests merely to make commands sequential;
+integration tests may remain non-parallel when they share real infrastructure.
+
+Never retry a failed test blindly. Read the assertion, exception, logs, and
+relevant implementation, classify the failure as production behavior, test
+setup, environment, or instability, and fix the root cause. Never loosen an
+assertion, remove an important scenario, add an arbitrary delay, or disable a
+test merely to make CI pass.
 
 Never transform "not run," "not discovered," "unavailable," or a pre-existing
 failure into a passing result. Report the command, outcome, and limitation.
@@ -181,7 +203,8 @@ A code change is complete only when:
 
 - requested observable behavior is implemented in the owning module;
 - governing rules and important assumptions are preserved or disclosed;
-- relevant regression or feature tests exist;
+- risk-selected tests required by the root policy exist, and omitted tests are
+  justified;
 - architecture and module boundaries remain valid;
 - focused verification passes, or failures are accurately reported;
 - affected contracts, migrations, configuration, and documentation agree;

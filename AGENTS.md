@@ -85,18 +85,74 @@ For business behavior, inspect in this order:
 
 Do not put business decisions in endpoints, EF mappings, or adapters.
 
-## Test-first development (TDD)
+## Risk-based testing and verification
 
-For every new feature or behavior change:
+Test behavior Haggly owns. Do not test framework internals, library behavior,
+trivial data containers, or implementation details. Test each behavior at the
+lowest layer that can prove it. Do not repeat the same business scenario at
+multiple layers unless each test covers a distinct risk.
 
-1. Write the relevant test cases first with the format `Method_Scenario_ExpectedResult`.
-2. Run the tests and confirm the new tests fail for the expected reason.
-3. Implement the new function or modify the existing code.
-4. Run the tests again.
-5. Review and refactor the implementation while keeping all tests passing.
+Strict red-green-refactor TDD is required for:
 
-Do not implement production behavior before its tests unless the user explicitly
-requests otherwise.
+- Domain invariants, calculations, policies, and state transitions.
+- Critical MVP workflows involving inventory, orders, payments, authorization,
+  or cross-module consistency.
+- Bug fixes, using a regression test that reproduces the defect.
+
+For these changes:
+
+1. Add the smallest test that proves the behavior, named
+   `Method_Scenario_ExpectedResult`.
+2. Run it and confirm it fails for the expected reason.
+3. Implement the smallest production change.
+4. Run the focused test again and refactor while it remains passing.
+
+Choose the test layer by responsibility:
+
+- Domain unit tests prove business rules without infrastructure.
+- Application unit tests prove meaningful orchestration, authorization
+  decisions, and failure handling; do not test pass-through handlers.
+- Integration tests prove boundaries Haggly depends on, including PostgreSQL
+  behavior, transactions, EF/Dapper mappings, authentication pipelines, and
+  provider adapters.
+- API contract tests prove routes, binding, authorization metadata, status
+  codes, and public response shapes without duplicating domain scenarios.
+- End-to-end, concurrency, load, and stress tests are added intentionally for
+  named critical journeys or measured risks, not as default feature coverage.
+
+A new test is normally unnecessary for DTO-only changes, trivial property
+mapping, pass-through queries, framework wiring already covered by a boundary
+test, or refactoring with unchanged observable behavior. When omitting tests,
+state why existing coverage and verification are sufficient.
+
+Use this verification ladder and stop at the first failure:
+
+1. Build the smallest affected project to catch compilation and nullable errors.
+2. Run the new or directly affected test.
+3. Run the affected test class or module filter.
+4. Run integration tests only when the change crosses a real boundary.
+5. Leave the complete unit and integration suites to pull-request or release CI.
+
+Run verification commands sequentially by default so failures retain a clear
+cause. This does not require disabling xUnit's normal parallel execution inside
+the fast unit-test project. Integration tests remain non-parallel because they
+share real infrastructure.
+
+Never retry a failed test without first reading its assertion, exception, logs,
+and relevant implementation. Determine whether the cause is production
+behavior, test setup, environment, or an unstable test, then fix the root cause.
+Never loosen assertions, remove important scenarios, add arbitrary delays, or
+disable tests merely to make CI pass.
+
+Report every command actually run, its outcome, broader suites left to CI, and
+any verification limitation. Never claim an unrun or retried suite passed.
+
+Do not delete existing tests during unrelated feature work. Audit test removal
+separately and classify candidates as critical MVP behavior, unique domain or
+boundary protection, duplicate coverage, obsolete behavior, or tests coupled
+only to implementation details. Remove a test only when its production behavior
+is removed or equivalent protection remains at a more appropriate layer. Being
+outside the MVP is not sufficient when the behavior still exists in production.
 
 ## Workspace hygiene
 
@@ -128,7 +184,8 @@ Preserve public contracts unless the request explicitly changes them.
 ## Verification
 
 Inspect `global.json`, shared props, `Haggly.slnx`, affected `.csproj` files, and
-CI before choosing commands. Confirm referenced projects exist. Preferred ladder:
+CI before choosing commands. Confirm referenced projects exist. Full CI/release
+ladder:
 
 ```powershell
 dotnet restore Haggly.slnx
@@ -136,8 +193,11 @@ dotnet build Haggly.slnx --no-restore
 dotnet test Haggly.slnx --no-build
 ```
 
-Run focused project tests first. For persistence, authentication, transactions,
-or providers, use integration tests that exercise the real boundary.
+For local verification, follow the risk-based ladder above instead of running
+the full solution suite by default. Run focused project tests first. For
+persistence, authentication, transactions, or providers, use integration tests
+that exercise the real boundary. The complete unit and integration suites are
+pull-request or release CI gates.
 
 When a persistence model changes, use the migration command documented in
 `docs/agent-guides/persistence.md`:
@@ -152,6 +212,7 @@ dotnet ef migrations add CreateMarketAndStallEntities `
 
 ## Completion
 
-Finish only when behavior, relevant tests, boundaries, contracts, migrations,
-configuration, and documentation are consistent. Report changed behavior,
-files, exact checks run, failures or skipped checks, and remaining risks.
+Finish only when behavior, risk-selected tests, boundaries, contracts,
+migrations, configuration, and documentation are consistent. Report changed
+behavior, omitted-test justification, files, exact checks run, failures or
+skipped checks, and remaining risks.
