@@ -20,6 +20,19 @@ public sealed class PaymentDomainTests
         Assert.Equal(Now, payment.InitiatedAt);
     }
 
+    [Fact]
+    public void Create_WithNonUtcTimestamp_NormalizesStoredTimestampToUtc()
+    {
+        var localTimestamp = new DateTimeOffset(2026, 8, 22, 8, 0, 0, TimeSpan.FromHours(7));
+
+        var payment = Payment.Create(
+            Guid.NewGuid(), Guid.NewGuid(), 300_000m, "VND", localTimestamp);
+
+        Assert.Equal(TimeSpan.Zero, payment.InitiatedAt.Offset);
+        Assert.Equal(localTimestamp.UtcDateTime, payment.InitiatedAt.UtcDateTime);
+        Assert.Equal(TimeSpan.Zero, payment.CreatedAt.Offset);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]

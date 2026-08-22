@@ -140,6 +140,19 @@ public sealed class DapperOutboxProcessorTests
 
     private static async Task InsertOutboxMessageAsync(TestOutboxEvent domainEvent)
     {
+        await using (var cleanupConnection = await new DapperDbContext(
+            IntegrationTestDatabase.CreateConfiguration())
+            .OpenConnectionAsync(CancellationToken.None))
+        {
+            await cleanupConnection.ExecuteAsync(
+                """
+                UPDATE messaging.outbox_messages
+                SET "ProcessedAt" = COALESCE("ProcessedAt", @ProcessedAt)
+                WHERE "ProcessedAt" IS NULL;
+                """,
+                new { ProcessedAt = DateTimeOffset.UtcNow });
+        }
+
         await using var dbContext = CreateDbContext();
         await using var transaction = await dbContext.Database.BeginTransactionAsync();
         await CreateWriter(dbContext).WriteAsync(domainEvent, CancellationToken.None);

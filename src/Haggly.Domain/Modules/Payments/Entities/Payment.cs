@@ -42,6 +42,8 @@ public sealed class Payment : AuditableEntity
         if (normalizedCurrency.Length != 3)
             throw new ArgumentException("Currency must be a three-letter code.", nameof(currency));
 
+        var utcInitiatedAt = initiatedAt.ToUniversalTime();
+
         return new Payment
         {
             Id = id,
@@ -51,8 +53,8 @@ public sealed class Payment : AuditableEntity
             AmountPaid = 0m,
             Currency = normalizedCurrency,
             Status = PaymentStatus.PENDING,
-            InitiatedAt = initiatedAt,
-            CreatedAt = initiatedAt
+            InitiatedAt = utcInitiatedAt,
+            CreatedAt = utcInitiatedAt
         };
     }
 
@@ -62,7 +64,7 @@ public sealed class Payment : AuditableEntity
             throw new InvalidOperationException("Only a pending or failed payment can start processing.");
 
         Status = PaymentStatus.PROCESSING;
-        UpdatedAt = occurredAt;
+        UpdatedAt = occurredAt.ToUniversalTime();
     }
 
     public void MarkPaid(DateTimeOffset occurredAt)
@@ -70,10 +72,11 @@ public sealed class Payment : AuditableEntity
         if (Status != PaymentStatus.PROCESSING)
             throw new InvalidOperationException("Only a processing payment can be marked paid.");
 
+        var utcOccurredAt = occurredAt.ToUniversalTime();
         Status = PaymentStatus.PAID;
         AmountPaid = AmountDue;
-        CompletedAt = occurredAt;
-        UpdatedAt = occurredAt;
+        CompletedAt = utcOccurredAt;
+        UpdatedAt = utcOccurredAt;
     }
 
     public void MarkFailed(DateTimeOffset occurredAt)
@@ -84,6 +87,6 @@ public sealed class Payment : AuditableEntity
         Status = PaymentStatus.FAILED;
         AmountPaid = 0m;
         CompletedAt = null;
-        UpdatedAt = occurredAt;
+        UpdatedAt = occurredAt.ToUniversalTime();
     }
 }

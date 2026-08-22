@@ -42,7 +42,7 @@ public sealed class StartPaymentHandler(
             if (await repository.FindByOrderIdAsync(order.OrderId, transactionCancellationToken) is not null)
                 throw new PaymentConflictException("A payment already exists for this order.");
 
-            var occurredAt = businessClock.GetNow();
+            var occurredAt = businessClock.GetNow().ToUniversalTime();
             var payment = Payment.Create(
                 Guid.NewGuid(),
                 order.OrderId,

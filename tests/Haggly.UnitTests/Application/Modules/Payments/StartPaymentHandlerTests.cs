@@ -88,6 +88,33 @@ public sealed class StartPaymentHandlerTests
                 CancellationToken.None));
     }
 
+    [Fact]
+    public async Task Handle_WhenClockHasNonUtcOffset_WritesUtcEventMetadata()
+    {
+        var orderId = Guid.NewGuid();
+        var buyerId = Guid.NewGuid();
+        var localTimestamp = new DateTimeOffset(2026, 8, 22, 8, 0, 0, TimeSpan.FromHours(7));
+        var repository = new FakePaymentCommandRepository
+        {
+            Order = new PaymentOrderSnapshot(
+                orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
+        };
+        var outbox = new FakeOutboxWriter();
+        var handler = new StartPaymentHandler(
+            repository,
+            outbox,
+            new FakePaymentUnitOfWork(),
+            new FixedBusinessClock(localTimestamp));
+
+        await handler.Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+
+        var requested = Assert.IsType<PaymentRequested>(Assert.Single(outbox.Events));
+        Assert.Equal(TimeSpan.Zero, requested.OccurredAt.Offset);
+        Assert.Equal(localTimestamp.UtcDateTime, requested.OccurredAt.UtcDateTime);
+    }
+
     private sealed class FakePaymentCommandRepository : IPaymentCommandRepository
     {
         public PaymentOrderSnapshot? Order { get; init; }

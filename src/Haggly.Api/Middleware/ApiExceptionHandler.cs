@@ -139,6 +139,7 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Cart resource not found", exception.Message),
             CartConflictException
                 => (StatusCodes.Status409Conflict, "Cart conflict", exception.Message),
+
             PaymentValidationException
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             PaymentForbiddenException
