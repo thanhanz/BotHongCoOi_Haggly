@@ -34,6 +34,5 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasForeignKey(payment => payment.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Ignore(payment => payment.PaymentMethod);
-        builder.Ignore(payment => payment.Transactions);
     }
 }

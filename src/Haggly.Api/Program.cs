@@ -8,6 +8,7 @@ using Haggly.Api.Endpoints.Inventory;
 using Haggly.Api.Endpoints.Sales;
 using Haggly.Api.Endpoints.Payments;
 using Haggly.Infrastructure.Messaging;
+using Haggly.Infrastructure.Payments;
 
 public partial class Program
 {
@@ -17,6 +18,9 @@ public partial class Program
 
         builder.Services.AddPersistence(builder.Configuration);
         builder.Services.AddMessaging(builder.Configuration);
+
+        builder.Services.AddPaymentProvider(builder.Configuration);
+        
         builder.Services.AddTokenServices(builder.Configuration);
         builder.Services.AddApiServices();
 

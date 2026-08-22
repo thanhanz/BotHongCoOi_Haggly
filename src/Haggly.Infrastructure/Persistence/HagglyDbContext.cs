@@ -45,6 +45,7 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
 
     // Payments
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
 
     // Finance
     public DbSet<RevenueLedger> RevenueLedgers => Set<RevenueLedger>();

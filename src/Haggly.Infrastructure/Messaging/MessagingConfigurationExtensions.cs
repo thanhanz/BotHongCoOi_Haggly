@@ -51,7 +51,10 @@ public static class MessagingConfigurationExtensions
         services.AddHostedService<OutboxBackgroundService>();
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));
+        
         services.AddDomainEvent<PaymentRequested>("payments.payment-requested.v1");
+        services.AddDomainEvent<PaymentSucceeded>("payments.payment-succeeded.v1");
+        services.AddDomainEvent<PaymentFailed>("payments.payment-failed.v1");
         return services;
     }
 

@@ -4,6 +4,7 @@ using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Domain.Common.Events.V1;
+using Haggly.Domain.Modules.Payments;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
@@ -50,6 +51,37 @@ public sealed class StartPaymentAtomicityTests
         Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
             "SELECT COUNT(*) FROM payments.payments WHERE \"OrderId\" = @OrderId;",
             new { OrderId = orderId }));
+    }
+
+    [Fact]
+    public async Task SaveChanges_WhenPaymentTransactionIsPending_RoundTripsThroughPostgreSql()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var handler = CreateHandler(dbContext, CreateWriter(dbContext));
+        var paymentResult = await handler.Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var payment = await dbContext.Payments.SingleAsync(item => item.Id == paymentResult.Id);
+        var transactionId = Guid.NewGuid();
+        var transaction = PaymentTransaction.Create(
+            transactionId,
+            payment,
+            payment.AmountDue,
+            Now.AddMinutes(1));
+
+        dbContext.PaymentTransactions.Add(transaction);
+        await dbContext.SaveChangesAsync();
+        dbContext.ChangeTracker.Clear();
+
+        var stored = await dbContext.PaymentTransactions
+            .AsNoTracking()
+            .SingleAsync(item => item.Id == transactionId);
+        Assert.Equal(payment.Id, stored.PaymentId);
+        Assert.Equal(PaymentTransactionType.PAYMENT, stored.TransactionType);
+        Assert.Equal(PaymentTransactionStatus.PENDING, stored.Status);
+        Assert.Equal(payment.AmountDue, stored.Amount);
+        Assert.Equal(TimeSpan.Zero, stored.CreatedAt.Offset);
     }
 
     private static StartPaymentHandler CreateHandler(
