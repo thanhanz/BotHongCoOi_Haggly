@@ -41,6 +41,19 @@ public sealed class PaymentMessagingTopologyTests
                 && binding.GetProperty("destination").GetString()
                     == PaymentMessagingNames.PaymentRequestedQueue
                 && binding.GetProperty("destination_type").GetString() == "exchange");
+
+            using var financeQueueDocument = await GetJsonAsync(
+                client,
+                $"queues/%2F/{PaymentMessagingNames.FinancePaymentSucceededQueue}");
+            Assert.True(financeQueueDocument.RootElement.GetProperty("durable").GetBoolean());
+            Assert.False(financeQueueDocument.RootElement.GetProperty("auto_delete").GetBoolean());
+
+            Assert.Contains(bindings.RootElement.EnumerateArray(), binding =>
+                binding.GetProperty("source").GetString()
+                    == PaymentMessagingNames.PaymentSucceededExchange
+                && binding.GetProperty("destination").GetString()
+                    == PaymentMessagingNames.FinancePaymentSucceededQueue
+                && binding.GetProperty("destination_type").GetString() == "exchange");
         }
         finally
         {

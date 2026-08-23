@@ -8,4 +8,7 @@ public static class PaymentMessagingNames
 
     public const string PaymentRequestedQueue = "haggly-payments-payment-requested-v1";
     public const string PaymentRequestedErrorQueue = PaymentRequestedQueue + "_error";
+
+    public const string FinancePaymentSucceededQueue = "haggly-finance-payment-succeeded-v1";
+    public const string FinancePaymentSucceededErrorQueue = FinancePaymentSucceededQueue + "_error";
 }

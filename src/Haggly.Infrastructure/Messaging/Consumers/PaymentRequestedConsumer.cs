@@ -4,10 +4,10 @@ using MassTransit;
 
 namespace Haggly.Infrastructure.Messaging.Consumers;
 
-public sealed class PaymentRequestedMassTransitConsumer(
-    IDomainEventConsumer<PaymentRequested> consumer)
+public sealed class PaymentRequestedConsumer(
+    ProcessPaymentRequestedHandler handler)
     : IConsumer<PaymentRequested>
 {
     public Task Consume(ConsumeContext<PaymentRequested> context)
-        => consumer.ConsumeAsync(context.Message, context.CancellationToken);
+        => handler.HandleAsync(context.Message, context.CancellationToken);
 }

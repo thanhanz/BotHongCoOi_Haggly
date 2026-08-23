@@ -8,13 +8,13 @@ using Xunit;
 
 namespace Haggly.UnitTests.Application.Modules.Payments;
 
-public sealed class ProcessPaymentRequestedConsumerTests
+public sealed class ProcessPaymentRequestedHandlerTests
 {
     private static readonly DateTimeOffset Now =
         new(2026, 8, 22, 9, 0, 0, TimeSpan.FromHours(7));
 
     [Fact]
-    public async Task ConsumeAsync_WhenProviderSucceeds_MarksPaymentAndAttemptSucceededAndWritesEvent()
+    public async Task HandleAsync_WhenProviderSucceeds_MarksPaymentAndAttemptSucceededAndWritesEvent()
     {
         var payment = CreatePayment();
         var repository = new FakePaymentCommandRepository(payment);
@@ -24,7 +24,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
             outbox,
             new FakePaymentProvider(new(true, "SIM-123", null)));
 
-        await consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None);
+        await consumer.HandleAsync(CreateRequested(payment), CancellationToken.None);
 
         var transaction = Assert.Single(repository.Transactions);
         var succeeded = Assert.IsType<PaymentSucceededEvent>(Assert.Single(outbox.Events));
@@ -37,7 +37,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
     }
 
     [Fact]
-    public async Task ConsumeAsync_WhenProviderDeclines_MarksPaymentAndAttemptFailedAndWritesEvent()
+    public async Task HandleAsync_WhenProviderDeclines_MarksPaymentAndAttemptFailedAndWritesEvent()
     {
         var payment = CreatePayment();
         var repository = new FakePaymentCommandRepository(payment);
@@ -47,7 +47,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
             outbox,
             new FakePaymentProvider(new(false, null, "simulated decline")));
 
-        await consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None);
+        await consumer.HandleAsync(CreateRequested(payment), CancellationToken.None);
 
         var transaction = Assert.Single(repository.Transactions);
         var failed = Assert.IsType<PaymentFailedEvent>(Assert.Single(outbox.Events));
@@ -57,7 +57,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
     }
 
     [Fact]
-    public async Task ConsumeAsync_WhenPaymentIsAlreadyPaid_DoesNotInvokeProviderOrWriteAgain()
+    public async Task HandleAsync_WhenPaymentIsAlreadyPaid_DoesNotInvokeProviderOrWriteAgain()
     {
         var payment = CreatePayment();
         payment.StartProcessing(Now);
@@ -67,7 +67,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
         var outbox = new FakeOutboxWriter();
         var consumer = CreateConsumer(repository, outbox, provider);
 
-        await consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None);
+        await consumer.HandleAsync(CreateRequested(payment), CancellationToken.None);
 
         Assert.Equal(0, provider.CallCount);
         Assert.Empty(repository.Transactions);
@@ -75,7 +75,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
     }
 
     [Fact]
-    public async Task ConsumeAsync_WhenProviderThrows_PropagatesTechnicalFailureForBrokerRetry()
+    public async Task HandleAsync_WhenProviderThrows_PropagatesTechnicalFailureForBrokerRetry()
     {
         var payment = CreatePayment();
         var outbox = new FakeOutboxWriter();
@@ -85,12 +85,12 @@ public sealed class ProcessPaymentRequestedConsumerTests
             new ThrowingPaymentProvider());
 
         await Assert.ThrowsAsync<TimeoutException>(() =>
-            consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None));
+            consumer.HandleAsync(CreateRequested(payment), CancellationToken.None));
 
         Assert.Empty(outbox.Events);
     }
 
-    private static ProcessPaymentRequestedConsumer CreateConsumer(
+    private static ProcessPaymentRequestedHandler CreateConsumer(
         IPaymentCommandRepository repository,
         IOutboxWriter outbox,
         IPaymentProvider provider)

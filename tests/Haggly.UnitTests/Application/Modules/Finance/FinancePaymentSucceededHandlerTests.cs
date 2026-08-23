@@ -20,7 +20,7 @@ public sealed class FinancePaymentSucceededHandlerTests
             new FakePaymentAllocationRepository(allocations));
         var integrationEvent = CreateEvent(allocations);
 
-        await handler.ConsumeAsync(integrationEvent, CancellationToken.None);
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
 
         Assert.Equal(2, revenue.Entries.Count);
         Assert.Equal(integrationEvent.Amount, revenue.Entries.Sum(entry => entry.NetAmount));
@@ -39,7 +39,7 @@ public sealed class FinancePaymentSucceededHandlerTests
             revenue,
             new FakePaymentAllocationRepository(allocations));
 
-        await handler.ConsumeAsync(CreateEvent(allocations), CancellationToken.None);
+        await handler.HandleAsync(CreateEvent(allocations), CancellationToken.None);
 
         var entry = Assert.Single(revenue.Entries);
         Assert.Equal(allocations[1].Id, entry.PaymentAllocationId);

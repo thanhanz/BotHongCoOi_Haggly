@@ -30,8 +30,11 @@ public static class MessagingConfigurationExtensions
 
         services.AddMassTransit(configurator =>
         {
-            configurator.AddConsumer<PaymentRequestedMassTransitConsumer,
+            // Register consumers and their definitions
+            configurator.AddConsumer<PaymentRequestedConsumer,
                 PaymentRequestedConsumerDefinition>();
+            configurator.AddConsumer<FinancePaymentSucceededConsumer,
+                FinancePaymentSucceededConsumerDefinition>();
 
             //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
             //Ex: PaymentRequested -> payment-requested
@@ -66,7 +69,7 @@ public static class MessagingConfigurationExtensions
         services.AddScoped<IOutboxWriter, DapperOutboxWriter>();
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
 
-        services.AddScoped<IDomainEventConsumer<PaymentRequested>, ProcessPaymentRequestedConsumer>();
+        services.AddScoped<ProcessPaymentRequestedHandler>();
         
         services.AddHostedService<OutboxBackgroundService>();
         services.AddSingleton(provider => new DomainEventTypeRegistry(

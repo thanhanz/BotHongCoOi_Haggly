@@ -109,7 +109,7 @@ public sealed class StartPaymentAtomicityTests
             CreateWriter(dbContext),
             new FixedPaymentProvider(providerSucceeded));
 
-        await consumer.ConsumeAsync(requested, CancellationToken.None);
+        await consumer.HandleAsync(requested, CancellationToken.None);
 
         await using var connection = await OpenConnectionAsync();
         Assert.Equal(expectedPaymentStatus, await connection.ExecuteScalarAsync<string>(
@@ -148,7 +148,7 @@ public sealed class StartPaymentAtomicityTests
             new FixedPaymentProvider(true));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            consumer.ConsumeAsync(CreateRequested(payment.Id, orderId), CancellationToken.None));
+            consumer.HandleAsync(CreateRequested(payment.Id, orderId), CancellationToken.None));
 
         await using var connection = await OpenConnectionAsync();
         Assert.Equal("PENDING", await connection.ExecuteScalarAsync<string>(
@@ -177,7 +177,7 @@ public sealed class StartPaymentAtomicityTests
         await CreateProcessingConsumer(
             dbContext,
             CreateWriter(dbContext),
-            new FixedPaymentProvider(true)).ConsumeAsync(
+            new FixedPaymentProvider(true)).HandleAsync(
                 CreateRequested(payment.Id, orderId),
                 CancellationToken.None);
         var allocations = await dbContext.PaymentAllocations
@@ -193,8 +193,8 @@ public sealed class StartPaymentAtomicityTests
             new EfRevenueLedgerRepository(dbContext),
             new EfPaymentAllocationRepository(dbContext));
 
-        await financeHandler.ConsumeAsync(integrationEvent, CancellationToken.None);
-        await financeHandler.ConsumeAsync(integrationEvent, CancellationToken.None);
+        await financeHandler.HandleAsync(integrationEvent, CancellationToken.None);
+        await financeHandler.HandleAsync(integrationEvent, CancellationToken.None);
 
         await using var connection = await OpenConnectionAsync();
         Assert.Equal(2, await connection.ExecuteScalarAsync<int>(
@@ -225,7 +225,7 @@ public sealed class StartPaymentAtomicityTests
             ]),
             TimeProvider.System);
 
-    private static ProcessPaymentRequestedConsumer CreateProcessingConsumer(
+    private static ProcessPaymentRequestedHandler CreateProcessingConsumer(
         HagglyDbContext dbContext,
         IOutboxWriter outboxWriter,
         IPaymentProvider paymentProvider)

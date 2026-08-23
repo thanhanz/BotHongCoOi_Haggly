@@ -1,5 +1,6 @@
 using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Common.Messaging;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Domain.Modules.Finance;
 
@@ -8,27 +9,27 @@ namespace Haggly.Application.Modules.Finance.Events.V1;
 public sealed class FinancePaymentSucceededHandler(
     IRevenueLedgerRepository revenueRepository,
     IPaymentAllocationRepository allocationRepository)
-    : IFinancePaymentSucceededHandler
+    : IEventHandler<PaymentSucceededEvent>
 {
-    public async Task ConsumeAsync(
-        PaymentSucceededEvent paymentSucceededEvent,
+    public async Task HandleAsync(
+        PaymentSucceededEvent message,
         CancellationToken cancellationToken)
     {
-        if (paymentSucceededEvent.PaymentAllocationIds.Count == 0
-            || paymentSucceededEvent.PaymentAllocationIds.Distinct().Count()
-            != paymentSucceededEvent.PaymentAllocationIds.Count)
+        if (message.PaymentAllocationIds.Count == 0
+            || message.PaymentAllocationIds.Distinct().Count()
+            != message.PaymentAllocationIds.Count)
         {
             throw new InvalidOperationException(
                 "PaymentSucceededEvent must reference unique payment allocations.");
         }
 
         var allocations = await allocationRepository.FindByIdsAsync(
-              paymentSucceededEvent.PaymentAllocationIds,
+              message.PaymentAllocationIds,
               cancellationToken);
         
-        if (allocations.Count != paymentSucceededEvent.PaymentAllocationIds.Count
+        if (allocations.Count != message.PaymentAllocationIds.Count
             || allocations.Sum(allocation => allocation.AllocatedAmount)
-                != paymentSucceededEvent.Amount)
+                != message.Amount)
         {
             throw new InvalidOperationException(
                 "Payment allocations must exist and equal the successful payment amount.");
@@ -51,7 +52,7 @@ public sealed class FinancePaymentSucceededHandler(
                 allocation.StallFulfillmentId,
                 allocation.StallId,
                 allocation.AllocatedAmount,
-                paymentSucceededEvent.OccurredAt), cancellationToken);
+                message.OccurredAt), cancellationToken);
             added = true;
         }
 

@@ -6,26 +6,26 @@ using Haggly.Domain.Modules.Payments;
 
 namespace Haggly.Application.Modules.Payments.Events.V1;
 
-public sealed class ProcessPaymentRequestedConsumer(
+public sealed class ProcessPaymentRequestedHandler(
     IPaymentCommandRepository repository,
     IPaymentProvider paymentProvider,
     IPaymentAllocationRepository allocationRepository,
     IOutboxWriter outboxWriter,
     IPaymentUnitOfWork unitOfWork,
     IBusinessClock businessClock)
-    : IDomainEventConsumer<PaymentRequested>
+    : IEventHandler<PaymentRequested>
 {
-    public async Task ConsumeAsync(
-        PaymentRequested integrationEvent,
+    public async Task HandleAsync(
+        PaymentRequested message,
         CancellationToken cancellationToken)
     {
         await unitOfWork.ExecuteInTransactionAsync(async transactionCancellationToken =>
         {
             var payment = await repository.FindByIdAsync(
-                integrationEvent.PaymentId,
+                message.PaymentId,
                 transactionCancellationToken)
                 ?? throw new PaymentNotFoundException(
-                    $"Payment '{integrationEvent.PaymentId}' was not found.");
+                    $"Payment '{message.PaymentId}' was not found.");
 
             if (payment.Status != PaymentStatus.PENDING)
                 return false;
@@ -92,7 +92,7 @@ public sealed class ProcessPaymentRequestedConsumer(
                 await repository.SaveChangesAsync(transactionCancellationToken);
                 await outboxWriter.WriteAsync(new PaymentSucceededEvent(
                     Guid.NewGuid(),
-                    integrationEvent.CorrelationId,
+                    message.CorrelationId,
                     occurredAt,
                     payment.Id,
                     transaction.Id,
@@ -114,7 +114,7 @@ public sealed class ProcessPaymentRequestedConsumer(
                 await repository.SaveChangesAsync(transactionCancellationToken);
                 await outboxWriter.WriteAsync(new PaymentFailedEvent(
                     Guid.NewGuid(),
-                    integrationEvent.CorrelationId,
+                    message.CorrelationId,
                     occurredAt,
                     payment.Id,
                     transaction.Id,
