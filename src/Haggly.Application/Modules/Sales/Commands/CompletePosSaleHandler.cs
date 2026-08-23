@@ -4,6 +4,7 @@ using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Sales.Dtos;
 using Haggly.Application.Modules.Sales.Validation;
+using Haggly.Domain.Modules.Finance;
 using Haggly.Domain.Modules.Sales;
 using MediatR;
 
@@ -14,7 +15,7 @@ public sealed class CompletePosSaleHandler(
     IInventorySaleRecorder inventory,
     IPosSaleUnitOfWork unitOfWork,
     IBusinessClock businessClock,
-    IRevenueSaleRecorder? revenue = null)
+    IRevenueLedgerRepository? revenueLedger = null)
     : IRequestHandler<CompletePosSaleCommand, PosSaleDto>
 {
     public async Task<PosSaleDto> Handle(
@@ -69,10 +70,10 @@ public sealed class CompletePosSaleHandler(
                 command.PaymentMethod,
                 command.AmountPaid);
 
-            if (revenue is not null)
+            if (revenueLedger is not null)
             {
-                await revenue.RecordCompletedPosSaleAsync(
-                    new CompletedPosSaleRevenue(
+                await revenueLedger.AddAsync(
+                    RevenueLedger.CreatePosSaleEntry(
                         sale.Id,
                         sale.StallId,
                         sale.TotalAmount,

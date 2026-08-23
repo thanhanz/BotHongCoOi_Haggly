@@ -82,7 +82,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IOrderCatalog, DapperOrderCatalog>();
         services.AddScoped<ICartQuery, DapperCartQuery>();
         services.AddScoped<ICartCatalog, DapperCartCatalog>();
-        services.AddScoped<IRevenueSaleRecorder, EfRevenueSaleRecorder>();
+        services.AddScoped<IRevenueLedgerRepository, EfRevenueLedgerRepository>();
 
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();

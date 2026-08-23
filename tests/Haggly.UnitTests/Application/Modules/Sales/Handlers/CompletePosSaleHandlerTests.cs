@@ -6,6 +6,7 @@ using Haggly.Application.Modules.Sales.Commands;
 using Haggly.Application.Modules.Sales.Dtos;
 using Haggly.Application.Modules.Sales.Exceptions;
 using Haggly.Domain.Modules.Catalog;
+using Haggly.Domain.Modules.Finance;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Sales;
 using Xunit;
@@ -62,7 +63,7 @@ public sealed class CompletePosSaleHandlerTests
     [Fact]
     public async Task Handle_WhenRevenueRecorderIsAvailable_RecordsSaleRevenueBeforeCommit()
     {
-        var revenue = new FakeRevenueSaleRecorder();
+        var revenue = new FakeRevenueLedgerRepository();
         var repository = new FakePosSaleCommandRepository();
         var inventory = new FakeInventorySaleRecorder
         {
@@ -84,7 +85,7 @@ public sealed class CompletePosSaleHandlerTests
             CancellationToken.None);
 
         var entry = Assert.Single(revenue.Entries);
-        Assert.Equal(result.Id, entry.SaleId);
+        Assert.Equal(result.Id, entry.PosSaleId);
         Assert.Equal(result.TotalAmount, entry.GrossAmount);
     }
 
@@ -203,15 +204,15 @@ public sealed class CompletePosSaleHandlerTests
         }
     }
 
-    private sealed class FakeRevenueSaleRecorder : IRevenueSaleRecorder
+    private sealed class FakeRevenueLedgerRepository : IRevenueLedgerRepository
     {
-        public List<CompletedPosSaleRevenue> Entries { get; } = [];
+        public List<RevenueLedger> Entries { get; } = [];
 
-        public Task RecordCompletedPosSaleAsync(
-            CompletedPosSaleRevenue revenue,
+        public Task AddAsync(
+            RevenueLedger ledger,
             CancellationToken cancellationToken)
         {
-            Entries.Add(revenue);
+            Entries.Add(ledger);
             return Task.CompletedTask;
         }
     }
