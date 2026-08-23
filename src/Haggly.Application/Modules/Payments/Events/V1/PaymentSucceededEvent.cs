@@ -2,7 +2,7 @@ using Haggly.Domain.Common.Events.V1;
 
 namespace Haggly.Application.Modules.Payments.Events.V1;
 
-public sealed record PaymentSucceeded(
+public sealed record PaymentSucceededEvent(
     Guid EventId,
     Guid CorrelationId,
     DateTimeOffset OccurredAt,

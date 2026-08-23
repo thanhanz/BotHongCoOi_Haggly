@@ -184,7 +184,7 @@ public sealed class StartPaymentAtomicityTests
             .AsNoTracking()
             .Where(allocation => allocation.PaymentTransaction!.PaymentId == payment.Id)
             .ToArrayAsync();
-        var integrationEvent = new PaymentSucceeded(
+        var integrationEvent = new PaymentSucceededEvent(
             Guid.NewGuid(), payment.Id, Now, payment.Id,
             allocations.Select(_ => Guid.NewGuid()).First(), orderId,
             payment.AmountDue, payment.Currency, "SIM-FINANCE",
@@ -220,8 +220,8 @@ public sealed class StartPaymentAtomicityTests
             new DomainEventTypeRegistry(
             [
                 DomainEventTypeRegistration.For<PaymentRequested>("payments.payment-requested.v1"),
-                DomainEventTypeRegistration.For<PaymentSucceeded>("payments.payment-succeeded.v1"),
-                DomainEventTypeRegistration.For<PaymentFailed>("payments.payment-failed.v1")
+                DomainEventTypeRegistration.For<PaymentSucceededEvent>("payments.payment-succeeded.v1"),
+                DomainEventTypeRegistration.For<PaymentFailedEvent>("payments.payment-failed.v1")
             ]),
             TimeProvider.System);
 

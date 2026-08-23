@@ -90,7 +90,7 @@ public sealed class ProcessPaymentRequestedConsumer(
                     await allocationRepository.AddAsync(allocation, transactionCancellationToken);
 
                 await repository.SaveChangesAsync(transactionCancellationToken);
-                await outboxWriter.WriteAsync(new PaymentSucceeded(
+                await outboxWriter.WriteAsync(new PaymentSucceededEvent(
                     Guid.NewGuid(),
                     integrationEvent.CorrelationId,
                     occurredAt,
@@ -112,7 +112,7 @@ public sealed class ProcessPaymentRequestedConsumer(
                 payment.MarkFailed(occurredAt);
 
                 await repository.SaveChangesAsync(transactionCancellationToken);
-                await outboxWriter.WriteAsync(new PaymentFailed(
+                await outboxWriter.WriteAsync(new PaymentFailedEvent(
                     Guid.NewGuid(),
                     integrationEvent.CorrelationId,
                     occurredAt,

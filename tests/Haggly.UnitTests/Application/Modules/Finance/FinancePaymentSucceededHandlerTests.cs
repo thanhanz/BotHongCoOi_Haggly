@@ -45,7 +45,7 @@ public sealed class FinancePaymentSucceededHandlerTests
         Assert.Equal(allocations[1].Id, entry.PaymentAllocationId);
     }
 
-    private static PaymentSucceeded CreateEvent(IReadOnlyList<PaymentAllocation> allocations)
+    private static PaymentSucceededEvent CreateEvent(IReadOnlyList<PaymentAllocation> allocations)
         => new(
             Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow,
             Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 300_000m, "VND", "SIM-1",

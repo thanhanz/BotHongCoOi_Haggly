@@ -27,7 +27,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
         await consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None);
 
         var transaction = Assert.Single(repository.Transactions);
-        var succeeded = Assert.IsType<PaymentSucceeded>(Assert.Single(outbox.Events));
+        var succeeded = Assert.IsType<PaymentSucceededEvent>(Assert.Single(outbox.Events));
         Assert.Equal(PaymentStatus.PAID, payment.Status);
         Assert.Equal(PaymentTransactionStatus.SUCCEEDED, transaction.Status);
         Assert.Equal(transaction.Id, succeeded.PaymentTransactionId);
@@ -50,7 +50,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
         await consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None);
 
         var transaction = Assert.Single(repository.Transactions);
-        var failed = Assert.IsType<PaymentFailed>(Assert.Single(outbox.Events));
+        var failed = Assert.IsType<PaymentFailedEvent>(Assert.Single(outbox.Events));
         Assert.Equal(PaymentStatus.FAILED, payment.Status);
         Assert.Equal(PaymentTransactionStatus.FAILED, transaction.Status);
         Assert.Equal("simulated decline", failed.FailureReason);

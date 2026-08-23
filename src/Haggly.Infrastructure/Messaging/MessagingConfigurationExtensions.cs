@@ -53,9 +53,9 @@ public static class MessagingConfigurationExtensions
 
                 rabbitMq.Message<PaymentRequested>(message =>
                     message.SetEntityName(PaymentMessagingNames.PaymentRequestedExchange));
-                rabbitMq.Message<PaymentSucceeded>(message =>
+                rabbitMq.Message<PaymentSucceededEvent>(message =>
                     message.SetEntityName(PaymentMessagingNames.PaymentSucceededExchange));
-                rabbitMq.Message<PaymentFailed>(message =>
+                rabbitMq.Message<PaymentFailedEvent>(message =>
                     message.SetEntityName(PaymentMessagingNames.PaymentFailedExchange));
 
                 rabbitMq.ConfigureEndpoints(context);
@@ -73,8 +73,8 @@ public static class MessagingConfigurationExtensions
             provider.GetServices<DomainEventTypeRegistration>()));
         
         services.AddDomainEvent<PaymentRequested>(PaymentMessagingNames.PaymentRequestedExchange);
-        services.AddDomainEvent<PaymentSucceeded>(PaymentMessagingNames.PaymentSucceededExchange);
-        services.AddDomainEvent<PaymentFailed>(PaymentMessagingNames.PaymentFailedExchange);
+        services.AddDomainEvent<PaymentSucceededEvent>(PaymentMessagingNames.PaymentSucceededExchange);
+        services.AddDomainEvent<PaymentFailedEvent>(PaymentMessagingNames.PaymentFailedExchange);
         return services;
     }
 
