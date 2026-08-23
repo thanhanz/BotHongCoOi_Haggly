@@ -32,6 +32,7 @@ public sealed class ProcessPaymentRequestedConsumerTests
         Assert.Equal(PaymentTransactionStatus.SUCCEEDED, transaction.Status);
         Assert.Equal(transaction.Id, succeeded.PaymentTransactionId);
         Assert.Equal("SIM-123", succeeded.ProviderTransactionId);
+        Assert.Single(succeeded.PaymentAllocationIds);
         Assert.Equal(TimeSpan.Zero, succeeded.OccurredAt.Offset);
     }
 
@@ -93,7 +94,13 @@ public sealed class ProcessPaymentRequestedConsumerTests
         IPaymentCommandRepository repository,
         IOutboxWriter outbox,
         IPaymentProvider provider)
-        => new(repository, provider, outbox, new FakePaymentUnitOfWork(), new FixedBusinessClock(Now));
+        => new(
+            repository,
+            provider,
+            new FakePaymentAllocationRepository(),
+            outbox,
+            new FakePaymentUnitOfWork(),
+            new FixedBusinessClock(Now));
 
     private static Payment CreatePayment()
         => Payment.Create(Guid.NewGuid(), Guid.NewGuid(), 300_000m, "VND", Now);
@@ -134,6 +141,33 @@ public sealed class ProcessPaymentRequestedConsumerTests
 
         public Task SaveChangesAsync(CancellationToken cancellationToken)
             => Task.CompletedTask;
+    }
+
+    private sealed class FakePaymentAllocationRepository : IPaymentAllocationRepository
+    {
+        private readonly List<PaymentAllocation> _allocations = [];
+
+        public Task<IReadOnlyList<PaymentAllocationTarget>> GetTargetsForOrderAsync(
+            Guid orderId,
+            CancellationToken cancellationToken)
+            => Task.FromResult<IReadOnlyList<PaymentAllocationTarget>>(
+            [
+                new(Guid.NewGuid(), Guid.NewGuid(), 300_000m)
+            ]);
+
+        public Task<IReadOnlyList<PaymentAllocation>> FindByIdsAsync(
+            IReadOnlyCollection<Guid> allocationIds,
+            CancellationToken cancellationToken)
+            => Task.FromResult<IReadOnlyList<PaymentAllocation>>(
+                _allocations.Where(item => allocationIds.Contains(item.Id)).ToArray());
+
+        public Task AddAsync(
+            PaymentAllocation allocation,
+            CancellationToken cancellationToken)
+        {
+            _allocations.Add(allocation);
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class FakePaymentProvider(PaymentProviderResult result) : IPaymentProvider

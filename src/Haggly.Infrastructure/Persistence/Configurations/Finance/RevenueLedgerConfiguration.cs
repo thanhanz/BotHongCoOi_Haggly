@@ -18,6 +18,9 @@ internal sealed class RevenueLedgerConfiguration : IEntityTypeConfiguration<Reve
         builder.HasIndex(ledger => new { ledger.PosSaleId, ledger.EntryType })
             .IsUnique()
             .HasFilter("\"PosSaleId\" IS NOT NULL");
+        builder.HasIndex(ledger => new { ledger.PaymentAllocationId, ledger.EntryType })
+            .IsUnique()
+            .HasFilter("\"PaymentAllocationId\" IS NOT NULL");
         builder.Property(ledger => ledger.EntryType).HasConversion<string>().HasMaxLength(32).IsRequired();
         builder.Property(ledger => ledger.GrossAmount).HasPrecision(18, 2).IsRequired();
         builder.Property(ledger => ledger.RefundAmount).HasPrecision(18, 2).IsRequired();
@@ -26,10 +29,13 @@ internal sealed class RevenueLedgerConfiguration : IEntityTypeConfiguration<Reve
         builder.Property(ledger => ledger.Notes).HasMaxLength(500);
         builder.Property(ledger => ledger.OccurredAt).IsRequired();
         builder.Property(ledger => ledger.CreatedAt).IsRequired();
-        // Payment allocations and online fulfillments are separate future
-        // workflows; POS revenue stores their identifiers without discovering
-        // the unfinished payment/order graph.
-        builder.Ignore(ledger => ledger.PaymentAllocation);
-        builder.Ignore(ledger => ledger.StallFulfillment);
+        builder.HasOne(ledger => ledger.PaymentAllocation)
+            .WithMany()
+            .HasForeignKey(ledger => ledger.PaymentAllocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(ledger => ledger.StallFulfillment)
+            .WithMany()
+            .HasForeignKey(ledger => ledger.StallFulfillmentId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

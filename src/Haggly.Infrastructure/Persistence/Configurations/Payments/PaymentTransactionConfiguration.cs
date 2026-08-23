@@ -49,6 +49,5 @@ internal sealed class PaymentTransactionConfiguration
             .HasForeignKey(transaction => transaction.PaymentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Ignore(transaction => transaction.Allocations);
     }
 }

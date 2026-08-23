@@ -4,12 +4,14 @@ using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
 using Haggly.Application.Modules.Payments.Events.V1;
+using Haggly.Application.Modules.Finance.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
 using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
+using Haggly.Infrastructure.Persistence.Repositories.Finance;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -86,13 +88,14 @@ public sealed class StartPaymentAtomicityTests
     }
 
     [Theory]
-    [InlineData(true, "PAID", "SUCCEEDED", "payments.payment-succeeded.v1")]
-    [InlineData(false, "FAILED", "FAILED", "payments.payment-failed.v1")]
+    [InlineData(true, "PAID", "SUCCEEDED", "payments.payment-succeeded.v1", 2)]
+    [InlineData(false, "FAILED", "FAILED", "payments.payment-failed.v1", 0)]
     public async Task ConsumeAsync_WhenProviderReturnsResult_CommitsPaymentAttemptAndOutboxAtomically(
         bool providerSucceeded,
         string expectedPaymentStatus,
         string expectedTransactionStatus,
-        string expectedEventType)
+        string expectedEventType,
+        int expectedAllocationCount)
     {
         var (orderId, buyerId) = await CreateAgreedOrderAsync();
         await using var dbContext = CreateDbContext();
@@ -121,6 +124,13 @@ public sealed class StartPaymentAtomicityTests
             WHERE "CorrelationId" = @PaymentId AND "EventType" = @EventType;
             """,
             new { PaymentId = payment.Id, EventType = expectedEventType }));
+        Assert.Equal(expectedAllocationCount, await connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*) FROM payments.payment_allocations AS a
+            JOIN payments.payment_transactions AS t ON t."Id" = a."PaymentTransactionId"
+            WHERE t."PaymentId" = @PaymentId;
+            """,
+            new { PaymentId = payment.Id }));
     }
 
     [Fact]
@@ -147,6 +157,52 @@ public sealed class StartPaymentAtomicityTests
         Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
             "SELECT COUNT(*) FROM payments.payment_transactions WHERE \"PaymentId\" = @PaymentId;",
             new { PaymentId = payment.Id }));
+        Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*) FROM payments.payment_allocations AS a
+            JOIN payments.payment_transactions AS t ON t."Id" = a."PaymentTransactionId"
+            WHERE t."PaymentId" = @PaymentId;
+            """,
+            new { PaymentId = payment.Id }));
+    }
+
+    [Fact]
+    public async Task FinanceConsumeAsync_WhenDeliveredTwice_AppendsOneRevenueEntryPerAllocation()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        await CreateProcessingConsumer(
+            dbContext,
+            CreateWriter(dbContext),
+            new FixedPaymentProvider(true)).ConsumeAsync(
+                CreateRequested(payment.Id, orderId),
+                CancellationToken.None);
+        var allocations = await dbContext.PaymentAllocations
+            .AsNoTracking()
+            .Where(allocation => allocation.PaymentTransaction!.PaymentId == payment.Id)
+            .ToArrayAsync();
+        var integrationEvent = new PaymentSucceeded(
+            Guid.NewGuid(), payment.Id, Now, payment.Id,
+            allocations.Select(_ => Guid.NewGuid()).First(), orderId,
+            payment.AmountDue, payment.Currency, "SIM-FINANCE",
+            allocations.Select(allocation => allocation.Id).ToArray());
+        var financeHandler = new FinancePaymentSucceededHandler(
+            new EfRevenueLedgerRepository(dbContext),
+            new EfPaymentAllocationRepository(dbContext));
+
+        await financeHandler.ConsumeAsync(integrationEvent, CancellationToken.None);
+        await financeHandler.ConsumeAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal(2, await connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*) FROM finance.revenue_ledgers
+            WHERE "PaymentAllocationId" = ANY(@AllocationIds);
+            """,
+            new { AllocationIds = allocations.Select(item => item.Id).ToArray() }));
     }
 
     private static StartPaymentHandler CreateHandler(
@@ -176,6 +232,7 @@ public sealed class StartPaymentAtomicityTests
         => new(
             new EfPaymentCommandRepository(dbContext),
             paymentProvider,
+            new EfPaymentAllocationRepository(dbContext),
             outboxWriter,
             new EfPaymentUnitOfWork(dbContext),
             new FixedBusinessClock(Now));
@@ -194,6 +251,13 @@ public sealed class StartPaymentAtomicityTests
     {
         var buyerId = Guid.NewGuid();
         var orderId = Guid.NewGuid();
+        var marketId = Guid.NewGuid();
+        var firstVendorId = Guid.NewGuid();
+        var secondVendorId = Guid.NewGuid();
+        var firstStallId = Guid.NewGuid();
+        var secondStallId = Guid.NewGuid();
+        var firstFulfillmentId = Guid.NewGuid();
+        var secondFulfillmentId = Guid.NewGuid();
         await using var connection = await OpenConnectionAsync();
         await connection.ExecuteAsync(
             """
@@ -207,17 +271,65 @@ public sealed class StartPaymentAtomicityTests
             VALUES
                 (@BuyerId, @Now);
 
+            INSERT INTO identity.users
+                ("Id", "Email", "PhoneNumber", "PasswordHash", "FullName", "Status", "CreatedAt")
+            VALUES
+                (@FirstVendorId, @FirstVendorEmail, @FirstVendorPhone, 'test-hash', 'Vendor One', 'ACTIVE', @Now),
+                (@SecondVendorId, @SecondVendorEmail, @SecondVendorPhone, 'test-hash', 'Vendor Two', 'ACTIVE', @Now);
+
+            INSERT INTO identity.vendor_profiles
+                ("UserId", "BusinessName", "ApprovalStatus", "CreatedAt")
+            VALUES
+                (@FirstVendorId, 'Vendor One', 'APPROVED', @Now),
+                (@SecondVendorId, 'Vendor Two', 'APPROVED', @Now);
+
+            INSERT INTO markets.markets
+                ("Id", "Code", "Name", "Address", "Status", "CreatedAt")
+            VALUES
+                (@MarketId, @MarketCode, 'Payment Test Market', 'Test Address', 'ACTIVE', @Now);
+
+            INSERT INTO markets.stalls
+                ("Id", "MarketId", "VendorId", "Code", "Name", "Status", "CreatedAt")
+            VALUES
+                (@FirstStallId, @MarketId, @FirstVendorId, @FirstStallCode, 'Payment Stall One', 'ACTIVE', @Now),
+                (@SecondStallId, @MarketId, @SecondVendorId, @SecondStallCode, 'Payment Stall Two', 'ACTIVE', @Now);
+
             INSERT INTO sales.orders
                 ("Id", "OrderNo", "BuyerId", "Status", "TotalToCharge", "TotalPaid",
                  "Currency", "PlacedAt", "CreatedAt")
             VALUES
                 (@OrderId, @OrderNo, @BuyerId, 'AGREED', 300000, 0, 'VND', @Now, @Now);
+
+            INSERT INTO sales.stall_fulfillments
+                ("Id", "OrderId", "StallId", "FulfillmentNo", "Status", "Subtotal",
+                 "FinalAmount", "PaidAmount", "CreatedAt")
+            VALUES
+                (@FirstFulfillmentId, @OrderId, @FirstStallId, @FirstFulfillmentNo,
+                 'AGREED', 120000, 120000, 0, @Now),
+                (@SecondFulfillmentId, @OrderId, @SecondStallId, @SecondFulfillmentNo,
+                 'AGREED', 180000, 180000, 0, @Now);
             """,
             new
             {
                 BuyerId = buyerId,
                 Email = $"payment-{buyerId:N}@example.com",
                 PhoneNumber = buyerId.ToString("N"),
+                FirstVendorId = firstVendorId,
+                SecondVendorId = secondVendorId,
+                FirstVendorEmail = $"vendor-{firstVendorId:N}@example.com",
+                SecondVendorEmail = $"vendor-{secondVendorId:N}@example.com",
+                FirstVendorPhone = firstVendorId.ToString("N"),
+                SecondVendorPhone = secondVendorId.ToString("N"),
+                MarketId = marketId,
+                MarketCode = $"MKT-{marketId:N}".ToUpperInvariant(),
+                FirstStallId = firstStallId,
+                SecondStallId = secondStallId,
+                FirstStallCode = $"S-{firstStallId:N}".ToUpperInvariant(),
+                SecondStallCode = $"S-{secondStallId:N}".ToUpperInvariant(),
+                FirstFulfillmentId = firstFulfillmentId,
+                SecondFulfillmentId = secondFulfillmentId,
+                FirstFulfillmentNo = $"FUL-{firstFulfillmentId:N}".ToUpperInvariant(),
+                SecondFulfillmentNo = $"FUL-{secondFulfillmentId:N}".ToUpperInvariant(),
                 OrderId = orderId,
                 OrderNo = $"ORD-{orderId:N}".ToUpperInvariant(),
                 Now

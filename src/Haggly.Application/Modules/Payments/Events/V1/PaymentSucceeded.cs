@@ -11,4 +11,5 @@ public sealed record PaymentSucceeded(
     Guid OrderId,
     decimal Amount,
     string Currency,
-    string ProviderTransactionId) : IDomainEvent;
+    string ProviderTransactionId,
+    IReadOnlyList<Guid> PaymentAllocationIds) : IDomainEvent;

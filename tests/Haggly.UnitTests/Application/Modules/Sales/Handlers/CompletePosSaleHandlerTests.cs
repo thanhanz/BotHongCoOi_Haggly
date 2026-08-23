@@ -208,6 +208,11 @@ public sealed class CompletePosSaleHandlerTests
     {
         public List<RevenueLedger> Entries { get; } = [];
 
+        public Task<bool> ExistsForPaymentAllocationAsync(
+            Guid paymentAllocationId,
+            CancellationToken cancellationToken)
+            => Task.FromResult(false);
+
         public Task AddAsync(
             RevenueLedger ledger,
             CancellationToken cancellationToken)
@@ -215,6 +220,9 @@ public sealed class CompletePosSaleHandlerTests
             Entries.Add(ledger);
             return Task.CompletedTask;
         }
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 
     private sealed class FakePosSaleUnitOfWork : IPosSaleUnitOfWork
