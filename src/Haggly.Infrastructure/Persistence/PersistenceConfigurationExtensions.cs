@@ -12,6 +12,7 @@ using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Modules.Finance.Events.V1;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -51,6 +52,8 @@ public static class PersistenceConfigurationExtensions
         return services;
     }
 
+    //TODO: Consider moving this to a separate class for better organization and maintainability.
+    // Command, Repository, and Query registrations can be grouped by module or feature for clarity.
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
         services.AddHagglyMediatR();
@@ -76,6 +79,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<ICartCheckoutUnitOfWork, EfCartCheckoutUnitOfWork>();
         services.AddScoped<IPaymentCommandRepository, EfPaymentCommandRepository>();
         services.AddScoped<IPaymentUnitOfWork, EfPaymentUnitOfWork>();
+        services.AddScoped<IPaymentAllocationRepository, EfPaymentAllocationRepository>();
 
         services.AddScoped<IPosSaleQuery, DapperPosSaleQuery>();
         services.AddScoped<IOrderQuery, DapperOrderQuery>();
@@ -83,6 +87,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<ICartQuery, DapperCartQuery>();
         services.AddScoped<ICartCatalog, DapperCartCatalog>();
         services.AddScoped<IRevenueLedgerRepository, EfRevenueLedgerRepository>();
+        services.AddScoped<IFinancePaymentSucceededHandler, FinancePaymentSucceededHandler>();
 
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
