@@ -73,6 +73,22 @@ public sealed class ProcessPaymentRequestedConsumerTests
         Assert.Empty(outbox.Events);
     }
 
+    [Fact]
+    public async Task ConsumeAsync_WhenProviderThrows_PropagatesTechnicalFailureForBrokerRetry()
+    {
+        var payment = CreatePayment();
+        var outbox = new FakeOutboxWriter();
+        var consumer = CreateConsumer(
+            new FakePaymentCommandRepository(payment),
+            outbox,
+            new ThrowingPaymentProvider());
+
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            consumer.ConsumeAsync(CreateRequested(payment), CancellationToken.None));
+
+        Assert.Empty(outbox.Events);
+    }
+
     private static ProcessPaymentRequestedConsumer CreateConsumer(
         IPaymentCommandRepository repository,
         IOutboxWriter outbox,
@@ -131,6 +147,14 @@ public sealed class ProcessPaymentRequestedConsumerTests
             CallCount++;
             return Task.FromResult(result);
         }
+    }
+
+    private sealed class ThrowingPaymentProvider : IPaymentProvider
+    {
+        public Task<PaymentProviderResult> ProcessAsync(
+            PaymentProviderRequest request,
+            CancellationToken cancellationToken = default)
+            => throw new TimeoutException("simulated provider timeout");
     }
 
     private sealed class FakeOutboxWriter : IOutboxWriter
