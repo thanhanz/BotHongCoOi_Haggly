@@ -4,8 +4,7 @@ using MassTransit;
 
 namespace Haggly.Infrastructure.Messaging.Consumers;
 
-public sealed class PaymentRequestedConsumer(
-    ProcessPaymentRequestedHandler handler)
+public sealed class PaymentRequestedConsumer(ProcessPaymentRequestedHandler handler)
     : IConsumer<PaymentRequested>
 {
     public Task Consume(ConsumeContext<PaymentRequested> context)

@@ -59,7 +59,7 @@ public sealed class InventoryDomainTests
     public void RecordSale_QuantityAvailable_DecrementsStockAndCreatesLedger()
     {
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
-        var ledger = item.RecordSale(3m, Guid.NewGuid(), Guid.NewGuid(), Now);
+        var ledger = item.RecordSaleDirectly(3m, Guid.NewGuid(), Guid.NewGuid(), Now);
         Assert.Equal(7m, item.CurrentQuantity);
         Assert.Equal(-3m, ledger.QuantityDelta);
         Assert.Equal(InventoryTransactionType.POS_SALE, ledger.TransactionType);
@@ -71,7 +71,22 @@ public sealed class InventoryDomainTests
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
         item.UpdateReservedQuantity(8m);
         Assert.Throws<InvalidOperationException>(() =>
-            item.RecordSale(3m, Guid.NewGuid(), Guid.NewGuid(), Now));
+            item.RecordSaleDirectly(3m, Guid.NewGuid(), Guid.NewGuid(), Now));
+    }
+
+    [Fact]
+    public void RecordOnlineSale_QuantityAvailable_DecrementsStockAndCreatesPaymentLedger()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        var paymentTransactionId = Guid.NewGuid();
+
+        var ledger = item.RecordOnlineSale(3m, paymentTransactionId, Now);
+
+        Assert.Equal(7m, item.CurrentQuantity);
+        Assert.Equal(InventoryTransactionType.ONLINE_SALE, ledger.TransactionType);
+        Assert.Equal("PAYMENT_TRANSACTION", ledger.ReferenceType);
+        Assert.Equal(paymentTransactionId, ledger.ReferenceId);
+        Assert.Equal(TimeSpan.Zero, ledger.OccurredAt.Offset);
     }
 
     private static DomainInventory CreateInventory()

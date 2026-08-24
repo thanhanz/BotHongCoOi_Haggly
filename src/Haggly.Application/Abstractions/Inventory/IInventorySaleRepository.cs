@@ -2,7 +2,7 @@ using Haggly.Domain.Modules.Catalog;
 
 namespace Haggly.Application.Abstractions.Inventory;
 
-public interface IInventorySaleRecorder
+public interface IInventorySaleRepository
 {
     Task<IReadOnlyList<InventorySaleItemSnapshot>> RecordPosSaleAsync(
         Guid stallId,

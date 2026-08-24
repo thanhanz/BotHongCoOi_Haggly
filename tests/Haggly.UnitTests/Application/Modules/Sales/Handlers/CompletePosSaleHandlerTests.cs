@@ -24,7 +24,7 @@ public sealed class CompletePosSaleHandlerTests
         var stallId = Guid.NewGuid();
         var actorId = Guid.NewGuid();
         var listingId = Guid.NewGuid();
-        var inventory = new FakeInventorySaleRecorder
+        var inventory = new FakeInventorySaleRepository
         {
             Items =
             [new InventorySaleItemSnapshot(
@@ -65,7 +65,7 @@ public sealed class CompletePosSaleHandlerTests
     {
         var revenue = new FakeRevenueLedgerRepository();
         var repository = new FakePosSaleCommandRepository();
-        var inventory = new FakeInventorySaleRecorder
+        var inventory = new FakeInventorySaleRepository
         {
             Items =
             [new InventorySaleItemSnapshot(
@@ -105,7 +105,7 @@ public sealed class CompletePosSaleHandlerTests
                 1m)],
             Now);
         var repository = new FakePosSaleCommandRepository { Existing = existing };
-        var inventory = new FakeInventorySaleRecorder();
+        var inventory = new FakeInventorySaleRepository();
         var unitOfWork = new FakePosSaleUnitOfWork();
         var handler = new CompletePosSaleHandler(
             repository,
@@ -129,7 +129,7 @@ public sealed class CompletePosSaleHandlerTests
     [Fact]
     public async Task Handle_WhenListingVersionIsStale_ThrowsConflictException()
     {
-        var inventory = new FakeInventorySaleRecorder
+        var inventory = new FakeInventorySaleRepository
         {
             Failure = new PosSaleConflictException("The listing was changed by another request.")
         };
@@ -178,7 +178,7 @@ public sealed class CompletePosSaleHandlerTests
             => Task.CompletedTask;
     }
 
-    private sealed class FakeInventorySaleRecorder : IInventorySaleRecorder
+    private sealed class FakeInventorySaleRepository : IInventorySaleRepository
     {
         public IReadOnlyList<InventorySaleItemSnapshot> Items { get; init; } = [];
         public Exception? Failure { get; init; }

@@ -63,6 +63,44 @@ public sealed class InventoryPersistenceBoundaryTests
         await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => secondContext.SaveChangesAsync());
     }
 
+    [Fact]
+    public async Task OnlineSale_DuplicatePaymentTransactionForItem_RejectsSecondLedger()
+    {
+        var scenario = await InventoryIntegrationScenarioFactory.CreateAsync();
+        var itemId = Guid.NewGuid();
+        var paymentTransactionId = Guid.NewGuid();
+        await using (var connection = new NpgsqlConnection(IntegrationTestDatabase.ConnectionString))
+        {
+            await connection.OpenAsync();
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO inventory.inventory_items
+                    ("Id", "InventoryId", "ProductStallId", "CurrentQuantity", "ReservedQuantity", "Version", "CreatedAt")
+                VALUES (@ItemId, @InventoryId, @ProductStallId, 10, 0, 0, @Now);
+                """, new { ItemId = itemId, scenario.InventoryId, scenario.ProductStallId, Now = DateTimeOffset.UtcNow });
+        }
+
+        await using (var firstContext = CreateDbContext())
+        {
+            var item = await firstContext.InventoryItems
+                .Include(value => value.InventoryLedgers)
+                .SingleAsync(value => value.Id == itemId);
+            item.RecordOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
+            await firstContext.SaveChangesAsync();
+        }
+
+        await using var secondContext = CreateDbContext();
+        var duplicate = await secondContext.InventoryItems
+            .Include(value => value.InventoryLedgers)
+            .SingleAsync(value => value.Id == itemId);
+        duplicate.RecordOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
+        var exception = await Assert.ThrowsAsync<DbUpdateException>(() =>
+            secondContext.SaveChangesAsync());
+        Assert.Equal(
+            PostgresErrorCodes.UniqueViolation,
+            Assert.IsType<PostgresException>(exception.InnerException).SqlState);
+    }
+
     private static HagglyDbContext CreateDbContext()
         => new(new DbContextOptionsBuilder<HagglyDbContext>()
             .UseNpgsql(IntegrationTestDatabase.ConnectionString).Options);

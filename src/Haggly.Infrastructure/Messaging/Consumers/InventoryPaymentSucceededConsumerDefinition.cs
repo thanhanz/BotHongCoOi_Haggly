@@ -2,16 +2,16 @@ using MassTransit;
 
 namespace Haggly.Infrastructure.Messaging.Consumers;
 
-public sealed class FinancePaymentSucceededConsumerDefinition : ConsumerDefinition<FinancePaymentSucceededConsumer>
+public sealed class InventoryPaymentSucceededConsumerDefinition : ConsumerDefinition<InventoryPaymentSucceededConsumer>
 {
-    public FinancePaymentSucceededConsumerDefinition()
+    public InventoryPaymentSucceededConsumerDefinition()
     {
-        EndpointName = PaymentMessagingNames.FinancePaymentSucceededQueue;
+        EndpointName = PaymentMessagingNames.InventoryPaymentSucceededQueue;
     }
 
     protected override void ConfigureConsumer(
         IReceiveEndpointConfigurator endpointConfigurator,
-        IConsumerConfigurator<FinancePaymentSucceededConsumer> consumerConfigurator,
+        IConsumerConfigurator<InventoryPaymentSucceededConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
         endpointConfigurator.UseMessageRetry(retry => retry.Intervals(

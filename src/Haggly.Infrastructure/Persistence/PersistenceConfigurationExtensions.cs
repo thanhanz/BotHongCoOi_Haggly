@@ -13,6 +13,7 @@ using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Payments;
 using Haggly.Application.Modules.Finance.Events.V1;
+using Haggly.Application.Modules.Inventory.Events.V1;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -71,7 +72,9 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
         services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
         services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
-        services.AddScoped<IInventorySaleRecorder, EfInventorySaleRecorder>();
+        services.AddScoped<IInventorySaleRepository, EfInventorySaleRepository>();
+        services.AddScoped<IInventoryPaymentRepository, EfInventoryPaymentRepository>();
+        services.AddScoped<InventoryPaymentSucceededHandler>();
         services.AddScoped<IPosSaleCommandRepository, EfPosSaleCommandRepository>();
         services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         services.AddScoped<IOrderCommandRepository, EfOrderCommandRepository>();

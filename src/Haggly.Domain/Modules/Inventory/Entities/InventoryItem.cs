@@ -81,7 +81,7 @@ public sealed class InventoryItem : AuditableEntity
         return ledger;
     }
 
-    public InventoryLedger RecordSale(
+    public InventoryLedger RecordSaleDirectly(
         decimal quantity,
         Guid saleId,
         Guid actorId,
@@ -105,8 +105,17 @@ public sealed class InventoryItem : AuditableEntity
         var quantityBefore = CurrentQuantity;
         CurrentQuantity -= quantity;
         MarkChanged(actorId, occurredAt);
+        
         var ledger = InventoryLedger.CreateSale(
-            Id, InventoryId, quantity, quantityBefore, CurrentQuantity, saleId, actorId, occurredAt);
+            Id, 
+            InventoryId, 
+            quantity, 
+            quantityBefore, 
+            CurrentQuantity, 
+            saleId,
+            actorId, 
+            occurredAt);
+        
         InventoryLedgers.Add(ledger);
         return ledger;
     }
@@ -128,7 +137,37 @@ public sealed class InventoryItem : AuditableEntity
         Version++;
     }
 
-    private void MarkChanged(Guid actorId, DateTimeOffset occurredAt)
+    public InventoryLedger RecordOnlineSale(
+        decimal quantity,
+        Guid paymentTransactionId,
+        DateTimeOffset occurredAt)
+    {
+        if (quantity <= 0m)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Sale quantity must be greater than zero.");
+        if (paymentTransactionId == Guid.Empty)
+            throw new ArgumentException("A valid payment transaction ID is required.", nameof(paymentTransactionId));
+        if (quantity > AvailableQuantity)
+            throw new InvalidOperationException("Sale quantity cannot exceed available inventory.");
+
+        var utcOccurredAt = occurredAt.ToUniversalTime();
+        var quantityBefore = CurrentQuantity;
+        CurrentQuantity -= quantity;
+        MarkChanged(null, utcOccurredAt);
+        
+        var ledger = InventoryLedger.CreateOnlineSale(
+            Id,
+            InventoryId,
+            quantity,
+            quantityBefore,
+            CurrentQuantity,
+            paymentTransactionId,
+            utcOccurredAt);
+        
+        InventoryLedgers.Add(ledger);
+        return ledger;
+    }
+
+    private void MarkChanged(Guid? actorId, DateTimeOffset occurredAt)
     {
         Version++;
         UpdatedAt = occurredAt;

@@ -13,6 +13,14 @@ internal sealed class InventoryLedgerConfiguration : IEntityTypeConfiguration<In
         builder.HasKey(ledger => ledger.Id);
         builder.HasIndex(ledger => new { ledger.InventoryId, ledger.OccurredAt, ledger.Id });
         builder.HasIndex(ledger => new { ledger.InventoryItemId, ledger.OccurredAt, ledger.Id });
+        builder.HasIndex(ledger => new
+            {
+                ledger.InventoryItemId,
+                ledger.ReferenceType,
+                ledger.ReferenceId
+            })
+            .IsUnique()
+            .HasFilter("\"ReferenceType\" = 'PAYMENT_TRANSACTION' AND \"ReferenceId\" IS NOT NULL");
         builder.Property(ledger => ledger.TransactionType).HasConversion<string>().HasMaxLength(32).IsRequired();
         builder.Property(ledger => ledger.QuantityDelta).HasPrecision(18, 3).IsRequired();
         builder.Property(ledger => ledger.QuantityBefore).HasPrecision(18, 3).IsRequired();

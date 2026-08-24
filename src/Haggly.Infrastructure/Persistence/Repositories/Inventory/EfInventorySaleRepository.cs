@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Haggly.Infrastructure.Persistence.Repositories.Inventory;
 
-public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInventorySaleRecorder
+public sealed class EfInventorySaleRepository(HagglyDbContext dbContext) : IInventorySaleRepository
 {
     public async Task<IReadOnlyList<InventorySaleItemSnapshot>> RecordPosSaleAsync(
         Guid stallId,
@@ -62,7 +62,7 @@ public sealed class EfInventorySaleRecorder(HagglyDbContext dbContext) : IInvent
 
             try
             {
-                item.RecordSale(line.Quantity, saleId, actorId, occurredAt);
+                item.RecordSaleDirectly(line.Quantity, saleId, actorId, occurredAt);
             }
             catch (InvalidOperationException exception)
             {

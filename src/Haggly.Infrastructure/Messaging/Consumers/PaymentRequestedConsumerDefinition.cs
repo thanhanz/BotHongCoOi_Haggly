@@ -2,8 +2,7 @@ using MassTransit;
 
 namespace Haggly.Infrastructure.Messaging.Consumers;
 
-public sealed class PaymentRequestedConsumerDefinition
-    : ConsumerDefinition<PaymentRequestedConsumer>
+public sealed class PaymentRequestedConsumerDefinition: ConsumerDefinition<PaymentRequestedConsumer>
 {
     public PaymentRequestedConsumerDefinition()
     {

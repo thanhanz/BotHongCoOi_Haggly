@@ -12,7 +12,7 @@ namespace Haggly.Application.Modules.Sales.Commands;
 
 public sealed class CompletePosSaleHandler(
     IPosSaleCommandRepository repository,
-    IInventorySaleRecorder inventory,
+    IInventorySaleRepository inventory,
     IPosSaleUnitOfWork unitOfWork,
     IBusinessClock businessClock,
     IRevenueLedgerRepository? revenueLedger = null)

@@ -31,10 +31,9 @@ public static class MessagingConfigurationExtensions
         services.AddMassTransit(configurator =>
         {
             // Register consumers and their definitions
-            configurator.AddConsumer<PaymentRequestedConsumer,
-                PaymentRequestedConsumerDefinition>();
-            configurator.AddConsumer<FinancePaymentSucceededConsumer,
-                FinancePaymentSucceededConsumerDefinition>();
+            configurator.AddConsumer<PaymentRequestedConsumer, PaymentRequestedConsumerDefinition>();
+            configurator.AddConsumer<FinancePaymentSucceededConsumer, FinancePaymentSucceededConsumerDefinition>();
+            configurator.AddConsumer<InventoryPaymentSucceededConsumer, InventoryPaymentSucceededConsumerDefinition>();
 
             //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
             //Ex: PaymentRequested -> payment-requested
