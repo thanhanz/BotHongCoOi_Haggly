@@ -181,6 +181,22 @@ generic repositories, vague manager/service abstractions, and speculative
 microservices, brokers, event sourcing, CQRS infrastructure, or outbox work.
 Preserve public contracts unless the request explicitly changes them.
 
+## Persistence naming
+
+- Every concrete Infrastructure class that directly connects to or executes a
+  query or command against a database must have a name ending in `Repository`.
+- Include the persistence technology prefix when it clarifies the adapter, for
+  example `EfInventoryPaymentRepository` or `DapperInventoryRepository`.
+- Do not name a direct database adapter with suffixes such as `Query`, `Command`,
+  `Catalog`, `Store`, or `UnitOfWork`; rename existing implementations to the
+  `Repository` convention when they are touched or as a dedicated refactor.
+- This suffix rule applies to concrete database-access classes. Application
+  abstractions should remain capability-oriented and must not expose EF Core,
+  Dapper, SQL, connection, or provider details.
+- A repository may be read-only, write-only, or both. Keep its interface narrow
+  and business-focused; the `Repository` suffix does not justify creating a
+  generic repository.
+
 ## Verification
 
 Inspect `global.json`, shared props, `Haggly.slnx`, affected `.csproj` files, and
