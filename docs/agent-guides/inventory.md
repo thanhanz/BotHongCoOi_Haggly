@@ -24,6 +24,9 @@ the time of a completed sale.
 - API: `src/Haggly.Api/Endpoints/Inventory` exposes vendor-only continuous
   inventory routes.
 
+Successful online payments currently deduct active OrderItem quantities
+directly and append idempotent online-sale ledger entries.
+
 ## Verified business rules
 
 - Stall creation also creates its Inventory in the same EF unit of work.
@@ -40,6 +43,17 @@ the time of a completed sale.
   price/unit/name and deducting stock.
 - Quantity changes append immutable InventoryLedger rows. Current product data
   is not duplicated in InventoryItem.
+- `InventoryPaymentSucceededHandler` loads active OrderItems, deducts their
+  InventoryItems, and appends one `ONLINE_SALE` ledger row per item. The
+  payment transaction is the ledger reference, and a filtered unique index
+  prevents duplicate delivery from deducting the same item twice.
+- `InventoryPaymentSucceededConsumer` owns the durable
+  `haggly-inventory-payment-succeeded-v1` queue bound to the shared
+  `payments.payment-succeeded.v1` exchange. Technical failures retry after
+  1, 5, and 15 seconds before MassTransit error transport.
+- Because checkout does not yet create InventoryReservation rows, online-sale
+  deduction checks currently available stock at event handling time. Persisted
+  reservation creation and consumption remain a separate workflow.
 - `IInventorySaleRecorder` is the Sales-facing port. It verifies stall ownership,
   checks both InventoryItem and ProductStall versions, snapshots current catalog
   data, and records `POS_SALE` atomically with the sale.

@@ -1,8 +1,8 @@
 # Sales module guide
 
-This guide records the currently executable Cart, buyer Order, and vendor POS
-slices. Negotiation, inventory reservation, payment, preparation, and pickup
-workflows remain incomplete.
+This guide records the currently executable Cart, buyer Order, vendor POS, and
+successful-payment Order reaction. Negotiation, inventory reservation,
+preparation, and pickup workflows remain incomplete.
 
 ## Responsibilities
 
@@ -63,6 +63,14 @@ reservation and final stock protection remain future Sales/Inventory work.
 The existing `POST /api/v1/orders` path can also create a negotiating order
 directly from submitted inventory item lines. Buyer order list, detail, and
 cancellation routes remain available under `/api/v1/orders`.
+
+`OrderPaymentSucceededHandler` validates the committed Payment allocations,
+marks the Order fully `PAID`, and assigns each fulfillment its complete
+`PaidAmount`. Exact duplicate delivery is a no-op. Fulfillments remain `AGREED`;
+successful collection does not automatically start vendor preparation. The
+MassTransit adapter uses the durable `haggly-order-payment-succeeded-v1` queue
+bound to `payments.payment-succeeded.v1`, with retries after 1, 5, and 15
+seconds. No PaymentFailed Sales reaction is currently implemented.
 
 ## Persistence
 

@@ -22,9 +22,9 @@ persistence, and vendor API endpoints.
 The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
 and Finance. Sales currently implements buyer carts, cart checkout into
 multi-stall negotiating orders, buyer order reads/cancellation, and vendor POS;
-POS revenue is also implemented. Inventory reservation, negotiation, payment,
-pickup/fulfillment transitions, general Payments, and broader Finance reporting
-remain future workflows.
+POS revenue and simulated online payment completion are also implemented.
+Inventory reservation, negotiation, pickup/fulfillment transitions, real payment
+provider integration, and broader Finance reporting remain future workflows.
 
 ## Technology actually used
 
@@ -32,15 +32,23 @@ remain future workflows.
 - ASP.NET Core Web SDK with Minimal API endpoint mapping.
 - Entity Framework Core `10.0.10` with the Npgsql PostgreSQL provider `10.0.3`.
 - Dapper `2.1.79` for read-side query adapters backed by PostgreSQL.
-- MassTransit `8.5.10` with the RabbitMQ transport; the API currently
-  registers a publisher-only bus connection. A PostgreSQL outbox schema,
+- MassTransit `8.5.10` with the RabbitMQ transport; the API registers the bus,
+  outbox publisher, and PaymentRequested consumer adapter. A PostgreSQL outbox schema,
   transaction-aware Dapper outbox processor, and explicit domain-event type
   registry are implemented. The processor uses the framework `System.Text.Json` serializer
   directly. The processor can publish bounded batches manually and records
   success or failure on each row. A configurable hosted service runs this
-  processor periodically in the API process. Concrete payment messages,
-  consumers, inbox deduplication, and multi-instance row claiming are not
-  implemented yet.
+  processor periodically in the API process. V1 payment request/success/failure
+  messages and a configurable local provider simulator exist. A MassTransit
+  adapter invokes the PaymentRequested Application handler, which atomically
+  persists the payment result, attempt, and result outbox event. Dedicated
+  Finance, Inventory, and Order queues independently consume PaymentSucceeded;
+  Finance appends allocation revenue, Inventory appends idempotent online-sale
+  ledger entries while deducting active order-item quantities, and Order applies
+  allocation amounts before moving to PAID. The request consumer's durable
+  `haggly-payments-payment-requested-v1` queue binds the stable request exchange;
+  technical failures retry after 1, 5, and 15 seconds before MassTransit error
+  transport. Inbox deduplication and multi-instance row claiming are not implemented.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.
@@ -129,8 +137,8 @@ are:
 | Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
-| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Payment initiation implemented through Domain, Application, PostgreSQL persistence, transactional outbox, and buyer API; provider processing deferred |
-| Finance | `RevenueLedger`, `RevenueEntryType` | POS sale revenue ledger implemented; broader reporting remains scaffold-only |
+| Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Simulated processing atomically persists the Payment, attempt, per-stall allocations, and result event containing allocation IDs |
+| Finance | `RevenueLedger`, `RevenueEntryType` | Append-only POS and online-payment revenue implemented; a dedicated MassTransit PaymentSucceeded consumer invokes the Finance handler and appends one row per allocation |
 
 Negotiation is currently a top-level Domain module under
 `Modules/Negotiation`; it is not nested under `Modules/Sales`.
@@ -209,8 +217,9 @@ non-deleted products.
   `AspNetPasswordHasher`.
 - `Messaging/RabbitMqOptions`, MassTransit RabbitMQ registration, and the
   broker-facing implementation of the Application domain-event publisher port,
-  the Dapper outbox writer/processor, and the hosted outbox publisher. The V1
-  `PaymentRequested` event is registered; consumers are deferred.
+  the Dapper outbox writer/processor, and the hosted outbox publisher. V1
+  PaymentRequested, Finance PaymentSucceeded, and Inventory PaymentSucceeded
+  consumers use independent durable queues.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
@@ -221,9 +230,12 @@ carts.
 Product and ProductStall are mapped to `catalog.products` and
 `catalog.product_stalls`; Inventory is mapped to `inventory`, POS sales to
 `sales`, Cart and Order are mapped to `sales`, and POS revenue to `finance`.
-Inventory reservations and Negotiation remain unmapped. Payments maps the
-initial `payments.payments` table; transaction/allocation/provider persistence
-remains deferred.
+Inventory reservations and Negotiation remain unmapped. Payments maps
+`payments.payments`, `payments.payment_transactions`, and
+`payments.payment_allocations`. Revenue rows use a unique PaymentAllocation plus
+entry-type key for idempotency; general inbox deduplication remains deferred.
+Finance, Inventory, and Sales/Order implement PaymentSucceeded Application
+handlers, persistence adapters, dedicated queues, and MassTransit consumers.
 
 ### API
 
