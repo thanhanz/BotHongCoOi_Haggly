@@ -5,6 +5,7 @@ using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Application.Modules.Finance.Events.V1;
+using Haggly.Application.Modules.Sales.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
 using Haggly.Infrastructure.Messaging.Outbox;
@@ -12,6 +13,7 @@ using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
+using Haggly.Infrastructure.Persistence.Repositories.Sales;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -203,6 +205,58 @@ public sealed class StartPaymentAtomicityTests
             WHERE "PaymentAllocationId" = ANY(@AllocationIds);
             """,
             new { AllocationIds = allocations.Select(item => item.Id).ToArray() }));
+    }
+
+    [Fact]
+    public async Task OrderHandleAsync_WhenDeliveredTwice_MarksOrderAndFulfillmentsPaidOnce()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        await CreateProcessingConsumer(
+            dbContext,
+            CreateWriter(dbContext),
+            new FixedPaymentProvider(true)).HandleAsync(
+                CreateRequested(payment.Id, orderId),
+                CancellationToken.None);
+        var allocations = await dbContext.PaymentAllocations
+            .AsNoTracking()
+            .Where(allocation => allocation.PaymentTransaction!.PaymentId == payment.Id)
+            .ToArrayAsync();
+        var transactionId = allocations.Select(allocation => allocation.PaymentTransactionId).Distinct().Single();
+        var integrationEvent = new PaymentSucceededEvent(
+            Guid.NewGuid(), payment.Id, Now, payment.Id,
+            transactionId, orderId, payment.AmountDue, payment.Currency, "SIM-ORDER",
+            allocations.Select(allocation => allocation.Id).ToArray());
+        dbContext.ChangeTracker.Clear();
+        var orderHandler = new OrderPaymentSucceededHandler(
+            new EfOrderCommandRepository(dbContext),
+            new EfPaymentAllocationRepository(dbContext));
+
+        await orderHandler.HandleAsync(integrationEvent, CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        await orderHandler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        var order = await connection.QuerySingleAsync<(string Status, decimal TotalPaid)>(
+            """
+            SELECT "Status", "TotalPaid"
+            FROM sales.orders
+            WHERE "Id" = @OrderId;
+            """,
+            new { OrderId = orderId });
+        Assert.Equal("PAID", order.Status);
+        Assert.Equal(payment.AmountDue, order.TotalPaid);
+        Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*)
+            FROM sales.stall_fulfillments
+            WHERE "OrderId" = @OrderId
+              AND ("PaidAmount" <> "FinalAmount" OR "Status" <> 'AGREED');
+            """,
+            new { OrderId = orderId }));
     }
 
     private static StartPaymentHandler CreateHandler(

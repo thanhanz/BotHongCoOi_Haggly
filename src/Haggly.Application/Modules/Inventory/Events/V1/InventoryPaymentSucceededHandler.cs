@@ -6,8 +6,7 @@ using Haggly.Domain.Modules.Inventory;
 namespace Haggly.Application.Modules.Inventory.Events.V1;
 
 public sealed class InventoryPaymentSucceededHandler(
-    IInventoryPaymentRepository repository)
-    : IEventHandler<PaymentSucceededEvent>
+    IInventoryPaymentRepository repository) : IEventHandler<PaymentSucceededEvent>
 {
     public async Task HandleAsync(
         PaymentSucceededEvent message,

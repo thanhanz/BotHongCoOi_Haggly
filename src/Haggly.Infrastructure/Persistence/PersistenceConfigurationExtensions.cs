@@ -14,6 +14,7 @@ using Haggly.Application.Abstractions.Finance;
 using Haggly.Application.Abstractions.Payments;
 using Haggly.Application.Modules.Finance.Events.V1;
 using Haggly.Application.Modules.Inventory.Events.V1;
+using Haggly.Application.Modules.Sales.Events.V1;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -74,7 +75,6 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
         services.AddScoped<IInventorySaleRepository, EfInventorySaleRepository>();
         services.AddScoped<IInventoryPaymentRepository, EfInventoryPaymentRepository>();
-        services.AddScoped<InventoryPaymentSucceededHandler>();
         services.AddScoped<IPosSaleCommandRepository, EfPosSaleCommandRepository>();
         services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         services.AddScoped<IOrderCommandRepository, EfOrderCommandRepository>();
@@ -90,7 +90,6 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<ICartQuery, DapperCartQuery>();
         services.AddScoped<ICartCatalog, DapperCartCatalog>();
         services.AddScoped<IRevenueLedgerRepository, EfRevenueLedgerRepository>();
-        services.AddScoped<FinancePaymentSucceededHandler>();
 
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
@@ -104,6 +103,12 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();
         
+        //Register event handlers for payment succeeded events
+        services.AddScoped<OrderPaymentSucceededHandler>();
+        services.AddScoped<FinancePaymentSucceededHandler>();
+        services.AddScoped<InventoryPaymentSucceededHandler>();
+
+
         // Register strategy handlers for use cases
         services.AddScoped<IRegisterBuyerUseCase>(provider =>
             provider.GetRequiredService<RegisterBuyerHandler>());

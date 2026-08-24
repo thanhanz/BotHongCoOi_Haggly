@@ -67,8 +67,11 @@ public sealed class InventoryPaymentSucceededHandlerTests
 
         public Task<bool> HasProcessedAsync(
             Guid paymentTransactionId,
+            InventoryTransactionType transactionType,
             CancellationToken cancellationToken)
-            => Task.FromResult(ProcessedPaymentTransactionIds.Contains(paymentTransactionId));
+            => Task.FromResult(
+                transactionType == InventoryTransactionType.ONLINE_SALE
+                && ProcessedPaymentTransactionIds.Contains(paymentTransactionId));
 
         public Task<IReadOnlyList<OrderItem>> FindActiveOrderItemsAsync(
             Guid orderId,

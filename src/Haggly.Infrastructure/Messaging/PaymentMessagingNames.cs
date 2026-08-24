@@ -14,4 +14,7 @@ public static class PaymentMessagingNames
 
     public const string InventoryPaymentSucceededQueue = "haggly-inventory-payment-succeeded-v1";
     public const string InventoryPaymentSucceededErrorQueue = InventoryPaymentSucceededQueue + "_error";
+
+    public const string OrderPaymentSucceededQueue = "haggly-order-payment-succeeded-v1";
+    public const string OrderPaymentSucceededErrorQueue = OrderPaymentSucceededQueue + "_error";
 }

@@ -34,6 +34,7 @@ public static class MessagingConfigurationExtensions
             configurator.AddConsumer<PaymentRequestedConsumer, PaymentRequestedConsumerDefinition>();
             configurator.AddConsumer<FinancePaymentSucceededConsumer, FinancePaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<InventoryPaymentSucceededConsumer, InventoryPaymentSucceededConsumerDefinition>();
+            configurator.AddConsumer<OrderPaymentSucceededConsumer, OrderPaymentSucceededConsumerDefinition>();
 
             //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
             //Ex: PaymentRequested -> payment-requested
