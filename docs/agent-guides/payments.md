@@ -1,9 +1,9 @@
 # Payments module guide
 
 This guide records the currently executable asynchronous payment workflow.
-Payment initiation, simulated provider processing, the success fan-out, and
-per-stall payment allocation are implemented. Downstream `PaymentFailed`
-handling is deferred to the next implementation session.
+Payment initiation, simulated provider processing, per-stall allocation,
+success fan-out, and centralized technical-fault logging are implemented.
+Business reactions to `PaymentFailedEvent` remain deferred.
 
 ## Responsibilities
 
@@ -37,22 +37,24 @@ The Payment, PaymentTransaction, allocations, and result event are committed
 in one PostgreSQL transaction. Runtime timestamps are normalized to UTC.
 
 The MassTransit adapter consumes from durable queue
-`haggly-payments-payment-requested-v1`, bound to
+`payments-payment-requested-v1`, bound to
 `payments.payment-requested.v1`. Technical exceptions retry after 1, 5, and 15
-seconds. A provider decline is a business result and is not retried by
-MassTransit.
+seconds before following MassTransit's default
+`payments-payment-requested-v1_error` transport. A definitive provider decline
+is a business result and is not retried by MassTransit.
 
 ## PaymentSucceeded fan-out
 
 The outbox publishes `PaymentSucceeded` once to
 `payments.payment-succeeded.v1`. RabbitMQ copies it to three independent durable
-queues, so the modules can run concurrently and retry independently:
+queues, so the modules process the event independently and can succeed or fail
+without acknowledging another module's delivery:
 
 | Module | Queue | Application handler | Persisted effect |
 |---|---|---|---|
-| Finance | `haggly-finance-payment-succeeded-v1` | `FinancePaymentSucceededHandler` | Append one RevenueLedger sale per PaymentAllocation. |
-| Inventory | `haggly-inventory-payment-succeeded-v1` | `InventoryPaymentSucceededHandler` | Deduct active OrderItem quantities and append `ONLINE_SALE` InventoryLedger rows. |
-| Sales/Order | `haggly-order-payment-succeeded-v1` | `OrderPaymentSucceededHandler` | Set `Order.TotalPaid`, move the Order to `PAID`, and apply each allocation to `StallFulfillment.PaidAmount`. |
+| Finance | `finance-payment-succeeded-v1` | `FinancePaymentSucceededHandler` | Append one RevenueLedger sale per PaymentAllocation. |
+| Inventory | `inventory-payment-succeeded-v1` | `InventoryPaymentSucceededHandler` | Deduct active OrderItem quantities and append `ONLINE_SALE` InventoryLedger rows. |
+| Sales/Order | `order-payment-succeeded-v1` | `OrderPaymentSucceededHandler` | Set `Order.TotalPaid`, move the Order to `PAID`, and apply each allocation to `StallFulfillment.PaidAmount`. |
 
 Each Infrastructure consumer implements MassTransit
 `IConsumer<PaymentSucceededEvent>` and delegates to its Application
@@ -72,26 +74,64 @@ A general InboxMessages table is not implemented. Consumers must continue to
 assume at-least-once delivery and must not rely on processing order between
 modules.
 
-## Failure workflow: next session
+## Failure semantics
+
+Haggly distinguishes a business payment result from a technical message
+processing fault.
+
+### Business payment failure
 
 `PaymentFailed` is currently persisted to the outbox and published through the
 registered `payments.payment-failed.v1` exchange, but there are no downstream
-module queues or handlers for it yet.
+module queues or handlers for it yet. It represents a provider attempt that
+completed with a definitive unsuccessful result. It does not represent an
+exception raised by Finance, Inventory, or Order while processing
+`PaymentSucceededEvent`.
 
-The next session should decide and implement the failure reactions explicitly:
+Future business-failure work must decide the reactions explicitly:
 
 - Define which Sales/Order state, if any, changes after the overall attempt
   fails.
 - Define whether Inventory reservations remain active, expire, or are released;
   persisted reservation creation is itself still deferred.
 - Keep Finance unchanged because a failed collection recognizes no revenue.
-- Add module-owned queues, MassTransit consumers, idempotent handlers, retry
-  policies, and focused failure tests only for the selected reactions.
+- Add module-owned queues, MassTransit consumers, idempotent handlers, and
+  focused failure tests only for the selected reactions.
 
-Do not treat MassTransit technical retries or its automatic `_error` transport
-as the business `PaymentFailed` workflow. Technical failure means processing
-could not complete; `PaymentFailed` means the provider attempt completed with a
-declined result.
+### PaymentSucceeded consumer fault
+
+Finance, Inventory, and Order do not retry a failed
+`PaymentSucceededEvent`. When any of their Application handlers throws:
+
+1. The exception escapes its MassTransit consumer adapter.
+2. MassTransit publishes `Fault<PaymentSucceededEvent>`, containing the
+   original event, fault identifiers, exception information, timestamp, and
+   host information.
+3. The source endpoint uses `DiscardFaultedMessages()`, so the original event
+   is not moved to a module-specific `_error` queue.
+4. The durable `payment-processing-faults-v1` queue receives every published
+   `Fault<PaymentSucceededEvent>`.
+5. `LoggingFaultConsumer<PaymentSucceededEvent>` maps the source queue to the
+   `Finance`, `Inventory`, or `Order` component and writes one structured
+   `ILogger` error record.
+6. The centralized fault message is acknowledged after logging succeeds.
+
+The structured record includes component, event type, fault ID, faulted
+message ID, correlation ID, original event ID, source address, host machine,
+exception types, messages, and stack traces. ASP.NET Core's configured logging
+providers currently write the record to the terminal. Loki storage and Grafana
+querying, dashboards, and alerts are not implemented.
+
+This is deliberately a logging-only failure path. The source message is not
+retained for broker replay, no compensation or reconciliation is started, and
+the Payment can remain `PAID` while one downstream module is inconsistent.
+Operational recovery, durable incident storage, replay, reconciliation, and
+downstream retry policies remain future work.
+
+The single centralized fault queue decision applies only to Finance,
+Inventory, and Order processing of `PaymentSucceededEvent`. The command-like
+`PaymentRequested` consumer still has its own retry and default `_error`
+transport.
 
 ## Other deferred work
 
@@ -102,10 +142,13 @@ declined result.
 - Refund (`REFUNDING`/`REFUNDED`) events and append-only reversals.
 - Partial payments.
 - General inbox deduplication and multi-instance outbox row claiming.
+- Durable technical-fault storage and incident lifecycle management.
+- Replay or reconciliation for failed `PaymentSucceededEvent` consumers.
+- Loki log collection and Grafana dashboards or alerts.
 
 ## Focused verification
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded|FullyQualifiedName~Infrastructure.Messaging"
 dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~StartPaymentAtomicityTests|FullyQualifiedName~PaymentMessagingTopologyTests"
 ```
