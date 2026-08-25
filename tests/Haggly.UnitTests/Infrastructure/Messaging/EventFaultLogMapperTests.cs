@@ -10,7 +10,7 @@ public sealed class EventFaultLogMapperTests
     [Theory]
     [InlineData(PaymentMessagingNames.InventoryPaymentSucceededQueue, "Inventory")]
     [InlineData(PaymentMessagingNames.FinancePaymentSucceededQueue, "Finance")]
-    [InlineData(PaymentMessagingNames.OrderPaymentSucceededQueue, "Sales.Order")]
+    [InlineData(PaymentMessagingNames.OrderPaymentSucceededQueue, "Order")]
     public void Map_KnownPaymentConsumerSource_ReturnsOwningComponent(
         string queueName,
         string expectedComponent)
@@ -23,9 +23,9 @@ public sealed class EventFaultLogMapperTests
     }
 
     [Fact]
-    public void Map_UnknownPaymentConsumerSource_ReturnsUnknownComponent()
+    public void Map_InvalidConsumerSource_ReturnsUnknownComponent()
     {
-        var fault = CreateFault("rabbitmq://localhost/unrecognized-payment-consumer");
+        var fault = CreateFault("not-a-source-address");
 
         var result = EventFaultLogMapper.Map(fault);
 
