@@ -1,9 +1,13 @@
 using System.Net.Http.Headers;
+using System.Net;
 using System.Text.Json;
+using System.Threading.Channels;
+using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Haggly.IntegrationTests.Infrastructure.Messaging;
@@ -103,6 +107,51 @@ public sealed class PaymentMessagingTopologyTests
         }
     }
 
+    [Fact]
+    public async Task Publish_WhenPaymentSucceededConsumersFail_LogsCentralFaultsWithoutSourceErrorQueues()
+    {
+        var logs = new FaultLogSink();
+        var services = new ServiceCollection();
+        services.AddLogging(logging => logging.AddProvider(logs));
+        services.AddMessaging(CreateConfiguration());
+        await using var provider = services.BuildServiceProvider();
+        var bus = provider.GetRequiredService<IBusControl>();
+        var message = CreatePaymentSucceededEvent();
+
+        await bus.StartAsync(CancellationToken.None);
+        try
+        {
+            await bus.Publish(message, CancellationToken.None);
+
+            var faultLogs = await logs.ReadForEventAsync(
+                message.EventId,
+                expectedCount: 3,
+                TimeSpan.FromSeconds(30));
+
+            Assert.Equal(
+                ["Finance", "Inventory", "Order"],
+                faultLogs
+                    .Select(log => Assert.IsType<string>(log["Component"]))
+                    .OrderBy(component => component)
+                    .ToArray());
+
+            using var client = CreateManagementClient();
+            await AssertQueueDoesNotExistAsync(
+                client,
+                PaymentMessagingNames.FinancePaymentSucceededQueue + "_error");
+            await AssertQueueDoesNotExistAsync(
+                client,
+                PaymentMessagingNames.InventoryPaymentSucceededQueue + "_error");
+            await AssertQueueDoesNotExistAsync(
+                client,
+                PaymentMessagingNames.OrderPaymentSucceededQueue + "_error");
+        }
+        finally
+        {
+            await bus.StopAsync(CancellationToken.None);
+        }
+    }
+
     private static IConfiguration CreateConfiguration()
         => new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -135,11 +184,94 @@ public sealed class PaymentMessagingTopologyTests
         return client;
     }
 
+    private static PaymentSucceededEvent CreatePaymentSucceededEvent()
+    {
+        var occurredAt = DateTimeOffset.UtcNow;
+        return new PaymentSucceededEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            occurredAt,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            300_000m,
+            "VND",
+            "provider-transaction-boundary-test",
+            [Guid.NewGuid()]);
+    }
+
+    private static async Task AssertQueueDoesNotExistAsync(
+        HttpClient client,
+        string queueName)
+    {
+        using var response = await client.GetAsync($"queues/%2F/{queueName}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     private static async Task<JsonDocument> GetJsonAsync(HttpClient client, string path)
     {
         using var response = await client.GetAsync(path);
         response.EnsureSuccessStatusCode();
         await using var content = await response.Content.ReadAsStreamAsync();
         return await JsonDocument.ParseAsync(content);
+    }
+
+    private sealed class FaultLogSink : ILoggerProvider
+    {
+        private readonly Channel<IReadOnlyDictionary<string, object?>> entries
+            = Channel.CreateUnbounded<IReadOnlyDictionary<string, object?>>();
+
+        public ILogger CreateLogger(string categoryName) => new FaultLogger(entries.Writer);
+
+        public void Dispose()
+        {
+        }
+
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, object?>>> ReadForEventAsync(
+            Guid eventId,
+            int expectedCount,
+            TimeSpan timeout)
+        {
+            using var cancellation = new CancellationTokenSource(timeout);
+            var matches = new List<IReadOnlyDictionary<string, object?>>(expectedCount);
+
+            while (matches.Count < expectedCount)
+            {
+                var entry = await entries.Reader.ReadAsync(cancellation.Token);
+                if (entry.TryGetValue("EventId", out var value)
+                    && value is Guid loggedEventId
+                    && loggedEventId == eventId)
+                {
+                    matches.Add(entry);
+                }
+            }
+
+            return matches;
+        }
+
+        private sealed class FaultLogger(
+            ChannelWriter<IReadOnlyDictionary<string, object?>> writer) : ILogger
+        {
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+                => null;
+
+            public bool IsEnabled(LogLevel logLevel) => logLevel == LogLevel.Error;
+
+            public void Log<TState>(
+                LogLevel logLevel,
+                EventId eventId,
+                TState state,
+                Exception? exception,
+                Func<TState, Exception?, string> formatter)
+            {
+                if (logLevel != LogLevel.Error
+                    || state is not IEnumerable<KeyValuePair<string, object?>> properties)
+                {
+                    return;
+                }
+
+                writer.TryWrite(properties.ToDictionary(item => item.Key, item => item.Value));
+            }
+        }
     }
 }
