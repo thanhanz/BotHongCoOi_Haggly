@@ -8,15 +8,4 @@ public sealed class OrderPaymentSucceededConsumerDefinition : ConsumerDefinition
     {
         EndpointName = PaymentMessagingNames.OrderPaymentSucceededQueue;
     }
-
-    protected override void ConfigureConsumer(
-        IReceiveEndpointConfigurator endpointConfigurator,
-        IConsumerConfigurator<OrderPaymentSucceededConsumer> consumerConfigurator,
-        IRegistrationContext context)
-    {
-        endpointConfigurator.UseMessageRetry(retry => retry.Intervals(
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromSeconds(5),
-            TimeSpan.FromSeconds(15)));
-    }
 }
