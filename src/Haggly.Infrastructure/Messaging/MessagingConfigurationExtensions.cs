@@ -3,6 +3,7 @@ using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Infrastructure.Messaging.Consumers;
+using Haggly.Infrastructure.Messaging.Faults;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,9 @@ public static class MessagingConfigurationExtensions
             configurator.AddConsumer<FinancePaymentSucceededConsumer, FinancePaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<InventoryPaymentSucceededConsumer, InventoryPaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<OrderPaymentSucceededConsumer, OrderPaymentSucceededConsumerDefinition>();
+            configurator.AddConsumer<
+                LoggingFaultConsumer<PaymentSucceededEvent>,
+                PaymentSucceededFaultConsumerDefinition>();
 
             //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
             //Ex: PaymentRequested -> payment-requested
