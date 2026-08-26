@@ -42,7 +42,7 @@ public sealed class ContinuousInventoryHandlerTests
         var stall = new Stall { VendorId = ownerId, Status = StallStatus.ACTIVE };
         var inventory = DomainInventory.Create(stall.Id, ownerId, Now);
         var item = inventory.AddItem(Guid.NewGuid(), 5m, ownerId, Now);
-        item.UpdateReservedQuantity(1m);
+        item.Reserve(1m, Now);
         var handler = new AdjustInventoryHandler(new FakeRepository(inventory),
             new FakeReferences(stall, null), new InlineUnitOfWork(), new FixedClock());
 

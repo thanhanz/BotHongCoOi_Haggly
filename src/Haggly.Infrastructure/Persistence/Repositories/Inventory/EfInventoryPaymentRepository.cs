@@ -10,6 +10,48 @@ namespace Haggly.Infrastructure.Persistence.Repositories.Inventory;
 public sealed class EfInventoryPaymentRepository(HagglyDbContext dbContext)
     : IInventoryPaymentRepository
 {
+    public async Task ReserveAsync(
+        Guid orderId,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken)
+    {
+        var orderItems = await FindActiveOrderItemsAsync(orderId, cancellationToken);
+        if (orderItems.Count == 0)
+            throw new InventoryConflictException("The order has no active inventory items to reserve.");
+
+        var groups = GroupByInventoryItem(orderItems).ToArray();
+        if (groups.Any(group => group.Quantity > group.InventoryItem.AvailableQuantity))
+            throw new InventoryConflictException("The order quantity exceeds available inventory.");
+
+        foreach (var group in groups)
+        {
+            group.InventoryItem.Reserve(group.Quantity, occurredAt);
+        }
+
+        await SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ReleaseAsync(
+        Guid orderId,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken)
+    {
+        var orderItems = await FindActiveOrderItemsAsync(orderId, cancellationToken);
+        if (orderItems.Count == 0)
+            throw new InventoryConflictException("The order has no active inventory items to release.");
+
+        var groups = GroupByInventoryItem(orderItems).ToArray();
+        if (groups.Any(group => group.Quantity > group.InventoryItem.ReservedQuantity))
+            throw new InventoryConflictException("The order quantity exceeds reserved inventory.");
+
+        foreach (var group in groups)
+        {
+            group.InventoryItem.ReleaseReserved(group.Quantity, occurredAt);
+        }
+
+        await SaveChangesAsync(cancellationToken);
+    }
+
     public Task<bool> HasProcessedAsync(
         Guid paymentTransactionId,
         InventoryTransactionType transactionType,
@@ -38,7 +80,7 @@ public sealed class EfInventoryPaymentRepository(HagglyDbContext dbContext)
         catch (DbUpdateConcurrencyException)
         {
             throw new InventoryConflictException(
-                "Inventory changed while applying the successful payment.");
+                "Inventory changed while processing the payment.");
         }
         catch (DbUpdateException exception) when (
             exception.InnerException is PostgresException postgres
@@ -48,4 +90,14 @@ public sealed class EfInventoryPaymentRepository(HagglyDbContext dbContext)
                 "The successful payment was already applied to inventory.");
         }
     }
+
+    private static IEnumerable<(InventoryItem InventoryItem, decimal Quantity)> GroupByInventoryItem(
+        IReadOnlyList<OrderItem> orderItems)
+        => orderItems
+            .GroupBy(item => item.InventoryItemId)
+            .Select(group => (
+                group.First().InventoryItem
+                    ?? throw new InventoryConflictException(
+                        $"Inventory item '{group.Key}' was not found."),
+                group.Sum(item => item.FinalQuantity)));
 }

@@ -38,19 +38,52 @@ public sealed class InventoryDomainTests
     }
 
     [Fact]
-    public void UpdateReservedQuantity_ValidQuantity_ComputesAvailableQuantity()
+    public void Reserve_QuantityAvailable_IncreasesReservedQuantity()
     {
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
-        item.UpdateReservedQuantity(4m);
+        item.Reserve(4m, Now);
+        Assert.Equal(4m, item.ReservedQuantity);
         Assert.Equal(6m, item.AvailableQuantity);
         Assert.Equal(1, item.Version);
+    }
+
+    [Fact]
+    public void Reserve_QuantityExceedsAvailable_ThrowsInvalidOperationException()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.Reserve(7m, Now);
+
+        Assert.Throws<InvalidOperationException>(() => item.Reserve(4m, Now));
+    }
+
+    [Fact]
+    public void ReleaseReserved_QuantityReserved_DecreasesReservedQuantity()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.Reserve(4m, Now);
+
+        item.ReleaseReserved(4m, Now.AddMinutes(1));
+
+        Assert.Equal(10m, item.CurrentQuantity);
+        Assert.Equal(0m, item.ReservedQuantity);
+        Assert.Equal(10m, item.AvailableQuantity);
+    }
+
+    [Fact]
+    public void ReleaseReserved_QuantityExceedsReservation_ThrowsInvalidOperationException()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.Reserve(2m, Now);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            item.ReleaseReserved(3m, Now.AddMinutes(1)));
     }
 
     [Fact]
     public void AdjustQuantity_ResultBelowReserved_ThrowsInvalidOperationException()
     {
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
-        item.UpdateReservedQuantity(6m);
+        item.Reserve(6m, Now);
         Assert.Throws<InvalidOperationException>(() =>
             item.AdjustQuantity(-5m, Guid.NewGuid(), Now, "Spoilage"));
     }
@@ -69,24 +102,37 @@ public sealed class InventoryDomainTests
     public void RecordSale_QuantityExceedsAvailable_ThrowsInvalidOperationException()
     {
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
-        item.UpdateReservedQuantity(8m);
+        item.Reserve(8m, Now);
         Assert.Throws<InvalidOperationException>(() =>
             item.RecordSaleDirectly(3m, Guid.NewGuid(), Guid.NewGuid(), Now));
     }
 
     [Fact]
-    public void RecordOnlineSale_QuantityAvailable_DecrementsStockAndCreatesPaymentLedger()
+    public void ConsumeReservedOnlineSale_QuantityReserved_DecrementsStockAndReservationAndCreatesPaymentLedger()
     {
         var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
         var paymentTransactionId = Guid.NewGuid();
+        item.Reserve(3m, Now);
 
-        var ledger = item.RecordOnlineSale(3m, paymentTransactionId, Now);
+        var ledger = item.ConsumeReservedOnlineSale(3m, paymentTransactionId, Now);
 
         Assert.Equal(7m, item.CurrentQuantity);
+        Assert.Equal(0m, item.ReservedQuantity);
+        Assert.Equal(7m, item.AvailableQuantity);
         Assert.Equal(InventoryTransactionType.ONLINE_SALE, ledger.TransactionType);
         Assert.Equal("PAYMENT_TRANSACTION", ledger.ReferenceType);
         Assert.Equal(paymentTransactionId, ledger.ReferenceId);
         Assert.Equal(TimeSpan.Zero, ledger.OccurredAt.Offset);
+    }
+
+    [Fact]
+    public void ConsumeReservedOnlineSale_QuantityExceedsReservation_ThrowsInvalidOperationException()
+    {
+        var item = CreateInventory().AddItem(Guid.NewGuid(), 10m, Guid.NewGuid(), Now);
+        item.Reserve(2m, Now);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            item.ConsumeReservedOnlineSale(3m, Guid.NewGuid(), Now));
     }
 
     private static DomainInventory CreateInventory()

@@ -5,6 +5,8 @@ using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Application.Modules.Finance.Events.V1;
+using Haggly.Application.Modules.Inventory.Events.V1;
+using Haggly.Application.Modules.Inventory.Exceptions;
 using Haggly.Application.Modules.Sales.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
@@ -12,6 +14,7 @@ using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
+using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
 using Haggly.Infrastructure.Persistence.Repositories.Sales;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +43,7 @@ public sealed class StartPaymentAtomicityTests
         Assert.Equal(1, await connection.ExecuteScalarAsync<int>(
             "SELECT COUNT(*) FROM messaging.outbox_messages WHERE \"CorrelationId\" = @PaymentId;",
             new { PaymentId = result.Id }));
+        Assert.Equal(5m, await GetReservedQuantityAsync(connection, orderId));
     }
 
     [Fact]
@@ -56,6 +60,38 @@ public sealed class StartPaymentAtomicityTests
         Assert.Equal(0, await connection.ExecuteScalarAsync<int>(
             "SELECT COUNT(*) FROM payments.payments WHERE \"OrderId\" = @OrderId;",
             new { OrderId = orderId }));
+        Assert.Equal(0m, await GetReservedQuantityAsync(connection, orderId));
+    }
+
+    [Fact]
+    public async Task Handle_WhenAnyOrderItemLacksStock_RollsBackEveryReservationAndPaymentRecord()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using (var connection = await OpenConnectionAsync())
+        {
+            await connection.ExecuteAsync(
+                """
+                UPDATE inventory.inventory_items AS i
+                SET "CurrentQuantity" = 1
+                FROM sales.order_items AS oi
+                JOIN sales.stall_fulfillments AS sf ON sf."Id" = oi."StallFulfillmentId"
+                WHERE i."Id" = oi."InventoryItemId"
+                  AND sf."OrderId" = @OrderId
+                  AND oi."FinalQuantity" = 3;
+                """,
+                new { OrderId = orderId });
+        }
+        await using var dbContext = CreateDbContext();
+        var handler = CreateHandler(dbContext, CreateWriter(dbContext));
+
+        await Assert.ThrowsAsync<InventoryConflictException>(() =>
+            handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None));
+
+        await using var verificationConnection = await OpenConnectionAsync();
+        Assert.Equal(0, await verificationConnection.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM payments.payments WHERE \"OrderId\" = @OrderId;",
+            new { OrderId = orderId }));
+        Assert.Equal(0m, await GetReservedQuantityAsync(verificationConnection, orderId));
     }
 
     [Fact]
@@ -133,6 +169,59 @@ public sealed class StartPaymentAtomicityTests
             WHERE t."PaymentId" = @PaymentId;
             """,
             new { PaymentId = payment.Id }));
+        Assert.Equal(providerSucceeded ? 5m : 0m, await GetReservedQuantityAsync(connection, orderId));
+    }
+
+    [Fact]
+    public async Task InventoryHandleAsync_WhenPaymentSucceeds_ConsumesReservedStockOnce()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        await CreateProcessingConsumer(
+            dbContext,
+            CreateWriter(dbContext),
+            new FixedPaymentProvider(true)).HandleAsync(
+                CreateRequested(payment.Id, orderId),
+                CancellationToken.None);
+        var transactionId = await dbContext.PaymentTransactions
+            .Where(transaction => transaction.PaymentId == payment.Id)
+            .Select(transaction => transaction.Id)
+            .SingleAsync();
+        var integrationEvent = new PaymentSucceededEvent(
+            Guid.NewGuid(), payment.Id, Now, payment.Id, transactionId, orderId,
+            payment.AmountDue, payment.Currency, "SIM-INVENTORY",
+            await dbContext.PaymentAllocations
+                .Where(allocation => allocation.PaymentTransactionId == transactionId)
+                .Select(allocation => allocation.Id)
+                .ToArrayAsync());
+        var inventoryHandler = new InventoryPaymentSucceededHandler(
+            new EfInventoryPaymentRepository(dbContext));
+
+        await inventoryHandler.HandleAsync(integrationEvent, CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        await inventoryHandler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal(0m, await GetReservedQuantityAsync(connection, orderId));
+        Assert.Equal(15m, await connection.ExecuteScalarAsync<decimal>(
+            """
+            SELECT SUM(i."CurrentQuantity")
+            FROM inventory.inventory_items AS i
+            JOIN sales.order_items AS oi ON oi."InventoryItemId" = i."Id"
+            JOIN sales.stall_fulfillments AS sf ON sf."Id" = oi."StallFulfillmentId"
+            WHERE sf."OrderId" = @OrderId;
+            """,
+            new { OrderId = orderId }));
+        Assert.Equal(2, await connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*)
+            FROM inventory.inventory_ledgers AS l
+            WHERE l."ReferenceId" = @TransactionId AND l."TransactionType" = 'ONLINE_SALE';
+            """,
+            new { TransactionId = transactionId }));
     }
 
     [Fact]
@@ -264,6 +353,7 @@ public sealed class StartPaymentAtomicityTests
         IOutboxWriter outboxWriter)
         => new(
             new EfPaymentCommandRepository(dbContext),
+            new EfInventoryPaymentRepository(dbContext),
             outboxWriter,
             new EfPaymentUnitOfWork(dbContext),
             new FixedBusinessClock(Now));
@@ -287,6 +377,7 @@ public sealed class StartPaymentAtomicityTests
             new EfPaymentCommandRepository(dbContext),
             paymentProvider,
             new EfPaymentAllocationRepository(dbContext),
+            new EfInventoryPaymentRepository(dbContext),
             outboxWriter,
             new EfPaymentUnitOfWork(dbContext),
             new FixedBusinessClock(Now));
@@ -312,6 +403,17 @@ public sealed class StartPaymentAtomicityTests
         var secondStallId = Guid.NewGuid();
         var firstFulfillmentId = Guid.NewGuid();
         var secondFulfillmentId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var firstProductId = Guid.NewGuid();
+        var secondProductId = Guid.NewGuid();
+        var firstProductStallId = Guid.NewGuid();
+        var secondProductStallId = Guid.NewGuid();
+        var firstInventoryId = Guid.NewGuid();
+        var secondInventoryId = Guid.NewGuid();
+        var firstInventoryItemId = Guid.NewGuid();
+        var secondInventoryItemId = Guid.NewGuid();
+        var firstOrderItemId = Guid.NewGuid();
+        var secondOrderItemId = Guid.NewGuid();
         await using var connection = await OpenConnectionAsync();
         await connection.ExecuteAsync(
             """
@@ -348,6 +450,38 @@ public sealed class StartPaymentAtomicityTests
                 (@FirstStallId, @MarketId, @FirstVendorId, @FirstStallCode, 'Payment Stall One', 'ACTIVE', @Now),
                 (@SecondStallId, @MarketId, @SecondVendorId, @SecondStallCode, 'Payment Stall Two', 'ACTIVE', @Now);
 
+            INSERT INTO inventory.inventories
+                ("Id", "StallId", "CreatedAt")
+            VALUES
+                (@FirstInventoryId, @FirstStallId, @Now),
+                (@SecondInventoryId, @SecondStallId, @Now);
+
+            INSERT INTO catalog.categories
+                ("Id", "Name", "Slug", "DisplayOrder", "Status", "CreatedAt")
+            VALUES
+                (@CategoryId, 'Payment Category', @CategorySlug, 0, 'ACTIVE', @Now);
+
+            INSERT INTO catalog.products
+                ("Id", "CategoryId", "Name", "DefaultUnit", "Status", "CreatedAt")
+            VALUES
+                (@FirstProductId, @CategoryId, @FirstProductName, 'KG', 'ACTIVE', @Now),
+                (@SecondProductId, @CategoryId, @SecondProductName, 'KG', 'ACTIVE', @Now);
+
+            INSERT INTO catalog.product_stalls
+                ("Id", "StallId", "ProductId", "DisplayName", "SellingUnit",
+                 "MinimumOrderQuantity", "CurrentUnitPrice", "IsNegotiable", "IsActive", "Version", "CreatedAt")
+            VALUES
+                (@FirstProductStallId, @FirstStallId, @FirstProductId, 'Payment Product One', 'KG',
+                 1, 60000, FALSE, TRUE, 0, @Now),
+                (@SecondProductStallId, @SecondStallId, @SecondProductId, 'Payment Product Two', 'KG',
+                 1, 60000, FALSE, TRUE, 0, @Now);
+
+            INSERT INTO inventory.inventory_items
+                ("Id", "InventoryId", "ProductStallId", "CurrentQuantity", "ReservedQuantity", "Version", "CreatedAt")
+            VALUES
+                (@FirstInventoryItemId, @FirstInventoryId, @FirstProductStallId, 10, 0, 0, @Now),
+                (@SecondInventoryItemId, @SecondInventoryId, @SecondProductStallId, 10, 0, 0, @Now);
+
             INSERT INTO sales.orders
                 ("Id", "OrderNo", "BuyerId", "Status", "TotalToCharge", "TotalPaid",
                  "Currency", "PlacedAt", "CreatedAt")
@@ -362,6 +496,16 @@ public sealed class StartPaymentAtomicityTests
                  'AGREED', 120000, 120000, 0, @Now),
                 (@SecondFulfillmentId, @OrderId, @SecondStallId, @SecondFulfillmentNo,
                  'AGREED', 180000, 180000, 0, @Now);
+
+            INSERT INTO sales.order_items
+                ("Id", "StallFulfillmentId", "InventoryItemId", "ProductNameSnapshot",
+                 "SellingUnitSnapshot", "PublicUnitPriceSnapshot", "FinalUnitPrice",
+                 "FinalQuantity", "LineTotal", "IsNegotiated", "Status", "CreatedAt")
+            VALUES
+                (@FirstOrderItemId, @FirstFulfillmentId, @FirstInventoryItemId, 'Payment Product One',
+                 'KG', 60000, 60000, 2, 120000, FALSE, 'ACTIVE', @Now),
+                (@SecondOrderItemId, @SecondFulfillmentId, @SecondInventoryItemId, 'Payment Product Two',
+                 'KG', 60000, 60000, 3, 180000, FALSE, 'ACTIVE', @Now);
             """,
             new
             {
@@ -384,12 +528,39 @@ public sealed class StartPaymentAtomicityTests
                 SecondFulfillmentId = secondFulfillmentId,
                 FirstFulfillmentNo = $"FUL-{firstFulfillmentId:N}".ToUpperInvariant(),
                 SecondFulfillmentNo = $"FUL-{secondFulfillmentId:N}".ToUpperInvariant(),
+                CategoryId = categoryId,
+                CategorySlug = $"payment-{categoryId:N}",
+                FirstProductId = firstProductId,
+                SecondProductId = secondProductId,
+                FirstProductName = $"Payment-{firstProductId:N}",
+                SecondProductName = $"Payment-{secondProductId:N}",
+                FirstProductStallId = firstProductStallId,
+                SecondProductStallId = secondProductStallId,
+                FirstInventoryId = firstInventoryId,
+                SecondInventoryId = secondInventoryId,
+                FirstInventoryItemId = firstInventoryItemId,
+                SecondInventoryItemId = secondInventoryItemId,
+                FirstOrderItemId = firstOrderItemId,
+                SecondOrderItemId = secondOrderItemId,
                 OrderId = orderId,
                 OrderNo = $"ORD-{orderId:N}".ToUpperInvariant(),
                 Now
             });
         return (orderId, buyerId);
     }
+
+    private static Task<decimal> GetReservedQuantityAsync(
+        System.Data.Common.DbConnection connection,
+        Guid orderId)
+        => connection.ExecuteScalarAsync<decimal>(
+            """
+            SELECT SUM(i."ReservedQuantity")
+            FROM inventory.inventory_items AS i
+            JOIN sales.order_items AS oi ON oi."InventoryItemId" = i."Id"
+            JOIN sales.stall_fulfillments AS sf ON sf."Id" = oi."StallFulfillmentId"
+            WHERE sf."OrderId" = @OrderId;
+            """,
+            new { OrderId = orderId });
 
     private static HagglyDbContext CreateDbContext()
         => new(new DbContextOptionsBuilder<HagglyDbContext>()

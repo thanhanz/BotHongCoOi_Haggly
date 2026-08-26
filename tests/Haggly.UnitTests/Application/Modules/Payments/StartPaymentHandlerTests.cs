@@ -1,4 +1,5 @@
 using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
@@ -6,6 +7,7 @@ using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Application.Modules.Payments.Exceptions;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
+using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Sales;
 using Xunit;
 
@@ -27,8 +29,9 @@ public sealed class StartPaymentHandlerTests
         };
         var outbox = new FakeOutboxWriter();
         var unitOfWork = new FakePaymentUnitOfWork();
+        var inventoryRepository = new FakeInventoryPaymentRepository();
         var handler = new StartPaymentHandler(
-            repository, outbox, unitOfWork, new FixedBusinessClock(Now));
+            repository, inventoryRepository, outbox, unitOfWork, new FixedBusinessClock(Now));
 
         var result = await handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None);
 
@@ -41,6 +44,7 @@ public sealed class StartPaymentHandlerTests
         Assert.Equal("VND", requested.Currency);
         Assert.Equal(payment.Id, requested.CorrelationId);
         Assert.Equal(1, repository.SaveCount);
+        Assert.Equal(orderId, Assert.Single(inventoryRepository.ReservedOrderIds));
         Assert.Equal(1, unitOfWork.TransactionCount);
     }
 
@@ -55,12 +59,41 @@ public sealed class StartPaymentHandlerTests
         };
         var handler = new StartPaymentHandler(
             repository,
+            new FakeInventoryPaymentRepository(),
             new FakeOutboxWriter(),
             new FakePaymentUnitOfWork(),
             new FixedBusinessClock(Now));
 
         await Assert.ThrowsAsync<PaymentConflictException>(() =>
             handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_WhenInventoryCannotBeReserved_DoesNotCreatePaymentOrWriteEvent()
+    {
+        var orderId = Guid.NewGuid();
+        var buyerId = Guid.NewGuid();
+        var repository = new FakePaymentCommandRepository
+        {
+            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
+        };
+        var inventoryRepository = new FakeInventoryPaymentRepository
+        {
+            ReserveException = new InvalidOperationException("insufficient stock")
+        };
+        var outbox = new FakeOutboxWriter();
+        var handler = new StartPaymentHandler(
+            repository,
+            inventoryRepository,
+            outbox,
+            new FakePaymentUnitOfWork(),
+            new FixedBusinessClock(Now));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None));
+
+        Assert.Empty(repository.Payments);
+        Assert.Empty(outbox.Events);
     }
 
     [Fact]
@@ -78,6 +111,7 @@ public sealed class StartPaymentHandlerTests
         };
         var handler = new StartPaymentHandler(
             repository,
+            new FakeInventoryPaymentRepository(),
             new FakeOutboxWriter(),
             new FakePaymentUnitOfWork(),
             new FixedBusinessClock(Now));
@@ -102,6 +136,7 @@ public sealed class StartPaymentHandlerTests
         var outbox = new FakeOutboxWriter();
         var handler = new StartPaymentHandler(
             repository,
+            new FakeInventoryPaymentRepository(),
             outbox,
             new FakePaymentUnitOfWork(),
             new FixedBusinessClock(localTimestamp));
@@ -162,6 +197,44 @@ public sealed class StartPaymentHandlerTests
             Events.Add(domainEvent);
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FakeInventoryPaymentRepository : IInventoryPaymentRepository
+    {
+        public List<Guid> ReservedOrderIds { get; } = [];
+        public Exception? ReserveException { get; init; }
+
+        public Task ReserveAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+        {
+            if (ReserveException is not null)
+                throw ReserveException;
+
+            ReservedOrderIds.Add(orderId);
+            return Task.CompletedTask;
+        }
+
+        public Task ReleaseAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+            => Task.CompletedTask;
+
+        public Task<bool> HasProcessedAsync(
+            Guid paymentTransactionId,
+            InventoryTransactionType transactionType,
+            CancellationToken cancellationToken)
+            => Task.FromResult(false);
+
+        public Task<IReadOnlyList<OrderItem>> FindActiveOrderItemsAsync(
+            Guid orderId,
+            CancellationToken cancellationToken)
+            => Task.FromResult<IReadOnlyList<OrderItem>>([]);
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 
     private sealed class FakePaymentUnitOfWork : IPaymentUnitOfWork

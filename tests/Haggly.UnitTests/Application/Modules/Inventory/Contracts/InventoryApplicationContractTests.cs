@@ -16,7 +16,7 @@ public sealed class InventoryApplicationContractTests
     {
         var inventory = DomainInventory.Create(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         var item = inventory.AddItem(Guid.NewGuid(), 25.5m, Guid.NewGuid(), DateTimeOffset.UtcNow);
-        item.UpdateReservedQuantity(5m);
+        item.Reserve(5m, DateTimeOffset.UtcNow);
         var result = InventoryItemDto.From(item);
         Assert.Equal(25.5m, result.CurrentQuantity);
         Assert.Equal(5m, result.ReservedQuantity);

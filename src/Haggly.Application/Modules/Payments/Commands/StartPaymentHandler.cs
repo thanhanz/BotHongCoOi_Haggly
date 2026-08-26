@@ -1,4 +1,5 @@
 using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Dtos;
@@ -12,6 +13,7 @@ namespace Haggly.Application.Modules.Payments.Commands;
 
 public sealed class StartPaymentHandler(
     IPaymentCommandRepository repository,
+    IInventoryPaymentRepository inventoryRepository,
     IOutboxWriter outboxWriter,
     IPaymentUnitOfWork unitOfWork,
     IBusinessClock businessClock)
@@ -43,6 +45,11 @@ public sealed class StartPaymentHandler(
                 throw new PaymentConflictException("A payment already exists for this order.");
 
             var occurredAt = businessClock.GetNow().ToUniversalTime();
+            await inventoryRepository.ReserveAsync(
+                order.OrderId,
+                occurredAt,
+                transactionCancellationToken);
+
             var payment = Payment.Create(
                 Guid.NewGuid(),
                 order.OrderId,

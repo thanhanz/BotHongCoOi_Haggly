@@ -33,7 +33,7 @@ public sealed class InventoryPaymentSucceededHandler(
             var inventoryItem = orderItem.InventoryItem
                 ?? throw new InvalidOperationException($"Inventory item '{orderItem.InventoryItemId}' was not found.");
             
-            inventoryItem.RecordOnlineSale(
+            inventoryItem.ConsumeReservedOnlineSale(
                 orderItem.FinalQuantity,
                 message.PaymentTransactionId,
                 message.OccurredAt);

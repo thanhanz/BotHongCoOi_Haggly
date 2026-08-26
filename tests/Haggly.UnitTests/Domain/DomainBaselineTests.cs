@@ -25,12 +25,13 @@ public sealed class DomainBaselineTests
     }
 
     [Fact]
-    public void UpdateReservedQuantity_WhenReservedQuantityExceedsCurrentQuantity_ThrowsInvalidOperationException()
+    public void Reserve_WhenReservedQuantityExceedsCurrentQuantity_ThrowsInvalidOperationException()
     {
         var inventory = Inventory.Create(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         var item = inventory.AddItem(Guid.NewGuid(), 3m, Guid.NewGuid(), DateTimeOffset.UtcNow);
 
-        Assert.Throws<InvalidOperationException>(() => item.UpdateReservedQuantity(4));
+        Assert.Throws<InvalidOperationException>(() =>
+            item.Reserve(4, DateTimeOffset.UtcNow));
     }
 
     [Fact]

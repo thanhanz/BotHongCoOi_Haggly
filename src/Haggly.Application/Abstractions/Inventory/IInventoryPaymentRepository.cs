@@ -6,6 +6,16 @@ namespace Haggly.Application.Abstractions.Inventory;
 
 public interface IInventoryPaymentRepository
 {
+    Task ReserveAsync(
+        Guid orderId,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken);
+
+    Task ReleaseAsync(
+        Guid orderId,
+        DateTimeOffset occurredAt,
+        CancellationToken cancellationToken);
+
     Task<bool> HasProcessedAsync(
         Guid paymentTransactionId,
         InventoryTransactionType transactionType,

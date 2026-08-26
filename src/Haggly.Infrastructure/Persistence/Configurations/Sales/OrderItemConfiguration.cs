@@ -31,7 +31,6 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
             .IsRequired();
         builder.Property(item => item.Notes).HasMaxLength(500);
         builder.ConfigureAuditable();
-        builder.Ignore(item => item.InventoryReservations);
 
         builder.HasOne(item => item.InventoryItem)
             .WithMany()

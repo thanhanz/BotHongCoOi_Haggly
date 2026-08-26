@@ -43,7 +43,6 @@ public sealed class OrderPersistenceModelTests
         Assert.Contains(item.GetIndexes(), index => index.IsUnique
             && index.Properties.Select(property => property.Name)
                 .SequenceEqual([nameof(OrderItem.StallFulfillmentId), nameof(OrderItem.InventoryItemId)]));
-        Assert.Null(item.FindNavigation(nameof(OrderItem.InventoryReservations)));
     }
 
     [Fact]

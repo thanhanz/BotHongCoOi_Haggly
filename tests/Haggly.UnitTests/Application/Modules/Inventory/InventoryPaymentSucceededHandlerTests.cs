@@ -32,6 +32,7 @@ public sealed class InventoryPaymentSucceededHandlerTests
         ], Now);
         var orderItem = Assert.Single(Assert.Single(order.StallFulfillments).OrderItems);
         orderItem.InventoryItem = inventoryItem;
+        inventoryItem.Reserve(orderItem.FinalQuantity, Now);
         var repository = new FakeInventoryPaymentRepository([orderItem]);
         var handler = new InventoryPaymentSucceededHandler(repository);
         var message = CreateEvent(order.Id);
@@ -40,6 +41,7 @@ public sealed class InventoryPaymentSucceededHandlerTests
         await handler.HandleAsync(message, CancellationToken.None);
 
         Assert.Equal(7m, inventoryItem.CurrentQuantity);
+        Assert.Equal(0m, inventoryItem.ReservedQuantity);
         Assert.Equal(1, repository.SaveCount);
         Assert.Contains(inventoryItem.InventoryLedgers, ledger =>
             ledger.TransactionType == InventoryTransactionType.ONLINE_SALE
@@ -64,6 +66,18 @@ public sealed class InventoryPaymentSucceededHandlerTests
     {
         public HashSet<Guid> ProcessedPaymentTransactionIds { get; } = [];
         public int SaveCount { get; private set; }
+
+        public Task ReserveAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+            => Task.CompletedTask;
+
+        public Task ReleaseAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+            => Task.CompletedTask;
 
         public Task<bool> HasProcessedAsync(
             Guid paymentTransactionId,

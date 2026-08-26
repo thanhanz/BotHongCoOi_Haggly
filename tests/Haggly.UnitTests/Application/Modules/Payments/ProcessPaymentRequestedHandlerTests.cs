@@ -1,9 +1,12 @@
 using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
+using Haggly.Domain.Modules.Inventory;
+using Haggly.Domain.Modules.Sales;
 using Xunit;
 
 namespace Haggly.UnitTests.Application.Modules.Payments;
@@ -42,10 +45,12 @@ public sealed class ProcessPaymentRequestedHandlerTests
         var payment = CreatePayment();
         var repository = new FakePaymentCommandRepository(payment);
         var outbox = new FakeOutboxWriter();
+        var inventoryRepository = new FakeInventoryPaymentRepository();
         var consumer = CreateConsumer(
             repository,
             outbox,
-            new FakePaymentProvider(new(false, null, "simulated decline")));
+            new FakePaymentProvider(new(false, null, "simulated decline")),
+            inventoryRepository);
 
         await consumer.HandleAsync(CreateRequested(payment), CancellationToken.None);
 
@@ -54,6 +59,7 @@ public sealed class ProcessPaymentRequestedHandlerTests
         Assert.Equal(PaymentStatus.FAILED, payment.Status);
         Assert.Equal(PaymentTransactionStatus.FAILED, transaction.Status);
         Assert.Equal("simulated decline", failed.FailureReason);
+        Assert.Equal(payment.OrderId, Assert.Single(inventoryRepository.ReleasedOrderIds));
     }
 
     [Fact]
@@ -79,25 +85,30 @@ public sealed class ProcessPaymentRequestedHandlerTests
     {
         var payment = CreatePayment();
         var outbox = new FakeOutboxWriter();
+        var inventoryRepository = new FakeInventoryPaymentRepository();
         var consumer = CreateConsumer(
             new FakePaymentCommandRepository(payment),
             outbox,
-            new ThrowingPaymentProvider());
+            new ThrowingPaymentProvider(),
+            inventoryRepository);
 
         await Assert.ThrowsAsync<TimeoutException>(() =>
             consumer.HandleAsync(CreateRequested(payment), CancellationToken.None));
 
         Assert.Empty(outbox.Events);
+        Assert.Empty(inventoryRepository.ReleasedOrderIds);
     }
 
     private static ProcessPaymentRequestedHandler CreateConsumer(
         IPaymentCommandRepository repository,
         IOutboxWriter outbox,
-        IPaymentProvider provider)
+        IPaymentProvider provider,
+        IInventoryPaymentRepository? inventoryRepository = null)
         => new(
             repository,
             provider,
             new FakePaymentAllocationRepository(),
+            inventoryRepository ?? new FakeInventoryPaymentRepository(),
             outbox,
             new FakePaymentUnitOfWork(),
             new FixedBusinessClock(Now));
@@ -168,6 +179,40 @@ public sealed class ProcessPaymentRequestedHandlerTests
             _allocations.Add(allocation);
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FakeInventoryPaymentRepository : IInventoryPaymentRepository
+    {
+        public List<Guid> ReleasedOrderIds { get; } = [];
+
+        public Task ReserveAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+            => Task.CompletedTask;
+
+        public Task ReleaseAsync(
+            Guid orderId,
+            DateTimeOffset occurredAt,
+            CancellationToken cancellationToken)
+        {
+            ReleasedOrderIds.Add(orderId);
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> HasProcessedAsync(
+            Guid paymentTransactionId,
+            InventoryTransactionType transactionType,
+            CancellationToken cancellationToken)
+            => Task.FromResult(false);
+
+        public Task<IReadOnlyList<OrderItem>> FindActiveOrderItemsAsync(
+            Guid orderId,
+            CancellationToken cancellationToken)
+            => Task.FromResult<IReadOnlyList<OrderItem>>([]);
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 
     private sealed class FakePaymentProvider(PaymentProviderResult result) : IPaymentProvider

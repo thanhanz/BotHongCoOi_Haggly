@@ -85,7 +85,8 @@ public sealed class InventoryPersistenceBoundaryTests
             var item = await firstContext.InventoryItems
                 .Include(value => value.InventoryLedgers)
                 .SingleAsync(value => value.Id == itemId);
-            item.RecordOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
+            item.Reserve(1m, DateTimeOffset.UtcNow);
+            item.ConsumeReservedOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
             await firstContext.SaveChangesAsync();
         }
 
@@ -93,7 +94,8 @@ public sealed class InventoryPersistenceBoundaryTests
         var duplicate = await secondContext.InventoryItems
             .Include(value => value.InventoryLedgers)
             .SingleAsync(value => value.Id == itemId);
-        duplicate.RecordOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
+        duplicate.Reserve(1m, DateTimeOffset.UtcNow);
+        duplicate.ConsumeReservedOnlineSale(1m, paymentTransactionId, DateTimeOffset.UtcNow);
         var exception = await Assert.ThrowsAsync<DbUpdateException>(() =>
             secondContext.SaveChangesAsync());
         Assert.Equal(
