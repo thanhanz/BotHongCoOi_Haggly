@@ -1,8 +1,8 @@
 # Inventory module guide
 
 This guide records the continuous Inventory slice implemented in the current
-workspace. Buyer cart/order coordination is implemented in Sales; Inventory
-reservation remains deferred.
+workspace. Buyer cart/order coordination is implemented in Sales. Starting a
+Payment now creates an aggregate stock hold without a separate reservation entity.
 
 ## Responsibilities
 
@@ -15,7 +15,7 @@ the time of a completed sale.
 ## Layer map
 
 - Domain: `src/Haggly.Domain/Modules/Inventory` contains `Inventory`,
-  `InventoryItem`, `InventoryLedger`, and reservation types.
+  `InventoryItem`, and `InventoryLedger`.
 - Application: `src/Haggly.Application/Modules/Inventory` contains add, read,
   adjustment, and ledger use cases plus ownership checks and persistence ports.
 - Infrastructure: EF configurations and repositories are under
@@ -24,8 +24,8 @@ the time of a completed sale.
 - API: `src/Haggly.Api/Endpoints/Inventory` exposes vendor-only continuous
   inventory routes.
 
-Successful online payments currently deduct active OrderItem quantities
-directly and append idempotent online-sale ledger entries.
+Payment start reserves active OrderItem quantities. Successful online payments
+consume those quantities and append idempotent online-sale ledger entries.
 
 ## Verified business rules
 
@@ -36,6 +36,12 @@ directly and append idempotent online-sale ledger entries.
   `AvailableQuantity` is calculated as current minus reserved and is not stored.
 - Quantities cannot be negative and reserved quantity cannot exceed current
   quantity. Adjustments cannot reduce current quantity below reserved stock.
+- `StartPaymentHandler` calls `IInventoryPaymentRepository.ReserveAsync` inside
+  the same PostgreSQL transaction that creates the Payment and request outbox
+  row. The operation is all-or-nothing and uses InventoryItem concurrency tokens.
+- A definitive provider decline releases the active OrderItem quantities inside
+  the same payment-result transaction. Technical provider exceptions roll back
+  and leave the quantities reserved for broker retry.
 - InventoryItem `Version` is an EF concurrency token and increments on quantity
   mutations.
 - ProductStall owns `SellingUnit`, `CurrentUnitPrice`, and its own concurrency
@@ -43,17 +49,18 @@ directly and append idempotent online-sale ledger entries.
   price/unit/name and deducting stock.
 - Quantity changes append immutable InventoryLedger rows. Current product data
   is not duplicated in InventoryItem.
-- `InventoryPaymentSucceededHandler` loads active OrderItems, deducts their
-  InventoryItems, and appends one `ONLINE_SALE` ledger row per item. The
+- `InventoryPaymentSucceededHandler` loads active OrderItems, decreases both
+  current and reserved quantity, and appends one `ONLINE_SALE` ledger row per
+  item. The
   payment transaction is the ledger reference, and a filtered unique index
   prevents duplicate delivery from deducting the same item twice.
 - `InventoryPaymentSucceededConsumer` owns the durable
   `haggly-inventory-payment-succeeded-v1` queue bound to the shared
   `payments.payment-succeeded.v1` exchange. Technical failures retry after
   1, 5, and 15 seconds before MassTransit error transport.
-- Because checkout does not yet create InventoryReservation rows, online-sale
-  deduction checks currently available stock at event handling time. Persisted
-  reservation creation and consumption remain a separate workflow.
+- There is no InventoryReservation entity or reservation ledger entry. Active
+  OrderItems supply the held quantities; `ReservedQuantity` is their aggregate
+  while payment is pending or processing.
 - `IInventorySaleRecorder` is the Sales-facing port. It verifies stall ownership,
   checks both InventoryItem and ProductStall versions, snapshots current catalog
   data, and records `POS_SALE` atomically with the sale.

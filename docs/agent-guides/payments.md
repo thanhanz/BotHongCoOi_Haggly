@@ -18,9 +18,11 @@ are not implemented.
 
 ## Payment processing
 
-`POST /api/v1/payments` atomically creates a pending Payment and appends a V1
+`POST /api/v1/payments` atomically revalidates and reserves every active
+OrderItem quantity, creates a pending Payment, and appends a V1
 `PaymentRequested` event to the PostgreSQL outbox. The hosted outbox processor
-publishes that event to RabbitMQ.
+publishes that event to RabbitMQ. A separate reservation entity is not stored;
+InventoryItem keeps the aggregate reserved quantity.
 
 `ProcessPaymentRequestedHandler` performs the following workflow:
 
@@ -30,8 +32,8 @@ publishes that event to RabbitMQ.
 4. On success, mark the transaction `SUCCEEDED`, mark the Payment `PAID`, create
    one PaymentAllocation per active StallFulfillment, and append
    `PaymentSucceeded` to the outbox.
-5. On provider decline, mark the transaction and Payment `FAILED` and append
-   `PaymentFailed` to the outbox.
+5. On provider decline, release the OrderItem quantities, mark the transaction
+   and Payment `FAILED`, and append `PaymentFailed` to the outbox.
 
 The Payment, PaymentTransaction, allocations, and result event are committed
 in one PostgreSQL transaction. Runtime timestamps are normalized to UTC.
@@ -53,7 +55,7 @@ without acknowledging another module's delivery:
 | Module | Queue | Application handler | Persisted effect |
 |---|---|---|---|
 | Finance | `finance-payment-succeeded-v1` | `FinancePaymentSucceededHandler` | Append one RevenueLedger sale per PaymentAllocation. |
-| Inventory | `inventory-payment-succeeded-v1` | `InventoryPaymentSucceededHandler` | Deduct active OrderItem quantities and append `ONLINE_SALE` InventoryLedger rows. |
+| Inventory | `inventory-payment-succeeded-v1` | `InventoryPaymentSucceededHandler` | Decrease current and reserved quantities and append `ONLINE_SALE` InventoryLedger rows. |
 | Sales/Order | `order-payment-succeeded-v1` | `OrderPaymentSucceededHandler` | Set `Order.TotalPaid`, move the Order to `PAID`, and apply each allocation to `StallFulfillment.PaidAmount`. |
 
 Each Infrastructure consumer implements MassTransit
@@ -88,15 +90,10 @@ completed with a definitive unsuccessful result. It does not represent an
 exception raised by Finance, Inventory, or Order while processing
 `PaymentSucceededEvent`.
 
-Future business-failure work must decide the reactions explicitly:
-
-- Define which Sales/Order state, if any, changes after the overall attempt
-  fails.
-- Define whether Inventory reservations remain active, expire, or are released;
-  persisted reservation creation is itself still deferred.
-- Keep Finance unchanged because a failed collection recognizes no revenue.
-- Add module-owned queues, MassTransit consumers, idempotent handlers, and
-  focused failure tests only for the selected reactions.
+A definitive provider decline releases the aggregate Inventory hold in the same
+database transaction that marks the Payment and attempt failed and writes the
+failure event. Finance remains unchanged because failed collection recognizes
+no revenue. Sales/Order does not yet react to `PaymentFailed`.
 
 ### PaymentSucceeded consumer fault
 
@@ -137,7 +134,7 @@ transport.
 
 - Explicit retry-payment command/API for a `FAILED` Payment, preserving prior
   PaymentTransactions.
-- Persisted InventoryReservation creation and consumption.
+- Reservation expiration and abandoned-payment release.
 - Authenticated real-provider webhook processing.
 - Refund (`REFUNDING`/`REFUNDED`) events and append-only reversals.
 - Partial payments.

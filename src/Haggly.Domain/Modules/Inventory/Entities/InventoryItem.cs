@@ -15,7 +15,6 @@ public sealed class InventoryItem : AuditableEntity
     public Inventory? Inventory { get; set; }
     public ProductStall? ProductStall { get; set; }
     public ICollection<InventoryLedger> InventoryLedgers { get; set; } = new List<InventoryLedger>();
-    public ICollection<InventoryReservation> InventoryReservations { get; set; } = new List<InventoryReservation>();
 
     internal static InventoryItem Create(
         Guid inventoryId,
@@ -120,24 +119,39 @@ public sealed class InventoryItem : AuditableEntity
         return ledger;
     }
 
-    public void UpdateReservedQuantity(decimal reservedQuantity)
+    public void Reserve(decimal quantity, DateTimeOffset occurredAt)
     {
-        ValidateNonNegative(reservedQuantity, nameof(reservedQuantity));
-        if (reservedQuantity > CurrentQuantity)
+        if (quantity <= 0m)
         {
-            throw new InvalidOperationException("Reserved quantity cannot exceed current quantity.");
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Reserved quantity must be greater than zero.");
         }
 
-        if (ReservedQuantity == reservedQuantity)
+        if (quantity > AvailableQuantity)
         {
-            return;
+            throw new InvalidOperationException("Reserved quantity cannot exceed available inventory.");
         }
 
-        ReservedQuantity = reservedQuantity;
-        Version++;
+        ReservedQuantity += quantity;
+        MarkChanged(null, occurredAt.ToUniversalTime());
     }
 
-    public InventoryLedger RecordOnlineSale(
+    public void ReleaseReserved(decimal quantity, DateTimeOffset occurredAt)
+    {
+        if (quantity <= 0m)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Released quantity must be greater than zero.");
+        }
+
+        if (quantity > ReservedQuantity)
+        {
+            throw new InvalidOperationException("Released quantity cannot exceed reserved inventory.");
+        }
+
+        ReservedQuantity -= quantity;
+        MarkChanged(null, occurredAt.ToUniversalTime());
+    }
+
+    public InventoryLedger ConsumeReservedOnlineSale(
         decimal quantity,
         Guid paymentTransactionId,
         DateTimeOffset occurredAt)
@@ -146,12 +160,13 @@ public sealed class InventoryItem : AuditableEntity
             throw new ArgumentOutOfRangeException(nameof(quantity), "Sale quantity must be greater than zero.");
         if (paymentTransactionId == Guid.Empty)
             throw new ArgumentException("A valid payment transaction ID is required.", nameof(paymentTransactionId));
-        if (quantity > AvailableQuantity)
-            throw new InvalidOperationException("Sale quantity cannot exceed available inventory.");
+        if (quantity > ReservedQuantity)
+            throw new InvalidOperationException("Sale quantity cannot exceed reserved inventory.");
 
         var utcOccurredAt = occurredAt.ToUniversalTime();
         var quantityBefore = CurrentQuantity;
         CurrentQuantity -= quantity;
+        ReservedQuantity -= quantity;
         MarkChanged(null, utcOccurredAt);
         
         var ledger = InventoryLedger.CreateOnlineSale(

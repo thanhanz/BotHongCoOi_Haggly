@@ -1,7 +1,7 @@
 # Sales module guide
 
 This guide records the currently executable Cart, buyer Order, vendor POS, and
-successful-payment Order reaction. Negotiation, inventory reservation,
+successful-payment Order reaction. Negotiation, reservation expiration,
 preparation, and pickup workflows remain incomplete.
 
 ## Responsibilities
@@ -57,8 +57,9 @@ stores product name, selling unit, public unit price, requested quantity, and
 notes as order-item values.
 
 `EfCartCheckoutUnitOfWork` creates the order and clears the cart within one EF
-Core database transaction. Checkout does not create an Inventory reservation;
-reservation and final stock protection remain future Sales/Inventory work.
+Core database transaction. Checkout does not reserve Inventory. The subsequent
+payment-start use case atomically reserves every active OrderItem before the
+provider request can be published.
 
 The existing `POST /api/v1/orders` path can also create a negotiating order
 directly from submitted inventory item lines. Buyer order list, detail, and

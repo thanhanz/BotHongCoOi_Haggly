@@ -23,8 +23,8 @@ The MVP requirements also cover ProductStall, Negotiation, Sales, Payments,
 and Finance. Sales currently implements buyer carts, cart checkout into
 multi-stall negotiating orders, buyer order reads/cancellation, and vendor POS;
 POS revenue and simulated online payment completion are also implemented.
-Inventory reservation, negotiation, pickup/fulfillment transitions, real payment
-provider integration, and broader Finance reporting remain future workflows.
+Negotiation, reservation expiration, pickup/fulfillment transitions, real
+payment provider integration, and broader Finance reporting remain future workflows.
 
 ## Technology actually used
 
@@ -43,8 +43,11 @@ provider integration, and broader Finance reporting remain future workflows.
   adapter invokes the PaymentRequested Application handler, which atomically
   persists the payment result, attempt, and result outbox event. Dedicated
   Finance, Inventory, and Order queues independently consume PaymentSucceeded;
-  Finance appends allocation revenue, Inventory appends idempotent online-sale
-  ledger entries while deducting active order-item quantities, and Order applies
+  Payment start atomically increases each active OrderItem's InventoryItem
+  `ReservedQuantity` before creating the Payment and request outbox row. A provider
+  decline releases those quantities in the payment-result transaction. Finance
+  appends allocation revenue, Inventory consumes reserved quantities and appends
+  idempotent online-sale ledger entries, and Order applies
   allocation amounts before moving to PAID. The request consumer's durable
   `haggly-payments-payment-requested-v1` queue binds the stable request exchange;
   technical failures retry after 1, 5, and 15 seconds before MassTransit error
@@ -134,7 +137,7 @@ are:
 | Identity | `User`, `Role`, `UserRole`, `BuyerProfile`, `VendorProfile`, `AdminProfile`, `DelivererProfile`, related enums | Implemented vertical slice across all layers |
 | Markets | `Market`, `Stall`, related enums | Implemented vertical slice across Domain, Application, Infrastructure, and API |
 | Catalog | `Category`, `Product`, `ProductStall`, related enums | Category, Product, and ProductStall vertical slices implemented |
-| Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, `InventoryReservation`, related enums | Implemented continuous-inventory slice across Domain, Application, Infrastructure, and API; reservation workflow deferred to Sales |
+| Inventory | `Inventory`, `InventoryItem`, `InventoryLedger`, related enums | Implemented continuous-inventory slice plus aggregate payment-time stock holds across Domain, Application, Infrastructure, and API |
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Simulated processing atomically persists the Payment, attempt, per-stall allocations, and result event containing allocation IDs |
@@ -230,7 +233,9 @@ carts.
 Product and ProductStall are mapped to `catalog.products` and
 `catalog.product_stalls`; Inventory is mapped to `inventory`, POS sales to
 `sales`, Cart and Order are mapped to `sales`, and POS revenue to `finance`.
-Inventory reservations and Negotiation remain unmapped. Payments maps
+Reservations have no separate entity or table; `InventoryItem.ReservedQuantity`
+stores the aggregate payment-time hold and active OrderItems provide the quantities.
+Negotiation remains unmapped. Payments maps
 `payments.payments`, `payments.payment_transactions`, and
 `payments.payment_allocations`. Revenue rows use a unique PaymentAllocation plus
 entry-type key for idempotency; general inbox deduplication remains deferred.
@@ -333,10 +338,10 @@ Buyer order routes are grouped under `/api/v1/orders` and require the
 | `GET` | `/api/v1/orders/{orderId}` | Return an owned Order with fulfillments and item snapshots |
 | `POST` | `/api/v1/orders/{orderId}/cancel` | Cancel an eligible owned Order |
 
-Cart availability uses `CurrentQuantity - ReservedQuantity`. Cart lines do not
-reserve or deduct Inventory, so add/update and checkout validate current stock
-but do not provide final stock protection. Checkout creates the Order and clears
-the cart in one EF Core transaction.
+Cart availability uses `CurrentQuantity - ReservedQuantity`. Cart lines and
+checkout do not reserve or deduct Inventory. Starting payment revalidates and
+reserves every active OrderItem atomically with Payment creation and its outbox
+message. Checkout creates the Order and clears the cart in one EF Core transaction.
 
 Successful endpoint responses use `ApiResponse<T>`. Application exceptions and
 authentication failures are translated centrally to Problem Details. In
@@ -412,7 +417,7 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete Inventory reservation, Negotiation, payment, fulfillment/pickup, and
+- Complete reservation expiration, Negotiation, payment retries, fulfillment/pickup, and
   broader Payments/Finance workflows around the existing Cart and Order slices.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
