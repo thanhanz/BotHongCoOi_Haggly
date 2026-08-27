@@ -1,5 +1,6 @@
 using Haggly.Application.Common.Messaging;
 using Haggly.Infrastructure.Messaging.Outbox;
+using Haggly.Infrastructure.Messaging.Inbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Infrastructure.Messaging.Consumers;
@@ -72,6 +73,7 @@ public static class MessagingConfigurationExtensions
         services.AddScoped<IDomainEventPublisher, MassTransitDomainEventPublisher>();
         services.AddScoped<IOutboxWriter, DapperOutboxWriter>();
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
+        services.AddScoped<IInboxRepository, DapperInboxRepository>();
 
         services.AddScoped<ProcessPaymentRequestedHandler>();
         
