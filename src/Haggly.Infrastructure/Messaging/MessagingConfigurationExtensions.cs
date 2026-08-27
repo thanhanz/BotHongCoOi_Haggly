@@ -37,6 +37,9 @@ public static class MessagingConfigurationExtensions
             configurator.AddConsumer<FinancePaymentSucceededConsumer, FinancePaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<InventoryPaymentSucceededConsumer, InventoryPaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<OrderPaymentSucceededConsumer, OrderPaymentSucceededConsumerDefinition>();
+            
+            configurator.AddConsumer<InventoryPaymentFailedConsumer, InventoryPaymentFailedConsumerDefinition>();
+            
             configurator.AddConsumer<
                 LoggingFaultConsumer<PaymentSucceededEvent>,
                 PaymentSucceededFaultConsumerDefinition>();

@@ -11,6 +11,7 @@ using Haggly.Application.Modules.Sales.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
 using Haggly.Infrastructure.Messaging.Outbox;
+using Haggly.Infrastructure.Messaging.Inbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
@@ -169,7 +170,7 @@ public sealed class StartPaymentAtomicityTests
             WHERE t."PaymentId" = @PaymentId;
             """,
             new { PaymentId = payment.Id }));
-        Assert.Equal(providerSucceeded ? 5m : 0m, await GetReservedQuantityAsync(connection, orderId));
+        Assert.Equal(5m, await GetReservedQuantityAsync(connection, orderId));
     }
 
     [Fact]
@@ -222,6 +223,59 @@ public sealed class StartPaymentAtomicityTests
             WHERE l."ReferenceId" = @TransactionId AND l."TransactionType" = 'ONLINE_SALE';
             """,
             new { TransactionId = transactionId }));
+    }
+
+    [Fact]
+    public async Task InventoryFailureHandleAsync_WhenEventIsNew_ReleasesReservationAndStoresInboxMessage()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var integrationEvent = CreateFailedEvent(payment.Id, orderId);
+        var handler = CreateInventoryFailureHandler(dbContext);
+
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal(0m, await GetReservedQuantityAsync(connection, orderId));
+        Assert.Equal(1, await GetInboxCountAsync(connection, integrationEvent.EventId));
+    }
+
+    [Fact]
+    public async Task InventoryFailureHandleAsync_WhenEventIsDuplicate_DoesNotReleaseReservationTwice()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var integrationEvent = CreateFailedEvent(payment.Id, orderId);
+        var handler = CreateInventoryFailureHandler(dbContext);
+
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal(0m, await GetReservedQuantityAsync(connection, orderId));
+        Assert.Equal(1, await GetInboxCountAsync(connection, integrationEvent.EventId));
+    }
+
+    [Fact]
+    public async Task InventoryFailureHandleAsync_WhenReleaseFails_RollsBackInboxMessage()
+    {
+        var (orderId, _) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var integrationEvent = CreateFailedEvent(Guid.NewGuid(), orderId);
+        var handler = CreateInventoryFailureHandler(dbContext);
+
+        await Assert.ThrowsAsync<InventoryConflictException>(() =>
+            handler.HandleAsync(integrationEvent, CancellationToken.None));
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal(0, await GetInboxCountAsync(connection, integrationEvent.EventId));
     }
 
     [Fact]
@@ -377,10 +431,17 @@ public sealed class StartPaymentAtomicityTests
             new EfPaymentCommandRepository(dbContext),
             paymentProvider,
             new EfPaymentAllocationRepository(dbContext),
-            new EfInventoryPaymentRepository(dbContext),
             outboxWriter,
             new EfPaymentUnitOfWork(dbContext),
             new FixedBusinessClock(Now));
+
+    private static InventoryPaymentFailedHandler CreateInventoryFailureHandler(
+        HagglyDbContext dbContext)
+        => new(
+            new DapperInboxRepository(dbContext),
+            new EfInventoryPaymentRepository(dbContext),
+            new EfInventoryUnitOfWork(dbContext),
+            new FixedBusinessClock(Now.AddMinutes(1)));
 
     private static PaymentRequested CreateRequested(Guid paymentId, Guid orderId)
         => new(
@@ -391,6 +452,18 @@ public sealed class StartPaymentAtomicityTests
             orderId,
             300_000m,
             "VND");
+
+    private static PaymentFailedEvent CreateFailedEvent(Guid paymentId, Guid orderId)
+        => new(
+            Guid.NewGuid(),
+            paymentId,
+            Now,
+            paymentId,
+            Guid.NewGuid(),
+            orderId,
+            300_000m,
+            "VND",
+            "simulated decline");
 
     private static async Task<(Guid OrderId, Guid BuyerId)> CreateAgreedOrderAsync()
     {
@@ -561,6 +634,18 @@ public sealed class StartPaymentAtomicityTests
             WHERE sf."OrderId" = @OrderId;
             """,
             new { OrderId = orderId });
+
+    private static Task<int> GetInboxCountAsync(
+        System.Data.Common.DbConnection connection,
+        Guid eventId)
+        => connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*)
+            FROM messaging.inbox_messages
+            WHERE "ConsumerName" = 'inventory-payment-failed-v1'
+              AND "EventId" = @EventId;
+            """,
+            new { EventId = eventId });
 
     private static HagglyDbContext CreateDbContext()
         => new(new DbContextOptionsBuilder<HagglyDbContext>()

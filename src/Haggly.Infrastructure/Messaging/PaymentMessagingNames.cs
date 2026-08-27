@@ -12,6 +12,7 @@ public static class PaymentMessagingNames
     public const string FinancePaymentSucceededQueue = "finance-payment-succeeded-v1";
 
     public const string InventoryPaymentSucceededQueue = "inventory-payment-succeeded-v1";
+    public const string InventoryPaymentFailedQueue = "inventory-payment-failed-v1";
 
     public const string OrderPaymentSucceededQueue = "order-payment-succeeded-v1";
 

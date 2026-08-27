@@ -107,6 +107,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<OrderPaymentSucceededHandler>();
         services.AddScoped<FinancePaymentSucceededHandler>();
         services.AddScoped<InventoryPaymentSucceededHandler>();
+        services.AddScoped<InventoryPaymentFailedHandler>();
 
 
         // Register strategy handlers for use cases

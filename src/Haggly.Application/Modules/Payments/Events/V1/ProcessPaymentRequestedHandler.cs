@@ -1,5 +1,4 @@
 using Haggly.Application.Abstractions.Payments;
-using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Exceptions;
@@ -11,7 +10,6 @@ public sealed class ProcessPaymentRequestedHandler(
     IPaymentCommandRepository repository,
     IPaymentProvider paymentProvider,
     IPaymentAllocationRepository allocationRepository,
-    IInventoryPaymentRepository inventoryRepository,
     IOutboxWriter outboxWriter,
     IPaymentUnitOfWork unitOfWork,
     IBusinessClock businessClock)
@@ -112,11 +110,6 @@ public sealed class ProcessPaymentRequestedHandler(
                         "A failed provider result requires a failure reason.");
                 transaction.MarkFailed(failureReason, null, null, occurredAt);
                 payment.MarkFailed(occurredAt);
-
-                await inventoryRepository.ReleaseAsync(
-                    payment.OrderId,
-                    occurredAt,
-                    transactionCancellationToken);
 
                 await repository.SaveChangesAsync(transactionCancellationToken);
                 await outboxWriter.WriteAsync(new PaymentFailedEvent(

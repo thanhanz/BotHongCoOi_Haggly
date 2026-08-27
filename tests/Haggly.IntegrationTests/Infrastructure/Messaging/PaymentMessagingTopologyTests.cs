@@ -72,6 +72,19 @@ public sealed class PaymentMessagingTopologyTests
                     == PaymentMessagingNames.InventoryPaymentSucceededQueue
                 && binding.GetProperty("destination_type").GetString() == "exchange");
 
+            using var inventoryFailedQueueDocument = await GetJsonAsync(
+                client,
+                $"queues/%2F/{PaymentMessagingNames.InventoryPaymentFailedQueue}");
+            Assert.True(inventoryFailedQueueDocument.RootElement.GetProperty("durable").GetBoolean());
+            Assert.False(inventoryFailedQueueDocument.RootElement.GetProperty("auto_delete").GetBoolean());
+
+            Assert.Contains(bindings.RootElement.EnumerateArray(), binding =>
+                binding.GetProperty("source").GetString()
+                    == PaymentMessagingNames.PaymentFailedExchange
+                && binding.GetProperty("destination").GetString()
+                    == PaymentMessagingNames.InventoryPaymentFailedQueue
+                && binding.GetProperty("destination_type").GetString() == "exchange");
+
             using var orderQueueDocument = await GetJsonAsync(
                 client,
                 $"queues/%2F/{PaymentMessagingNames.OrderPaymentSucceededQueue}");
