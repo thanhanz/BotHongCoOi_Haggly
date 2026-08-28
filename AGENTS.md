@@ -190,6 +190,8 @@ Preserve public contracts unless the request explicitly changes them.
 - Do not name a direct database adapter with suffixes such as `Query`, `Command`,
   `Catalog`, `Store`, or `UnitOfWork`; rename existing implementations to the
   `Repository` convention when they are touched or as a dedicated refactor.
+  Transaction-only coordinators are the exception and must end in
+  `TransactionExecutor`.
 - This suffix rule applies to concrete database-access classes. Application
   abstractions should remain capability-oriented and must not expose EF Core,
   Dapper, SQL, connection, or provider details.
