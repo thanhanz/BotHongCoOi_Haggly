@@ -39,9 +39,10 @@ consume those quantities and append idempotent online-sale ledger entries.
 - `StartPaymentHandler` calls `IInventoryPaymentRepository.ReserveAsync` inside
   the same PostgreSQL transaction that creates the Payment and request outbox
   row. The operation is all-or-nothing and uses InventoryItem concurrency tokens.
-- A definitive provider decline releases the active OrderItem quantities inside
-  the same payment-result transaction. Technical provider exceptions roll back
-  and leave the quantities reserved for broker retry.
+- A definitive provider decline publishes `PaymentFailedEvent`. The Inventory
+  failure handler atomically inserts an InboxMessage and releases the active
+  OrderItem quantities in one PostgreSQL transaction. Technical provider or
+  consumer exceptions leave the quantities reserved for broker retry.
 - InventoryItem `Version` is an EF concurrency token and increments on quantity
   mutations.
 - ProductStall owns `SellingUnit`, `CurrentUnitPrice`, and its own concurrency
@@ -55,9 +56,13 @@ consume those quantities and append idempotent online-sale ledger entries.
   payment transaction is the ledger reference, and a filtered unique index
   prevents duplicate delivery from deducting the same item twice.
 - `InventoryPaymentSucceededConsumer` owns the durable
-  `haggly-inventory-payment-succeeded-v1` queue bound to the shared
+  `inventory-payment-succeeded-v1` queue bound to the shared
   `payments.payment-succeeded.v1` exchange. Technical failures retry after
   1, 5, and 15 seconds before MassTransit error transport.
+- `InventoryPaymentFailedConsumer` owns the durable
+  `inventory-payment-failed-v1` queue bound to `payments.payment-failed.v1`.
+  It retries technical failures after 1, 5, and 15 seconds and retains the
+  original message in MassTransit's default `_error` queue after exhaustion.
 - There is no InventoryReservation entity or reservation ledger entry. Active
   OrderItems supply the held quantities; `ReservedQuantity` is their aggregate
   while payment is pending or processing.

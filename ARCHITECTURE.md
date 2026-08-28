@@ -32,26 +32,11 @@ payment provider integration, and broader Finance reporting remain future workfl
 - ASP.NET Core Web SDK with Minimal API endpoint mapping.
 - Entity Framework Core `10.0.10` with the Npgsql PostgreSQL provider `10.0.3`.
 - Dapper `2.1.79` for read-side query adapters backed by PostgreSQL.
-- MassTransit `8.5.10` with the RabbitMQ transport; the API registers the bus,
-  outbox publisher, and PaymentRequested consumer adapter. A PostgreSQL outbox schema,
-  transaction-aware Dapper outbox processor, and explicit domain-event type
-  registry are implemented. The processor uses the framework `System.Text.Json` serializer
-  directly. The processor can publish bounded batches manually and records
-  success or failure on each row. A configurable hosted service runs this
-  processor periodically in the API process. V1 payment request/success/failure
-  messages and a configurable local provider simulator exist. A MassTransit
-  adapter invokes the PaymentRequested Application handler, which atomically
-  persists the payment result, attempt, and result outbox event. Dedicated
-  Finance, Inventory, and Order queues independently consume PaymentSucceeded;
-  Payment start atomically increases each active OrderItem's InventoryItem
-  `ReservedQuantity` before creating the Payment and request outbox row. A provider
-  decline releases those quantities in the payment-result transaction. Finance
-  appends allocation revenue, Inventory consumes reserved quantities and appends
-  idempotent online-sale ledger entries, and Order applies
-  allocation amounts before moving to PAID. The request consumer's durable
-  `haggly-payments-payment-requested-v1` queue binds the stable request exchange;
-  technical failures retry after 1, 5, and 15 seconds before MassTransit error
-  transport. Inbox deduplication and multi-instance row claiming are not implemented.
+- MassTransit `8.5.10` with the RabbitMQ transport for asynchronous integration
+  events. The API process currently hosts the bus and consumers.
+- PostgreSQL transactional outbox and Inbox persistence, Dapper-backed message
+  adapters, a configurable hosted outbox publisher, and structured consumer-fault
+  logging.
 - ASP.NET Core JWT bearer authentication and `Microsoft.Extensions.Identity.Core`
   password hashing.
 - Swashbuckle.AspNetCore `10.2.3` for the OpenAPI/Swagger document and UI.
@@ -220,9 +205,9 @@ non-deleted products.
   `AspNetPasswordHasher`.
 - `Messaging/RabbitMqOptions`, MassTransit RabbitMQ registration, and the
   broker-facing implementation of the Application domain-event publisher port,
-  the Dapper outbox writer/processor, and the hosted outbox publisher. V1
-  PaymentRequested, Finance PaymentSucceeded, and Inventory PaymentSucceeded
-  consumers use independent durable queues.
+  the Dapper outbox writer/processor, Inbox repository, hosted outbox publisher,
+  payment request/result consumers, and centralized payment-fault logging
+  consumer. Each business reaction uses an independent durable queue.
 
 `AddPersistence` requires the `ConnectionStrings:HagglyDatabase` setting and
 configures PostgreSQL. The current `HagglyDbContext` exposes DbSets and EF Core
@@ -238,9 +223,11 @@ stores the aggregate payment-time hold and active OrderItems provide the quantit
 Negotiation remains unmapped. Payments maps
 `payments.payments`, `payments.payment_transactions`, and
 `payments.payment_allocations`. Revenue rows use a unique PaymentAllocation plus
-entry-type key for idempotency; general inbox deduplication remains deferred.
-Finance, Inventory, and Sales/Order implement PaymentSucceeded Application
-handlers, persistence adapters, dedicated queues, and MassTransit consumers.
+entry-type key for idempotency. `messaging.inbox_messages` deduplicates the
+Inventory and Order `PaymentFailedEvent` consumers; adoption by the other
+consumers remains deferred. Finance, Inventory, and Sales/Order implement
+PaymentSucceeded Application handlers, persistence adapters, dedicated queues,
+and MassTransit consumers.
 
 ### API
 
@@ -249,7 +236,8 @@ token services, and API services. The request pipeline uses exception handling,
 authentication, and authorization middleware.
 
 Payments exposes buyer-authorized `POST /api/v1/payments`. It validates Order
-ownership and eligibility, atomically creates a pending Payment plus
+ownership and eligibility, atomically reserves the Order's active item
+quantities, moves the Order to `PAYMENT_PENDING`, creates a pending Payment plus
 `PaymentRequested`, and returns `202 Accepted`.
 
 Identity routes are grouped under `/api/v1/identity`:
@@ -371,6 +359,34 @@ PostgreSQL                RabbitMQ
 (local: localhost:5433)   (local: localhost:5672)
 ```
 
+The implemented payment message flow is:
+
+```text
+POST /api/v1/payments
+  -> PostgreSQL transaction: reserve Inventory + update Order + create Payment
+     + append PaymentRequested to messaging.outbox_messages
+  -> hosted outbox publisher -> payments.payment-requested.v1
+  -> payments-payment-requested-v1 -> simulated provider adapter
+  -> PostgreSQL transaction: persist result + append one result event
+     |-> payments.payment-succeeded.v1
+     |    |-> finance-payment-succeeded-v1
+     |    |-> inventory-payment-succeeded-v1
+     |    `-> order-payment-succeeded-v1
+     `-> payments.payment-failed.v1
+          |-> inventory-payment-failed-v1
+          `-> order-payment-failed-v1
+
+Terminal result-consumer faults
+  -> MassTransit Fault<PaymentSucceededEvent> or Fault<PaymentFailedEvent>
+  -> payment-processing-faults-v1 -> structured ILogger error
+```
+
+These module reactions are eventually consistent and use at-least-once broker
+delivery. The outbox makes each originating database change atomic with its
+message creation; it does not make all downstream module changes one distributed
+transaction. Consumer-specific idempotency or Inbox claims protect implemented
+reactions from duplicate delivery.
+
 The local PostgreSQL database and RabbitMQ broker are defined in
 `docker-compose.yml`. The development configuration uses the
 `HagglyDatabase` connection-string name and the `RabbitMq` configuration
@@ -391,8 +407,9 @@ Inventory endpoint contracts, Swagger, and Dapper Markets, Category, Product,
 and Inventory queries against PostgreSQL. Inventory boundary tests cover the
 real EF constraints/concurrency behavior and the full authenticated HTTP
 lifecycle. It also covers the Category and Product HTTP authorization and
-contributor creation paths. The
-repository currently has no active architecture-test project.
+contributor creation paths. Payment boundary tests cover start-payment
+atomicity, result idempotency, RabbitMQ queue/exchange bindings, and centralized
+fault routing. The repository currently has no active architecture-test project.
 
 ## Module growth rules
 
@@ -423,8 +440,8 @@ The following is direction, not a description of files that currently exist:
   use case.
 - Add architecture tests only when an actual architecture-test project and its
   solution entry are created.
-- Add operational instrumentation or messaging only when a concrete MVP use
-  case requires them.
+- Add durable fault/incident storage, replay or reconciliation, and Loki/Grafana
+  only when the payment workflow has an explicit operational recovery target.
 
 The README remains the source for MVP scope and business requirements. This
 document records executable structure and boundaries; it does not expand the

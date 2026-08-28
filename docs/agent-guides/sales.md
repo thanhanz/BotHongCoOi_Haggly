@@ -1,7 +1,7 @@
 # Sales module guide
 
 This guide records the currently executable Cart, buyer Order, vendor POS, and
-successful-payment Order reaction. Negotiation, reservation expiration,
+payment-result Order reactions. Negotiation, reservation expiration,
 preparation, and pickup workflows remain incomplete.
 
 ## Responsibilities
@@ -58,8 +58,9 @@ notes as order-item values.
 
 `EfCartCheckoutUnitOfWork` creates the order and clears the cart within one EF
 Core database transaction. Checkout does not reserve Inventory. The subsequent
-payment-start use case atomically reserves every active OrderItem before the
-provider request can be published.
+payment-start use case atomically reserves every active OrderItem, moves the
+Order from `AGREED` to `PAYMENT_PENDING`, creates the Payment, and writes the
+provider request before it can be published.
 
 The existing `POST /api/v1/orders` path can also create a negotiating order
 directly from submitted inventory item lines. Buyer order list, detail, and
@@ -69,9 +70,15 @@ cancellation routes remain available under `/api/v1/orders`.
 marks the Order fully `PAID`, and assigns each fulfillment its complete
 `PaidAmount`. Exact duplicate delivery is a no-op. Fulfillments remain `AGREED`;
 successful collection does not automatically start vendor preparation. The
-MassTransit adapter uses the durable `haggly-order-payment-succeeded-v1` queue
+MassTransit adapter uses the durable `order-payment-succeeded-v1` queue
 bound to `payments.payment-succeeded.v1`, with retries after 1, 5, and 15
-seconds. No PaymentFailed Sales reaction is currently implemented.
+seconds.
+
+`OrderPaymentFailedHandler` atomically claims `PaymentFailedEvent` in
+InboxMessages and moves a `PAYMENT_PENDING` Order back to `AGREED`. Delayed
+failure events do not overwrite `PAID` or `CANCELLED` Orders. Its MassTransit
+adapter owns durable queue `order-payment-failed-v1`, retries after 1, 5, and 15
+seconds, and retains exhausted messages in the default `_error` queue.
 
 ## Persistence
 
