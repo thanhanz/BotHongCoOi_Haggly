@@ -129,6 +129,40 @@ public sealed class Order : AuditableEntity
             .Sum(item => item.LineTotal);
     }
 
+    public bool StartPayment(DateTimeOffset occurredAt)
+    {
+        if (Status == OrderStatus.PAYMENT_PENDING)
+            return false;
+        if (Status != OrderStatus.AGREED)
+            throw new InvalidOperationException("Only an agreed order can start payment.");
+
+        Status = OrderStatus.PAYMENT_PENDING;
+        UpdatedAt = occurredAt.ToUniversalTime();
+        return true;
+    }
+
+    public bool ApplyFailedPayment(DateTimeOffset occurredAt)
+    {
+        if (Status == OrderStatus.PAYMENT_PENDING)
+        {
+            Status = OrderStatus.AGREED;
+            UpdatedAt = occurredAt.ToUniversalTime();
+            return true;
+        }
+
+        if (Status is OrderStatus.AGREED
+            or OrderStatus.PAID
+            or OrderStatus.PARTIALLY_PICKED_UP
+            or OrderStatus.COMPLETED
+            or OrderStatus.CANCELLED)
+        {
+            return false;
+        }
+
+        throw new InvalidOperationException(
+            "Only a payment-pending order can apply a failed payment.");
+    }
+
     public bool ApplySuccessfulPayment(
         IReadOnlyCollection<OrderPaymentAllocation> allocations,
         DateTimeOffset occurredAt)

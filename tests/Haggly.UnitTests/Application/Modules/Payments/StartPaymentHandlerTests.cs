@@ -1,5 +1,6 @@
 using Haggly.Application.Abstractions.Payments;
 using Haggly.Application.Abstractions.Inventory;
+using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Common.Messaging;
 using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Commands;
@@ -9,6 +10,7 @@ using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
 using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Sales;
+using Haggly.Domain.Modules.Catalog;
 using Xunit;
 
 namespace Haggly.UnitTests.Application.Modules.Payments;
@@ -23,15 +25,18 @@ public sealed class StartPaymentHandlerTests
     {
         var orderId = Guid.NewGuid();
         var buyerId = Guid.NewGuid();
-        var repository = new FakePaymentCommandRepository
-        {
-            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
-        };
+        var order = CreateOrder(orderId, buyerId, OrderStatus.AGREED);
+        var repository = new FakePaymentCommandRepository { Order = order };
         var outbox = new FakeOutboxWriter();
         var unitOfWork = new FakePaymentUnitOfWork();
         var inventoryRepository = new FakeInventoryPaymentRepository();
         var handler = new StartPaymentHandler(
-            repository, inventoryRepository, outbox, unitOfWork, new FixedBusinessClock(Now));
+            repository,
+            new FakeOrderCommandRepository(order),
+            inventoryRepository,
+            outbox,
+            unitOfWork,
+            new FixedBusinessClock(Now));
 
         var result = await handler.Handle(new StartPaymentCommand(orderId, buyerId), CancellationToken.None);
 
@@ -46,6 +51,7 @@ public sealed class StartPaymentHandlerTests
         Assert.Equal(1, repository.SaveCount);
         Assert.Equal(orderId, Assert.Single(inventoryRepository.ReservedOrderIds));
         Assert.Equal(1, unitOfWork.TransactionCount);
+        Assert.Equal(OrderStatus.PAYMENT_PENDING, order.Status);
     }
 
     [Fact]
@@ -55,10 +61,11 @@ public sealed class StartPaymentHandlerTests
         var buyerId = Guid.NewGuid();
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.NEGOTIATING, 300_000m, "VND")
+            Order = CreateOrder(orderId, buyerId, OrderStatus.NEGOTIATING)
         };
         var handler = new StartPaymentHandler(
             repository,
+            new FakeOrderCommandRepository(repository.Order!),
             new FakeInventoryPaymentRepository(),
             new FakeOutboxWriter(),
             new FakePaymentUnitOfWork(),
@@ -75,7 +82,7 @@ public sealed class StartPaymentHandlerTests
         var buyerId = Guid.NewGuid();
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
+            Order = CreateOrder(orderId, buyerId, OrderStatus.AGREED)
         };
         var inventoryRepository = new FakeInventoryPaymentRepository
         {
@@ -84,6 +91,7 @@ public sealed class StartPaymentHandlerTests
         var outbox = new FakeOutboxWriter();
         var handler = new StartPaymentHandler(
             repository,
+            new FakeOrderCommandRepository(repository.Order!),
             inventoryRepository,
             outbox,
             new FakePaymentUnitOfWork(),
@@ -102,15 +110,14 @@ public sealed class StartPaymentHandlerTests
         var orderId = Guid.NewGuid();
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(
+            Order = CreateOrder(
                 orderId,
                 Guid.NewGuid(),
-                OrderStatus.AGREED,
-                300_000m,
-                "VND")
+                OrderStatus.AGREED)
         };
         var handler = new StartPaymentHandler(
             repository,
+            new FakeOrderCommandRepository(repository.Order!),
             new FakeInventoryPaymentRepository(),
             new FakeOutboxWriter(),
             new FakePaymentUnitOfWork(),
@@ -130,12 +137,12 @@ public sealed class StartPaymentHandlerTests
         var localTimestamp = new DateTimeOffset(2026, 8, 22, 8, 0, 0, TimeSpan.FromHours(7));
         var repository = new FakePaymentCommandRepository
         {
-            Order = new PaymentOrderSnapshot(
-                orderId, buyerId, OrderStatus.AGREED, 300_000m, "VND")
+            Order = CreateOrder(orderId, buyerId, OrderStatus.AGREED)
         };
         var outbox = new FakeOutboxWriter();
         var handler = new StartPaymentHandler(
             repository,
+            new FakeOrderCommandRepository(repository.Order!),
             new FakeInventoryPaymentRepository(),
             outbox,
             new FakePaymentUnitOfWork(),
@@ -150,9 +157,22 @@ public sealed class StartPaymentHandlerTests
         Assert.Equal(localTimestamp.UtcDateTime, requested.OccurredAt.UtcDateTime);
     }
 
+    private static Order CreateOrder(Guid orderId, Guid buyerId, OrderStatus status)
+    {
+        var order = Order.Place(
+            orderId,
+            buyerId,
+            [new OrderItemInput(
+                Guid.NewGuid(), Guid.NewGuid(), "Rice", ProductUnit.KG,
+                300_000m, 1m, null)],
+            Now);
+        order.Status = status;
+        return order;
+    }
+
     private sealed class FakePaymentCommandRepository : IPaymentCommandRepository
     {
-        public PaymentOrderSnapshot? Order { get; init; }
+        public Order? Order { get; init; }
         public Payment? ExistingPayment { get; init; }
         public List<Payment> Payments { get; } = [];
         public int SaveCount { get; private set; }
@@ -161,9 +181,6 @@ public sealed class StartPaymentHandlerTests
             => Task.FromResult(
                 Payments.Concat(ExistingPayment is null ? [] : [ExistingPayment])
                     .SingleOrDefault(payment => payment.Id == paymentId));
-
-        public Task<PaymentOrderSnapshot?> FindOrderAsync(Guid orderId, CancellationToken cancellationToken)
-            => Task.FromResult(Order?.OrderId == orderId ? Order : null);
 
         public Task<Payment?> FindByOrderIdAsync(Guid orderId, CancellationToken cancellationToken)
             => Task.FromResult(ExistingPayment?.OrderId == orderId ? ExistingPayment : null);
@@ -185,6 +202,20 @@ public sealed class StartPaymentHandlerTests
             SaveCount++;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FakeOrderCommandRepository(Order order) : IOrderCommandRepository
+    {
+        public Task<Order?> FindByIdAsync(
+            Guid orderId,
+            CancellationToken cancellationToken)
+            => Task.FromResult<Order?>(order.Id == orderId ? order : null);
+
+        public Task AddAsync(Order orderToAdd, CancellationToken cancellationToken)
+            => Task.CompletedTask;
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken)
+            => Task.CompletedTask;
     }
 
     private sealed class FakeOutboxWriter : IOutboxWriter

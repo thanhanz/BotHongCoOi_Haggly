@@ -15,6 +15,7 @@ public static class PaymentMessagingNames
     public const string InventoryPaymentFailedQueue = "inventory-payment-failed-v1";
 
     public const string OrderPaymentSucceededQueue = "order-payment-succeeded-v1";
+    public const string OrderPaymentFailedQueue = "order-payment-failed-v1";
 
     public const string PaymentProcessingFaultsQueue = "payment-processing-faults-v1";
 }

@@ -4,6 +4,7 @@ using Haggly.Application.Common.Time;
 using Haggly.Application.Modules.Payments.Events.V1;
 using Haggly.Domain.Common.Events.V1;
 using Haggly.Domain.Modules.Payments;
+using Haggly.Domain.Modules.Sales;
 using Xunit;
 
 namespace Haggly.UnitTests.Application.Modules.Payments;
@@ -129,9 +130,6 @@ public sealed class ProcessPaymentRequestedHandlerTests
             Transactions.Add(transaction);
             return Task.CompletedTask;
         }
-
-        public Task<PaymentOrderSnapshot?> FindOrderAsync(Guid orderId, CancellationToken cancellationToken)
-            => Task.FromResult<PaymentOrderSnapshot?>(null);
 
         public Task<Payment?> FindByOrderIdAsync(Guid orderId, CancellationToken cancellationToken)
             => Task.FromResult<Payment?>(null);

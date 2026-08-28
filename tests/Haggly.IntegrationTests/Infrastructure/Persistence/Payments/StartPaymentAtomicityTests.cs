@@ -18,6 +18,7 @@ using Haggly.Infrastructure.Persistence.Repositories.Payments;
 using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
 using Haggly.Infrastructure.Persistence.Repositories.Sales;
+using Haggly.Infrastructure.Persistence.Transactions.Sales;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -45,6 +46,7 @@ public sealed class StartPaymentAtomicityTests
             "SELECT COUNT(*) FROM messaging.outbox_messages WHERE \"CorrelationId\" = @PaymentId;",
             new { PaymentId = result.Id }));
         Assert.Equal(5m, await GetReservedQuantityAsync(connection, orderId));
+        Assert.Equal("PAYMENT_PENDING", await GetOrderStatusAsync(connection, orderId));
     }
 
     [Fact]
@@ -279,6 +281,69 @@ public sealed class StartPaymentAtomicityTests
     }
 
     [Fact]
+    public async Task OrderFailureHandleAsync_WhenEventIsNew_MovesOrderToAgreedAndStoresInboxMessage()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var integrationEvent = CreateFailedEvent(payment.Id, orderId);
+        var handler = CreateOrderFailureHandler(dbContext);
+
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal("AGREED", await GetOrderStatusAsync(connection, orderId));
+        Assert.Equal(1, await GetOrderFailureInboxCountAsync(
+            connection,
+            integrationEvent.EventId));
+    }
+
+    [Fact]
+    public async Task OrderFailureHandleAsync_WhenEventIsDuplicate_DoesNotChangeOrderAgain()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var integrationEvent = CreateFailedEvent(payment.Id, orderId);
+        var handler = CreateOrderFailureHandler(dbContext);
+
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+        dbContext.ChangeTracker.Clear();
+        await handler.HandleAsync(integrationEvent, CancellationToken.None);
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal("AGREED", await GetOrderStatusAsync(connection, orderId));
+        Assert.Equal(1, await GetOrderFailureInboxCountAsync(
+            connection,
+            integrationEvent.EventId));
+    }
+
+    [Fact]
+    public async Task OrderFailureHandleAsync_WhenOrderUpdateFails_RollsBackInboxMessage()
+    {
+        var (orderId, buyerId) = await CreateAgreedOrderAsync();
+        await using var dbContext = CreateDbContext();
+        var payment = await CreateHandler(dbContext, CreateWriter(dbContext)).Handle(
+            new StartPaymentCommand(orderId, buyerId),
+            CancellationToken.None);
+        var integrationEvent = CreateFailedEvent(payment.Id, orderId) with { Amount = 1m };
+        var handler = CreateOrderFailureHandler(dbContext);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            handler.HandleAsync(integrationEvent, CancellationToken.None));
+
+        await using var connection = await OpenConnectionAsync();
+        Assert.Equal("PAYMENT_PENDING", await GetOrderStatusAsync(connection, orderId));
+        Assert.Equal(0, await GetOrderFailureInboxCountAsync(
+            connection,
+            integrationEvent.EventId));
+    }
+
+    [Fact]
     public async Task ConsumeAsync_WhenResultOutboxWriteFails_RollsBackPaymentAndAttempt()
     {
         var (orderId, buyerId) = await CreateAgreedOrderAsync();
@@ -407,6 +472,7 @@ public sealed class StartPaymentAtomicityTests
         IOutboxWriter outboxWriter)
         => new(
             new EfPaymentCommandRepository(dbContext),
+            new EfOrderCommandRepository(dbContext),
             new EfInventoryPaymentRepository(dbContext),
             outboxWriter,
             new EfPaymentUnitOfWork(dbContext),
@@ -441,6 +507,14 @@ public sealed class StartPaymentAtomicityTests
             new DapperInboxRepository(dbContext),
             new EfInventoryPaymentRepository(dbContext),
             new EfInventoryUnitOfWork(dbContext),
+            new FixedBusinessClock(Now.AddMinutes(1)));
+
+    private static OrderPaymentFailedHandler CreateOrderFailureHandler(
+        HagglyDbContext dbContext)
+        => new(
+            new EfOrderCommandRepository(dbContext),
+            new DapperInboxRepository(dbContext),
+            new EfSalesTransactionExecutor(dbContext),
             new FixedBusinessClock(Now.AddMinutes(1)));
 
     private static PaymentRequested CreateRequested(Guid paymentId, Guid orderId)
@@ -646,6 +720,25 @@ public sealed class StartPaymentAtomicityTests
               AND "EventId" = @EventId;
             """,
             new { EventId = eventId });
+
+    private static Task<int> GetOrderFailureInboxCountAsync(
+        System.Data.Common.DbConnection connection,
+        Guid eventId)
+        => connection.ExecuteScalarAsync<int>(
+            """
+            SELECT COUNT(*)
+            FROM messaging.inbox_messages
+            WHERE "ConsumerName" = 'order-payment-failed-v1'
+              AND "EventId" = @EventId;
+            """,
+            new { EventId = eventId });
+
+    private static Task<string?> GetOrderStatusAsync(
+        System.Data.Common.DbConnection connection,
+        Guid orderId)
+        => connection.ExecuteScalarAsync<string>(
+            "SELECT \"Status\" FROM sales.orders WHERE \"Id\" = @OrderId;",
+            new { OrderId = orderId });
 
     private static HagglyDbContext CreateDbContext()
         => new(new DbContextOptionsBuilder<HagglyDbContext>()

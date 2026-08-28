@@ -158,6 +158,45 @@ public sealed class OrderDomainTests
             order.ApplySuccessfulPayment(allocations, PlacedAt.AddMinutes(1)));
     }
 
+    [Fact]
+    public void StartPayment_WhenOrderIsAgreed_MovesOrderToPaymentPending()
+    {
+        var order = CreateAgreedOrder();
+
+        var changed = order.StartPayment(PlacedAt.AddMinutes(1));
+
+        Assert.True(changed);
+        Assert.Equal(OrderStatus.PAYMENT_PENDING, order.Status);
+        Assert.Equal(PlacedAt.AddMinutes(1), order.UpdatedAt);
+    }
+
+    [Fact]
+    public void ApplyFailedPayment_WhenOrderIsPaymentPending_MovesOrderBackToAgreed()
+    {
+        var order = CreateAgreedOrder();
+        order.StartPayment(PlacedAt.AddMinutes(1));
+
+        var changed = order.ApplyFailedPayment(PlacedAt.AddMinutes(2));
+
+        Assert.True(changed);
+        Assert.Equal(OrderStatus.AGREED, order.Status);
+        Assert.Equal(PlacedAt.AddMinutes(2), order.UpdatedAt);
+    }
+
+    [Theory]
+    [InlineData(OrderStatus.PAID)]
+    [InlineData(OrderStatus.CANCELLED)]
+    public void ApplyFailedPayment_WhenOrderIsTerminal_DoesNotOverwriteStatus(OrderStatus status)
+    {
+        var order = CreateAgreedOrder();
+        order.Status = status;
+
+        var changed = order.ApplyFailedPayment(PlacedAt.AddMinutes(1));
+
+        Assert.False(changed);
+        Assert.Equal(status, order.Status);
+    }
+
     private static Order CreateAgreedOrder()
     {
         var order = Order.Place(
