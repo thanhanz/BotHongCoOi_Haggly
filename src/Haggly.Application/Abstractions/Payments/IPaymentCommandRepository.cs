@@ -1,5 +1,4 @@
 using Haggly.Domain.Modules.Payments;
-using Haggly.Domain.Modules.Sales;
 
 namespace Haggly.Application.Abstractions.Payments;
 
@@ -7,10 +6,6 @@ public interface IPaymentCommandRepository
 {
     Task<Payment?> FindByIdAsync(
         Guid paymentId,
-        CancellationToken cancellationToken);
-
-    Task<PaymentOrderSnapshot?> FindOrderAsync(
-        Guid orderId,
         CancellationToken cancellationToken);
 
     Task<Payment?> FindByOrderIdAsync(
@@ -25,10 +20,3 @@ public interface IPaymentCommandRepository
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }
-
-public sealed record PaymentOrderSnapshot(
-    Guid OrderId,
-    Guid BuyerId,
-    OrderStatus Status,
-    decimal Amount,
-    string Currency);

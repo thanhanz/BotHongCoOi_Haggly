@@ -16,19 +16,6 @@ public sealed class EfPaymentCommandRepository(HagglyDbContext dbContext)
             payment => payment.Id == paymentId,
             cancellationToken);
 
-    public Task<PaymentOrderSnapshot?> FindOrderAsync(
-        Guid orderId,
-        CancellationToken cancellationToken)
-        => dbContext.Orders
-            .Where(order => order.Id == orderId)
-            .Select(order => new PaymentOrderSnapshot(
-                order.Id,
-                order.BuyerId,
-                order.Status,
-                order.TotalToCharge,
-                order.Currency))
-            .SingleOrDefaultAsync(cancellationToken);
-
     public Task<Payment?> FindByOrderIdAsync(
         Guid orderId,
         CancellationToken cancellationToken)
