@@ -29,6 +29,7 @@ using Haggly.Infrastructure.Persistence.Repositories.Sales;
 using Haggly.Infrastructure.Persistence.Queries.Sales;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
+using Haggly.Infrastructure.Persistence.Transactions.Sales;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -78,6 +79,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IPosSaleCommandRepository, EfPosSaleCommandRepository>();
         services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         services.AddScoped<IOrderCommandRepository, EfOrderCommandRepository>();
+        services.AddScoped<ISalesTransactionExecutor, EfSalesTransactionExecutor>();
         services.AddScoped<ICartCommandRepository, EfCartCommandRepository>();
         services.AddScoped<ICartCheckoutUnitOfWork, EfCartCheckoutUnitOfWork>();
         services.AddScoped<IPaymentCommandRepository, EfPaymentCommandRepository>();
@@ -108,6 +110,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<FinancePaymentSucceededHandler>();
         services.AddScoped<InventoryPaymentSucceededHandler>();
         services.AddScoped<InventoryPaymentFailedHandler>();
+        services.AddScoped<OrderPaymentFailedHandler>();
 
 
         // Register strategy handlers for use cases
