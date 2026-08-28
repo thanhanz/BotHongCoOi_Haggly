@@ -44,6 +44,9 @@ public static class MessagingConfigurationExtensions
             configurator.AddConsumer<
                 LoggingFaultConsumer<PaymentSucceededEvent>,
                 PaymentSucceededFaultConsumerDefinition>();
+            configurator.AddConsumer<
+                LoggingFaultConsumer<PaymentFailedEvent>,
+                PaymentFailedFaultConsumerDefinition>();
 
             //Convert those PascalCase type names into kebab-case (lowercase, hyphen-separated) queue names automatically.
             //Ex: PaymentRequested -> payment-requested

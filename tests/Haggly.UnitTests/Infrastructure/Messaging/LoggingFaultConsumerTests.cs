@@ -11,6 +11,59 @@ namespace Haggly.UnitTests.Infrastructure.Messaging;
 public sealed class LoggingFaultConsumerTests
 {
     [Fact]
+    public async Task Consume_PaymentFailedFault_LogsComponentEventAndExceptionDetails()
+    {
+        var logger = new RecordingLogger<LoggingFaultConsumer<PaymentFailedEvent>>();
+        var consumer = new LoggingFaultConsumer<PaymentFailedEvent>(logger);
+        var occurredAt = new DateTimeOffset(2026, 8, 28, 1, 2, 3, TimeSpan.Zero);
+        var message = new PaymentFailedEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            occurredAt,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            300_000m,
+            "VND",
+            "Provider declined the payment.");
+        var faultId = Guid.NewGuid();
+        var faultedMessageId = Guid.NewGuid();
+        var fault = new TestFault<PaymentFailedEvent>(
+            faultId,
+            faultedMessageId,
+            occurredAt.AddSeconds(1).UtcDateTime,
+            [
+                new TestExceptionInfo(
+                    "System.InvalidOperationException",
+                    null,
+                    "at InventoryPaymentFailedHandler.HandleAsync()",
+                    "The inventory release failed.",
+                    "Haggly.Application")
+            ],
+            new TestHostInfo("haggly-worker"),
+            [typeof(PaymentFailedEvent).FullName!],
+            message);
+        var context = CreateContext(
+            fault,
+            message.CorrelationId,
+            new Uri($"rabbitmq://localhost/{PaymentMessagingNames.InventoryPaymentFailedQueue}"));
+
+        await consumer.Consume(context);
+
+        var log = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Error, log.Level);
+        Assert.Equal("Inventory", log.Properties["Component"]);
+        Assert.Equal(typeof(PaymentFailedEvent).FullName, log.Properties["EventType"]);
+        Assert.Equal(faultId, log.Properties["FaultId"]);
+        Assert.Equal(faultedMessageId, log.Properties["FaultedMessageId"]);
+        Assert.Equal(message.CorrelationId, log.Properties["CorrelationId"]);
+        Assert.Equal(message.EventId, log.Properties["EventId"]);
+        Assert.Contains(
+            "The inventory release failed.",
+            Assert.IsType<string>(log.Properties["ExceptionDetails"]));
+    }
+
+    [Fact]
     public async Task Consume_PaymentSucceededFault_LogsComponentEventAndExceptionDetails()
     {
         var logger = new RecordingLogger<LoggingFaultConsumer<PaymentSucceededEvent>>();
@@ -121,12 +174,13 @@ public sealed class LoggingFaultConsumerTests
             "provider-transaction-1",
             [Guid.NewGuid()]);
 
-    private static ConsumeContext<Fault<PaymentSucceededEvent>> CreateContext(
-        Fault<PaymentSucceededEvent> fault,
+    private static ConsumeContext<Fault<TEvent>> CreateContext<TEvent>(
+        Fault<TEvent> fault,
         Guid correlationId,
         Uri sourceAddress)
+        where TEvent : class
     {
-        var context = DispatchProxy.Create<ConsumeContext<Fault<PaymentSucceededEvent>>, ConsumeContextProxy>();
+        var context = DispatchProxy.Create<ConsumeContext<Fault<TEvent>>, ConsumeContextProxy>();
         var proxy = (ConsumeContextProxy)(object)context;
         proxy.Message = fault;
         proxy.CorrelationId = correlationId;
