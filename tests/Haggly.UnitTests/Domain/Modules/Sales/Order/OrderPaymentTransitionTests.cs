@@ -58,6 +58,81 @@ public sealed class OrderPaymentTransitionTests
         Assert.Equal(order.TotalToCharge, order.TotalPaid);
     }
 
+    [Fact]
+    public void ApplySuccessfulPayment_MissingAllocation_RejectsWithoutPayment()
+    {
+        // Arrange
+        var order = CreateAgreedOrder();
+
+        // Act
+        Action action = () => { order.ApplySuccessfulPayment([], OccurredAt); };
+
+        // Assert
+        Assert.Throws<ArgumentException>(action);
+        Assert.Equal(OrderStatus.AGREED, order.Status);
+        Assert.Equal(0m, order.TotalPaid);
+    }
+
+    [Fact]
+    public void ApplySuccessfulPayment_WrongStallAllocation_RejectsWithoutPayment()
+    {
+        // Arrange
+        var order = CreateAgreedOrder();
+        var fulfillment = Assert.Single(order.StallFulfillments);
+        var allocation = new OrderPaymentAllocation(
+            fulfillment.Id,
+            Guid.Parse("22000000-0000-0000-0000-000000000099"),
+            fulfillment.FinalAmount);
+
+        // Act
+        Action action = () => { order.ApplySuccessfulPayment([allocation], OccurredAt); };
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(action);
+        Assert.Equal(OrderStatus.AGREED, order.Status);
+        Assert.Equal(0m, order.TotalPaid);
+    }
+
+    [Fact]
+    public void ApplySuccessfulPayment_IncorrectAmount_RejectsWithoutPayment()
+    {
+        // Arrange
+        var order = CreateAgreedOrder();
+        var fulfillment = Assert.Single(order.StallFulfillments);
+        var allocation = new OrderPaymentAllocation(
+            fulfillment.Id, fulfillment.StallId, fulfillment.FinalAmount - 1m);
+
+        // Act
+        Action action = () => { order.ApplySuccessfulPayment([allocation], OccurredAt); };
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(action);
+        Assert.Equal(OrderStatus.AGREED, order.Status);
+        Assert.Equal(0m, order.TotalPaid);
+    }
+
+    [Fact]
+    public void ApplySuccessfulPayment_SamePaymentRepeated_ReturnsUnchanged()
+    {
+        // Arrange
+        var order = CreateAgreedOrder();
+        var fulfillment = Assert.Single(order.StallFulfillments);
+        var allocation = new OrderPaymentAllocation(
+            fulfillment.Id, fulfillment.StallId, fulfillment.FinalAmount);
+        order.ApplySuccessfulPayment([allocation], OccurredAt);
+
+        // Act
+        var changed = order.ApplySuccessfulPayment([allocation], OccurredAt.AddMinutes(1));
+
+        // Assert
+        Assert.False(changed);
+        Assert.Equal(OrderStatus.PAID, order.Status);
+        Assert.Equal(order.TotalToCharge, order.TotalPaid);
+    }
+
+    private static readonly DateTimeOffset OccurredAt =
+        new(2026, 8, 17, 2, 7, 0, TimeSpan.Zero);
+
     private static DomainOrder CreateAgreedOrder()
     {
         var order = DomainOrder.Place(

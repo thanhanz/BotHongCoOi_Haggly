@@ -39,4 +39,55 @@ public sealed class ProductStallTests
         Assert.Equal(50_000m, productStall.CurrentUnitPrice);
         Assert.Equal(1, productStall.Version);
     }
+
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(1, -1)]
+    public void Create_InvalidQuantityOrPrice_RejectsListing(decimal minimumQuantity, decimal price)
+    {
+        // Arrange
+
+        // Act
+        var action = () => ProductStall.Create(
+            Guid.Parse("60000000-0000-0000-0000-000000000001"),
+            Guid.Parse("60000000-0000-0000-0000-000000000002"),
+            "Tomato", ProductUnit.KG, minimumQuantity, price, true);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(action);
+    }
+
+    [Fact]
+    public void UpdateConfiguration_InvalidPrice_RejectsWithoutMutation()
+    {
+        // Arrange
+        var productStall = ProductStall.Create(
+            Guid.Parse("60000000-0000-0000-0000-000000000001"),
+            Guid.Parse("60000000-0000-0000-0000-000000000002"),
+            "Tomato", ProductUnit.KG, 1m, 45_000m, true);
+
+        // Act
+        var action = () => productStall.UpdateConfiguration(null, null, null, -1m, null, null);
+
+        // Assert
+        Assert.Throws<ArgumentOutOfRangeException>(action);
+        Assert.Equal(45_000m, productStall.CurrentUnitPrice);
+        Assert.Equal(0, productStall.Version);
+    }
+
+    [Fact]
+    public void UpdateConfiguration_UnchangedValues_DoesNotIncrementVersion()
+    {
+        // Arrange
+        var productStall = ProductStall.Create(
+            Guid.Parse("60000000-0000-0000-0000-000000000001"),
+            Guid.Parse("60000000-0000-0000-0000-000000000002"),
+            "Tomato", ProductUnit.KG, 1m, 45_000m, true);
+
+        // Act
+        productStall.UpdateConfiguration("Tomato", ProductUnit.KG, 1m, 45_000m, true, true);
+
+        // Assert
+        Assert.Equal(0, productStall.Version);
+    }
 }
