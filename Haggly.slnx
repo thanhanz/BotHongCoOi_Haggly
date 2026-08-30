@@ -3,6 +3,6 @@
   <Project Path="src\Haggly.Application\Haggly.Application.csproj" />
   <Project Path="src\Haggly.Infrastructure\Haggly.Infrastructure.csproj" />
   <Project Path="src\Haggly.Api\Haggly.Api.csproj" />
-  <Project Path="tests\Haggly.UnitTests\Haggly.UnitTests.csproj" />
-  <Project Path="tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj" />
+  <Project Path="tests\Haggly.Legacy.UnitTests\Haggly.Legacy.UnitTests.csproj" />
+  <Project Path="tests\Haggly.Legacy.IntegrationTests\Haggly.Legacy.IntegrationTests.csproj" />
 </Solution>
