@@ -2,12 +2,11 @@
   <ItemGroup>
     <ProjectReference Include="../../src/Haggly.Domain/Haggly.Domain.csproj" />
     <ProjectReference Include="../../src/Haggly.Application/Haggly.Application.csproj" />
-    <ProjectReference Include="../../src/Haggly.Infrastructure/Haggly.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="NSubstitute" />
   </ItemGroup>
 </Project>

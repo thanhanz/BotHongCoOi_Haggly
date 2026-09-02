@@ -8,6 +8,7 @@ using Haggly.Application.Modules.Catalog.Exceptions.Products;
 using Haggly.Application.Modules.Catalog.Exceptions.ProductStalls;
 using Haggly.Application.Modules.Inventory.Exceptions;
 using Haggly.Application.Modules.Sales.Exceptions;
+using Haggly.Application.Modules.Payments.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -138,6 +139,15 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Cart resource not found", exception.Message),
             CartConflictException
                 => (StatusCodes.Status409Conflict, "Cart conflict", exception.Message),
+
+            PaymentValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            PaymentForbiddenException
+                => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
+            PaymentNotFoundException
+                => (StatusCodes.Status404NotFound, "Order not found", exception.Message),
+            PaymentConflictException
+                => (StatusCodes.Status409Conflict, "Payment conflict", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

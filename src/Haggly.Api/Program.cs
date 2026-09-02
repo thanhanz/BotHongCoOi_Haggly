@@ -6,6 +6,9 @@ using Haggly.Api.Endpoints.Markets;
 using Haggly.Api.Endpoints.Catalog;
 using Haggly.Api.Endpoints.Inventory;
 using Haggly.Api.Endpoints.Sales;
+using Haggly.Api.Endpoints.Payments;
+using Haggly.Infrastructure.Messaging;
+using Haggly.Infrastructure.Payments;
 
 public partial class Program
 {
@@ -14,6 +17,10 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddPersistence(builder.Configuration);
+        builder.Services.AddMessaging(builder.Configuration);
+
+        builder.Services.AddPaymentProvider(builder.Configuration);
+        
         builder.Services.AddTokenServices(builder.Configuration);
         builder.Services.AddApiServices();
 
@@ -48,6 +55,7 @@ public partial class Program
         app.MapPosSaleEndpoints();
         app.MapCartEndpoints();
         app.MapOrderEndpoints();
+        app.MapPaymentEndpoints();
 
         app.Run();
     }

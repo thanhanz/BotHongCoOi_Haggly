@@ -4,8 +4,6 @@ public enum InventoryTransactionType
 {
     OPENING,
     POS_SALE,
-    ORDER_RESERVE,
-    RESERVATION_RELEASE,
     ONLINE_SALE,
     ADJUSTMENT,
     RETURN,

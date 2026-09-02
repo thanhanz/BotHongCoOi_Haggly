@@ -43,10 +43,9 @@ The development database uses the `HagglyDatabase` connection string from
 `src/Haggly.Api/appsettings.Development.json` and PostgreSQL port `5433`.
 Development credentials must not be reused in production.
 
-Integration tests use a separate `haggly_test` database. The test harness
-creates the database if needed and applies the existing EF Core migrations
-before database-backed tests run. You can override its connection string with
-`HAGGLY_TEST_CONNECTION_STRING`, but it must continue to target `haggly_test`.
+Future functional tests must use a separate `haggly_test` database and may read
+`HAGGLY_TEST_CONNECTION_STRING`; the configured database name must remain
+`haggly_test`.
 
 In Development, the API exposes Swagger at `/swagger` and redirects `/` to the
 Swagger UI.
@@ -171,11 +170,20 @@ directly mutate another module's entities.
 
 ## 6. Testing and verification
 
-Run focused tests while developing:
+The primary suite is `Haggly.UnitTests`:
+
+- `Domain` tests use real entities and aggregates without mocks.
+- `Application` tests use real handlers and Domain objects; NSubstitute replaces
+  only Application ports.
+- Every test follows Arrange/Act/Assert and
+  `Method_Scenario_ExpectedResult` naming.
+- Tests use deterministic fresh data and do not depend on execution order.
+
+Run the focused module or class while developing, then the complete active unit suite:
 
 ```powershell
+dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Inventory"
 dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj
-dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
 ```
 
 Before opening or updating a PR, run the full local verification ladder:
@@ -186,9 +194,10 @@ dotnet build Haggly.slnx --no-restore
 dotnet test Haggly.slnx --no-build
 ```
 
-Persistence, authentication, transaction, and provider changes require tests
-at the real boundary where practical. Mocks alone do not prove database or
-provider behavior.
+Persistence, authentication, transaction, messaging, and provider changes
+require tests at the real boundary where practical. NSubstitute-based unit tests
+do not prove database, HTTP, broker, or provider behavior. A dedicated
+`Haggly.FunctionalTests` project is planned but does not exist yet.
 
 ## 7. Pull-request checklist
 
@@ -198,7 +207,7 @@ Before requesting review, confirm:
 - The pull request targets `develop`.
 - Every commit follows `<type>(<scope>): <message>`.
 - Husky hooks are installed and local checks pass.
-- Relevant unit and integration tests were added or updated.
+- Relevant active unit tests and required real-boundary tests were added or updated.
 - The full build and test ladder passes locally.
 - API contracts, configuration, migrations, and documentation are updated when
   affected.
@@ -209,11 +218,17 @@ Before requesting review, confirm:
 
 ## 8. CI and merge requirements
 
-Pull requests targeting `develop` or `main` run the CI workflow in this order:
+Pull requests targeting `develop` or `main` are intended to run the CI workflow
+in this order:
 
 ```text
-commit lint -> build -> unit tests -> integration tests -> publish
+commit lint -> build -> unit tests -> boundary tests -> publish
 ```
+
+The checked-in workflow already runs `Haggly.UnitTests`. Its boundary-test stage
+does not yet target a valid functional-test project. Update that stage to
+`Haggly.FunctionalTests` when the project is introduced; do not report the stage
+as passing while its project path is absent.
 
 The publish stage produces the `haggly-api` artifact; it is not a production
 deployment. A PR must have passing CI and the required team approvals before it

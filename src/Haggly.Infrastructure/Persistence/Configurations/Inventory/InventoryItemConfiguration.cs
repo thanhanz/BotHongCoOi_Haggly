@@ -23,6 +23,5 @@ internal sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Inve
             .HasForeignKey(item => item.InventoryId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(item => item.ProductStall).WithOne()
             .HasForeignKey<InventoryItem>(item => item.ProductStallId).OnDelete(DeleteBehavior.Restrict);
-        builder.Ignore(item => item.InventoryReservations);
     }
 }

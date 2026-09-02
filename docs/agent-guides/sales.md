@@ -1,8 +1,8 @@
 # Sales module guide
 
-This guide records the currently executable Cart, buyer Order, and vendor POS
-slices. Negotiation, inventory reservation, payment, preparation, and pickup
-workflows remain incomplete.
+This guide records the currently executable Cart, buyer Order, vendor POS, and
+payment-result Order reactions. Negotiation, reservation expiration,
+preparation, and pickup workflows remain incomplete.
 
 ## Responsibilities
 
@@ -57,12 +57,28 @@ stores product name, selling unit, public unit price, requested quantity, and
 notes as order-item values.
 
 `EfCartCheckoutUnitOfWork` creates the order and clears the cart within one EF
-Core database transaction. Checkout does not create an Inventory reservation;
-reservation and final stock protection remain future Sales/Inventory work.
+Core database transaction. Checkout does not reserve Inventory. The subsequent
+payment-start use case atomically reserves every active OrderItem, moves the
+Order from `AGREED` to `PAYMENT_PENDING`, creates the Payment, and writes the
+provider request before it can be published.
 
 The existing `POST /api/v1/orders` path can also create a negotiating order
 directly from submitted inventory item lines. Buyer order list, detail, and
 cancellation routes remain available under `/api/v1/orders`.
+
+`OrderPaymentSucceededHandler` validates the committed Payment allocations,
+marks the Order fully `PAID`, and assigns each fulfillment its complete
+`PaidAmount`. Exact duplicate delivery is a no-op. Fulfillments remain `AGREED`;
+successful collection does not automatically start vendor preparation. The
+MassTransit adapter uses the durable `order-payment-succeeded-v1` queue
+bound to `payments.payment-succeeded.v1`, with retries after 1, 5, and 15
+seconds.
+
+`OrderPaymentFailedHandler` atomically claims `PaymentFailedEvent` in
+InboxMessages and moves a `PAYMENT_PENDING` Order back to `AGREED`. Delayed
+failure events do not overwrite `PAID` or `CANCELLED` Orders. Its MassTransit
+adapter owns durable queue `order-payment-failed-v1`, retries after 1, 5, and 15
+seconds, and retains exhausted messages in the default `_error` queue.
 
 ## Persistence
 
@@ -104,15 +120,14 @@ Vendor POS routes remain under
 
 ## Tests and verification
 
-Application cart coverage is in
-`tests/Haggly.UnitTests/Application/Modules/Sales/Handlers/CartApplicationHandlerTests.cs`.
-It covers enriched reads, add/update quantity limits, minimum quantity, remove,
-clear, successful multi-stall checkout, checkout after stock reduction, and
-empty checkout. There are currently no cart-specific API or PostgreSQL
-integration tests.
+Domain coverage is organized by Cart, Order, and POS aggregate behavior under
+`tests/Haggly.UnitTests/Domain/Modules/Sales`. Application coverage is organized
+by use case under `tests/Haggly.UnitTests/Application/Modules/Sales`; handlers
+are real and only their Application ports are substituted. Sales persistence,
+authentication, and HTTP behavior belongs in the planned functional-test suite.
 
 Focused command:
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~CartApplicationHandlerTests"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Sales"
 ```

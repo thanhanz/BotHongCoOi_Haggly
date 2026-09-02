@@ -12,7 +12,7 @@ public sealed class BusinessClock : IBusinessClock
     }
 
     public DateTimeOffset GetNow()
-        => timeProvider.GetUtcNow();
+        => timeProvider.GetUtcNow().ToUniversalTime();
 
     public DateOnly GetBusinessDate()
         => DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(GetNow(), businessTimeZone).DateTime);

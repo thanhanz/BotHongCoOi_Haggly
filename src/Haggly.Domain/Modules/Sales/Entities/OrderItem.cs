@@ -20,7 +20,6 @@ public sealed class OrderItem : AuditableEntity
 
     public StallFulfillment? StallFulfillment { get; set; }
     public InventoryItem? InventoryItem { get; set; }
-    public ICollection<InventoryReservation> InventoryReservations { get; set; } = new List<InventoryReservation>();
 
     internal static OrderItem Create(
         Guid fulfillmentId,

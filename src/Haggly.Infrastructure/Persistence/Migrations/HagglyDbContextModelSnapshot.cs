@@ -3,7 +3,6 @@ using System;
 using Haggly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -14,7 +13,6 @@ namespace Haggly.Infrastructure.Persistence.Migrations
     [DbContext(typeof(HagglyDbContext))]
     partial class HagglyDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
@@ -276,6 +274,12 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StallFulfillmentId");
+
+                    b.HasIndex("PaymentAllocationId", "EntryType")
+                        .IsUnique()
+                        .HasFilter("\"PaymentAllocationId\" IS NOT NULL");
 
                     b.HasIndex("PosSaleId", "EntryType")
                         .IsUnique()
@@ -782,6 +786,10 @@ namespace Haggly.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("InventoryItemId", "OccurredAt", "Id");
 
+                    b.HasIndex("InventoryItemId", "ReferenceType", "ReferenceId")
+                        .IsUnique()
+                        .HasFilter("\"ReferenceType\" = 'PAYMENT_TRANSACTION' AND \"ReferenceId\" IS NOT NULL");
+
                     b.ToTable("inventory_ledgers", "inventory", t =>
                         {
                             t.HasCheckConstraint("CK_inventory_ledgers_quantity_bounds", "\"QuantityBefore\" >= 0 AND \"QuantityAfter\" >= 0");
@@ -913,6 +921,187 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("stalls", "markets");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AmountDue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<DateTimeOffset>("InitiatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PaymentMethodId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PaymentNo")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentNo")
+                        .IsUnique();
+
+                    b.ToTable("payments", "payments", t =>
+                        {
+                            t.HasCheckConstraint("CK_payments_amounts", "\"AmountDue\" > 0 AND \"AmountPaid\" >= 0 AND \"AmountPaid\" <= \"AmountDue\"");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.PaymentAllocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AllocatedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("AllocatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AllocationType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PaymentTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StallFulfillmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StallId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StallFulfillmentId");
+
+                    b.HasIndex("PaymentTransactionId", "StallFulfillmentId")
+                        .IsUnique();
+
+                    b.ToTable("payment_allocations", "payments", t =>
+                        {
+                            t.HasCheckConstraint("CK_payment_allocations_amount", "\"AllocatedAmount\" > 0");
+                        });
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.PaymentTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProviderResponseCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ProviderResponseData")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("ProviderTransactionId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderTransactionId")
+                        .IsUnique()
+                        .HasFilter("\"ProviderTransactionId\" IS NOT NULL");
+
+                    b.HasIndex("PaymentId", "CreatedAt");
+
+                    b.ToTable("payment_transactions", "payments", t =>
+                        {
+                            t.HasCheckConstraint("CK_payment_transactions_amount", "\"Amount\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.Cart", b =>
@@ -1394,6 +1583,23 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("Stall");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Finance.RevenueLedger", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Payments.PaymentAllocation", "PaymentAllocation")
+                        .WithMany()
+                        .HasForeignKey("PaymentAllocationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Haggly.Domain.Modules.Sales.StallFulfillment", "StallFulfillment")
+                        .WithMany()
+                        .HasForeignKey("StallFulfillmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PaymentAllocation");
+
+                    b.Navigation("StallFulfillment");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Identity.AdminProfile", b =>
                 {
                     b.HasOne("Haggly.Domain.Modules.Identity.User", null)
@@ -1515,6 +1721,47 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("Market");
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.Payment", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Sales.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.PaymentAllocation", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Payments.PaymentTransaction", "PaymentTransaction")
+                        .WithMany("Allocations")
+                        .HasForeignKey("PaymentTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Sales.StallFulfillment", "StallFulfillment")
+                        .WithMany()
+                        .HasForeignKey("StallFulfillmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PaymentTransaction");
+
+                    b.Navigation("StallFulfillment");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.PaymentTransaction", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Payments.Payment", "Payment")
+                        .WithMany("Transactions")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.Cart", b =>
@@ -1648,6 +1895,16 @@ namespace Haggly.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Haggly.Domain.Modules.Markets.Market", b =>
                 {
                     b.Navigation("Stalls");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.Payment", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Payments.PaymentTransaction", b =>
+                {
+                    b.Navigation("Allocations");
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.Cart", b =>

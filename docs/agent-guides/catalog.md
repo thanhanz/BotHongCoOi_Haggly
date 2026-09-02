@@ -73,10 +73,8 @@ catalog Product; daily availability remains an Inventory concern.
 ## Focused verification
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Category"
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Category"
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Product"
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~Product"
-
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~ProductStallApiIntegrationTests"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Catalog"
 ```
+
+Catalog HTTP and PostgreSQL behavior belongs in the planned functional-test
+suite. Do not replace those boundaries with mocks in `Haggly.UnitTests`.

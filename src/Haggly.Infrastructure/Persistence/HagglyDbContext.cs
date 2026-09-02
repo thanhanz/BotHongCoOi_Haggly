@@ -5,6 +5,7 @@ using Haggly.Domain.Modules.Inventory;
 using Haggly.Domain.Modules.Markets;
 using Haggly.Domain.Modules.Sales;
 using Haggly.Domain.Modules.Finance;
+using Haggly.Domain.Modules.Payments;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -41,6 +42,11 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<PosSale> PosSales => Set<PosSale>();
     public DbSet<PosSaleItem> PosSaleItems => Set<PosSaleItem>();
+
+    // Payments
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
+    public DbSet<PaymentAllocation> PaymentAllocations => Set<PaymentAllocation>();
 
     // Finance
     public DbSet<RevenueLedger> RevenueLedgers => Set<RevenueLedger>();
