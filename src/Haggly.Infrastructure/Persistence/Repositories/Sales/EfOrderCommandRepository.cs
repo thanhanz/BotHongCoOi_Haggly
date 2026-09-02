@@ -17,6 +17,13 @@ public sealed class EfOrderCommandRepository(HagglyDbContext dbContext)
             .ThenInclude(fulfillment => fulfillment.OrderItems)
             .SingleOrDefaultAsync(order => order.Id == orderId, cancellationToken);
 
+    public Task<Order?> FindForPaymentAsync(
+        Guid orderId,
+        CancellationToken cancellationToken)
+        => dbContext.Orders.SingleOrDefaultAsync(
+            order => order.Id == orderId,
+            cancellationToken);
+
     public Task AddAsync(Order order, CancellationToken cancellationToken)
     {
         dbContext.Orders.Add(order);

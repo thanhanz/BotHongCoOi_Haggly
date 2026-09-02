@@ -141,9 +141,10 @@ by endpoint contract tests when changed.
 
 ## Testing API changes
 
-API behavior is a real boundary and belongs in
-`tests/Haggly.IntegrationTests/Api`. Follow test-first development for behavior
-changes and use the nearest existing test style:
+API behavior is a real boundary and belongs in the planned
+`Haggly.FunctionalTests` project. Until that project exists, do not simulate the
+HTTP boundary in unit tests or claim functional verification. Follow test-first
+development for behavior changes and use the nearest real-boundary style:
 
 - endpoint contract tests verify registered method/path combinations,
   authorization metadata, response types, and documented statuses;
@@ -153,7 +154,7 @@ changes and use the nearest existing test style:
   serialization, and exception translation through an HTTP application;
 - Swagger contract tests verify the generated document and Development routes.
 
-Application use-case tests remain in the unit test project and should prove
+Application use-case tests belong in `tests/Haggly.UnitTests/Application` and prove
 business behavior independently of HTTP. API tests should not become duplicate
 business-rule test suites. When persistence, transactions, or providers are
 part of the behavior, use the appropriate real-boundary integration tests
@@ -162,7 +163,7 @@ described by the persistence and owning-module guides.
 Focused commands currently used by the repository are:
 
 ```powershell
-dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
+dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Application"
 dotnet test Haggly.slnx --no-build
 ```
 

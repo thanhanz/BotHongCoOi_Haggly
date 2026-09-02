@@ -128,4 +128,114 @@ public sealed class Order : AuditableEntity
             .Where(item => item.Status == OrderItemStatus.ACTIVE)
             .Sum(item => item.LineTotal);
     }
+
+    public bool StartPayment(DateTimeOffset occurredAt)
+    {
+        if (Status == OrderStatus.PAYMENT_PENDING)
+            return false;
+        if (Status != OrderStatus.AGREED)
+            throw new InvalidOperationException("Only an agreed order can start payment.");
+
+        Status = OrderStatus.PAYMENT_PENDING;
+        UpdatedAt = occurredAt.ToUniversalTime();
+        return true;
+    }
+
+    public bool ApplyFailedPayment(DateTimeOffset occurredAt)
+    {
+        if (Status == OrderStatus.PAYMENT_PENDING)
+        {
+            Status = OrderStatus.AGREED;
+            UpdatedAt = occurredAt.ToUniversalTime();
+            return true;
+        }
+
+        if (Status is OrderStatus.AGREED
+            or OrderStatus.PAID
+            or OrderStatus.PARTIALLY_PICKED_UP
+            or OrderStatus.COMPLETED
+            or OrderStatus.CANCELLED)
+        {
+            return false;
+        }
+
+        throw new InvalidOperationException(
+            "Only a payment-pending order can apply a failed payment.");
+    }
+
+    public bool ApplySuccessfulPayment(
+        IReadOnlyCollection<OrderPaymentAllocation> allocations,
+        DateTimeOffset occurredAt)
+    {
+        ArgumentNullException.ThrowIfNull(allocations);
+        if (allocations.Count == 0)
+            throw new ArgumentException("At least one payment allocation is required.", nameof(allocations));
+        if (allocations.Select(allocation => allocation.StallFulfillmentId).Distinct().Count()
+            != allocations.Count)
+        {
+            throw new ArgumentException("A fulfillment can occur only once in an order payment.", nameof(allocations));
+        }
+
+        var activeFulfillments = StallFulfillments
+            .Where(fulfillment => fulfillment.Status != StallFulfillmentStatus.CANCELLED)
+            .ToArray();
+
+        if (Status == OrderStatus.PAID)
+        {
+            var alreadyApplied = TotalPaid == TotalToCharge
+                && activeFulfillments.Length == allocations.Count
+                && activeFulfillments.All(fulfillment => allocations.Any(allocation =>
+                    allocation.StallFulfillmentId == fulfillment.Id
+                    && allocation.StallId == fulfillment.StallId
+                    && allocation.Amount == fulfillment.FinalAmount
+                    && fulfillment.PaidAmount == allocation.Amount));
+            if (alreadyApplied)
+                return false;
+
+            throw new InvalidOperationException(
+                "The order was already paid with different allocation data.");
+        }
+
+        if (Status is not OrderStatus.AGREED and not OrderStatus.PAYMENT_PENDING)
+            throw new InvalidOperationException("Only an agreed or payment-pending order can be paid.");
+        if (activeFulfillments.Length != allocations.Count)
+            throw new InvalidOperationException("Payment must allocate every active fulfillment exactly once.");
+        if (allocations.Sum(allocation => allocation.Amount) != TotalToCharge)
+            throw new InvalidOperationException("Payment allocations must equal the order total.");
+
+        foreach (var fulfillment in activeFulfillments)
+        {
+            if (fulfillment.Status != StallFulfillmentStatus.AGREED)
+                throw new InvalidOperationException("Every fulfillment must be agreed before payment.");
+
+            var allocation = allocations.SingleOrDefault(value =>
+                value.StallFulfillmentId == fulfillment.Id);
+            if (allocation is null
+                || allocation.StallId != fulfillment.StallId
+                || allocation.Amount != fulfillment.FinalAmount)
+            {
+                throw new InvalidOperationException(
+                    "Payment allocation does not match its fulfillment.");
+            }
+        }
+
+        var utcOccurredAt = occurredAt.ToUniversalTime();
+        foreach (var fulfillment in activeFulfillments)
+        {
+            var allocation = allocations.Single(value =>
+                value.StallFulfillmentId == fulfillment.Id);
+            fulfillment.PaidAmount = allocation.Amount;
+            fulfillment.UpdatedAt = utcOccurredAt;
+        }
+
+        TotalPaid = TotalToCharge;
+        Status = OrderStatus.PAID;
+        UpdatedAt = utcOccurredAt;
+        return true;
+    }
 }
+
+public sealed record OrderPaymentAllocation(
+    Guid StallFulfillmentId,
+    Guid StallId,
+    decimal Amount);

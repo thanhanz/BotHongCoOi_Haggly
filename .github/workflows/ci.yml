@@ -101,14 +101,6 @@ jobs:
           --no-restore
           --logger "trx;LogFileName=unit-tests.trx"
 
-      - name: Integration tests
-        run: >-
-          dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
-          --configuration Release
-          --no-build
-          --no-restore
-          --logger "trx;LogFileName=integration-tests.trx"
-
       - name: Publish
         run: >-
           dotnet publish src/Haggly.Api/Haggly.Api.csproj

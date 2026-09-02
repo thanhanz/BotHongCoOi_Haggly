@@ -136,3 +136,11 @@ When changing Identity or authorization, test:
 - unauthenticated access
 - forbidden access
 - account/profile state rules
+
+Domain profile transitions and Application registration, login, administration,
+and query behavior belong in the active unit suite. Authentication token and
+HTTP authorization pipelines remain real-boundary concerns.
+
+```powershell
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Identity"
+```

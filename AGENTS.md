@@ -37,15 +37,10 @@ guided the change.
 
 ## Business routing
 
-Module-specific guides under `docs/agent-guides/` have not been implemented yet.
-
-Until they exist:
-
-- Use this root `AGENTS.md` for repository-wide implementation rules.
-- Use `ARCHITECTURE.md` for architecture and module ownership.
-- Do not search for or depend on nonexistent module guides.
-- Derive new conventions from the first validated vertical slices before
-  documenting them as reusable guidance.
+Module-specific guides under `docs/agent-guides/` are verified caches of local
+knowledge. Some guides remain empty; treat an empty guide as absent and use this
+root file plus `ARCHITECTURE.md`. Never infer a convention from an expected path
+that has no implementation or guide content.
 
 
 | Concern | Owner | Read next | Expected roots |
@@ -85,18 +80,77 @@ For business behavior, inspect in this order:
 
 Do not put business decisions in endpoints, EF mappings, or adapters.
 
-## Test-first development (TDD)
+## Risk-based testing and verification
 
-For every new feature or behavior change:
+Test behavior Haggly owns. Do not test framework internals, library behavior,
+trivial data containers, or implementation details. Test each behavior at the
+lowest layer that can prove it. Do not repeat the same business scenario at
+multiple layers unless each test covers a distinct risk.
 
-1. Write the relevant test cases first with the format `Method_Scenario_ExpectedResult`.
-2. Run the tests and confirm the new tests fail for the expected reason.
-3. Implement the new function or modify the existing code.
-4. Run the tests again.
-5. Review and refactor the implementation while keeping all tests passing.
+Strict red-green-refactor TDD is required for:
 
-Do not implement production behavior before its tests unless the user explicitly
-requests otherwise.
+- Domain invariants, calculations, policies, and state transitions.
+- Critical MVP workflows involving inventory, orders, payments, authorization,
+  or cross-module consistency.
+- Bug fixes, using a regression test that reproduces the defect.
+
+For these changes:
+
+1. Add the smallest test that proves the behavior, named
+   `Method_Scenario_ExpectedResult`.
+2. Run it and confirm it fails for the expected reason.
+3. Implement the smallest production change.
+4. Run the focused test again and refactor while it remains passing.
+
+Choose the test layer by responsibility:
+
+- Domain tests in `tests/Haggly.UnitTests/Domain` use real Domain objects and
+  prove invariants, calculations, and state transitions without mocks or DI.
+- Application tests in `tests/Haggly.UnitTests/Application` use real handlers
+  and Domain objects. Substitute only Application ports with NSubstitute to
+  prove meaningful orchestration, authorization decisions, and failure handling;
+  do not test pass-through handlers.
+- Boundary and future functional tests prove dependencies Haggly relies on, including PostgreSQL
+  behavior, transactions, EF/Dapper mappings, authentication pipelines, and
+  provider adapters.
+- API contract tests prove routes, binding, authorization metadata, status
+  codes, and public response shapes without duplicating domain scenarios.
+- End-to-end, concurrency, load, and stress tests are added intentionally for
+  named critical journeys or measured risks, not as default feature coverage.
+
+A new test is normally unnecessary for DTO-only changes, trivial property
+mapping, pass-through queries, framework wiring already covered by a boundary
+test, or refactoring with unchanged observable behavior. When omitting tests,
+state why existing coverage and verification are sufficient.
+
+Every new unit test uses visible Arrange, Act, and Assert sections, is named
+`Method_Scenario_ExpectedResult`, creates fresh deterministic state, and must not
+depend on execution order or shared mutable fixtures.
+
+Use this verification ladder and stop at the first failure:
+
+1. Build the smallest affected project to catch compilation and nullable errors.
+2. Run the new or directly affected test.
+3. Run the affected test class or module filter.
+4. Run functional tests when the change crosses a real boundary and that suite exists.
+5. Leave broader functional suites to pull-request or release CI.
+
+Run verification commands sequentially by default so failures retain a clear
+cause. This does not require disabling xUnit's normal parallel execution inside
+the fast unit-test project. Real-boundary tests remain non-parallel when they
+share infrastructure.
+
+Never retry a failed test without first reading its assertion, exception, logs,
+and relevant implementation. Determine whether the cause is production
+behavior, test setup, environment, or an unstable test, then fix the root cause.
+Never loosen assertions, remove important scenarios, add arbitrary delays, or
+disable tests merely to make CI pass.
+
+Report every command actually run, its outcome, broader suites left to CI, and
+any verification limitation. Never claim an unrun or retried suite passed.
+
+Do not delete tests during unrelated feature work. Remove a test only when its
+behavior is gone, duplicated, obsolete, or protected at a more appropriate layer.
 
 ## Workspace hygiene
 
@@ -125,10 +179,29 @@ generic repositories, vague manager/service abstractions, and speculative
 microservices, brokers, event sourcing, CQRS infrastructure, or outbox work.
 Preserve public contracts unless the request explicitly changes them.
 
+## Persistence naming
+
+- Every concrete Infrastructure class that directly connects to or executes a
+  query or command against a database must have a name ending in `Repository`.
+- Include the persistence technology prefix when it clarifies the adapter, for
+  example `EfInventoryPaymentRepository` or `DapperInventoryRepository`.
+- Do not name a direct database adapter with suffixes such as `Query`, `Command`,
+  `Catalog`, `Store`, or `UnitOfWork`; rename existing implementations to the
+  `Repository` convention when they are touched or as a dedicated refactor.
+  Transaction-only coordinators are the exception and must end in
+  `TransactionExecutor`.
+- This suffix rule applies to concrete database-access classes. Application
+  abstractions should remain capability-oriented and must not expose EF Core,
+  Dapper, SQL, connection, or provider details.
+- A repository may be read-only, write-only, or both. Keep its interface narrow
+  and business-focused; the `Repository` suffix does not justify creating a
+  generic repository.
+
 ## Verification
 
 Inspect `global.json`, shared props, `Haggly.slnx`, affected `.csproj` files, and
-CI before choosing commands. Confirm referenced projects exist. Preferred ladder:
+CI before choosing commands. Confirm referenced projects exist. Full CI/release
+ladder:
 
 ```powershell
 dotnet restore Haggly.slnx
@@ -136,8 +209,16 @@ dotnet build Haggly.slnx --no-restore
 dotnet test Haggly.slnx --no-build
 ```
 
-Run focused project tests first. For persistence, authentication, transactions,
-or providers, use integration tests that exercise the real boundary.
+For local verification, follow the risk-based ladder above instead of running
+the full solution suite by default. Run `tests/Haggly.UnitTests` first. For
+persistence, authentication, transactions, messaging, HTTP, or providers, add
+coverage to `Haggly.FunctionalTests` once that project exists; do not simulate
+those boundaries in the unit project.
+
+```powershell
+dotnet build tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
+```
 
 When a persistence model changes, use the migration command documented in
 `docs/agent-guides/persistence.md`:
@@ -152,6 +233,7 @@ dotnet ef migrations add CreateMarketAndStallEntities `
 
 ## Completion
 
-Finish only when behavior, relevant tests, boundaries, contracts, migrations,
-configuration, and documentation are consistent. Report changed behavior,
-files, exact checks run, failures or skipped checks, and remaining risks.
+Finish only when behavior, risk-selected tests, boundaries, contracts,
+migrations, configuration, and documentation are consistent. Report changed
+behavior, omitted-test justification, files, exact checks run, failures or
+skipped checks, and remaining risks.

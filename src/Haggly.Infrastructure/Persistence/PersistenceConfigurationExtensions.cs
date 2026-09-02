@@ -11,6 +11,10 @@ using Haggly.Application.Abstractions.Markets;
 using Haggly.Application.Abstractions.Inventory;
 using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Abstractions.Finance;
+using Haggly.Application.Abstractions.Payments;
+using Haggly.Application.Modules.Finance.Events.V1;
+using Haggly.Application.Modules.Inventory.Events.V1;
+using Haggly.Application.Modules.Sales.Events.V1;
 using Haggly.Infrastructure.Authentication;
 using Haggly.Infrastructure.MediatR;
 using Haggly.Infrastructure.Persistence.Repositories.Identity;
@@ -24,6 +28,8 @@ using Haggly.Infrastructure.Persistence.Repositories.Inventory;
 using Haggly.Infrastructure.Persistence.Repositories.Sales;
 using Haggly.Infrastructure.Persistence.Queries.Sales;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
+using Haggly.Infrastructure.Persistence.Repositories.Payments;
+using Haggly.Infrastructure.Persistence.Transactions.Sales;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -49,6 +55,8 @@ public static class PersistenceConfigurationExtensions
         return services;
     }
 
+    //TODO: Consider moving this to a separate class for better organization and maintainability.
+    // Command, Repository, and Query registrations can be grouped by module or feature for clarity.
     public static IServiceCollection AddInfrastructureRepositories(this IServiceCollection services)
     {
         services.AddHagglyMediatR();
@@ -66,19 +74,24 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
         services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
         services.AddScoped<IInventoryUnitOfWork, EfInventoryUnitOfWork>();
-        services.AddScoped<IInventorySaleRecorder, EfInventorySaleRecorder>();
+        services.AddScoped<IInventorySaleRepository, EfInventorySaleRepository>();
+        services.AddScoped<IInventoryPaymentRepository, EfInventoryPaymentRepository>();
         services.AddScoped<IPosSaleCommandRepository, EfPosSaleCommandRepository>();
         services.AddScoped<IPosSaleUnitOfWork, EfPosSaleUnitOfWork>();
         services.AddScoped<IOrderCommandRepository, EfOrderCommandRepository>();
+        services.AddScoped<ISalesTransactionExecutor, EfSalesTransactionExecutor>();
         services.AddScoped<ICartCommandRepository, EfCartCommandRepository>();
         services.AddScoped<ICartCheckoutUnitOfWork, EfCartCheckoutUnitOfWork>();
+        services.AddScoped<IPaymentCommandRepository, EfPaymentCommandRepository>();
+        services.AddScoped<IPaymentUnitOfWork, EfPaymentUnitOfWork>();
+        services.AddScoped<IPaymentAllocationRepository, EfPaymentAllocationRepository>();
 
         services.AddScoped<IPosSaleQuery, DapperPosSaleQuery>();
         services.AddScoped<IOrderQuery, DapperOrderQuery>();
         services.AddScoped<IOrderCatalog, DapperOrderCatalog>();
         services.AddScoped<ICartQuery, DapperCartQuery>();
         services.AddScoped<ICartCatalog, DapperCartCatalog>();
-        services.AddScoped<IRevenueSaleRecorder, EfRevenueSaleRecorder>();
+        services.AddScoped<IRevenueLedgerRepository, EfRevenueLedgerRepository>();
 
         services.AddScoped<IMarketQuery, DapperMarketQuery>();
         services.AddScoped<ICategoryQuery, DapperCategoryQuery>();
@@ -92,6 +105,14 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<RegisterBuyerHandler>();
         services.AddScoped<RegisterVendorHandler>();
         
+        //Register event handlers for payment succeeded events
+        services.AddScoped<OrderPaymentSucceededHandler>();
+        services.AddScoped<FinancePaymentSucceededHandler>();
+        services.AddScoped<InventoryPaymentSucceededHandler>();
+        services.AddScoped<InventoryPaymentFailedHandler>();
+        services.AddScoped<OrderPaymentFailedHandler>();
+
+
         // Register strategy handlers for use cases
         services.AddScoped<IRegisterBuyerUseCase>(provider =>
             provider.GetRequiredService<RegisterBuyerHandler>());

@@ -88,4 +88,26 @@ public sealed class InventoryLedger : ImmutableEntity
             CreatedAt = occurredAt,
             CreatedBy = performedBy
         };
+
+    internal static InventoryLedger CreateOnlineSale(
+        Guid inventoryItemId,
+        Guid inventoryId,
+        decimal quantity,
+        decimal quantityBefore,
+        decimal quantityAfter,
+        Guid paymentTransactionId,
+        DateTimeOffset occurredAt)
+        => new()
+        { 
+            InventoryItemId = inventoryItemId,
+            InventoryId = inventoryId,
+            TransactionType = InventoryTransactionType.ONLINE_SALE,
+            QuantityDelta = -quantity,
+            QuantityBefore = quantityBefore,
+            QuantityAfter = quantityAfter,
+            ReferenceType = "PAYMENT_TRANSACTION",
+            ReferenceId = paymentTransactionId,
+            OccurredAt = occurredAt.ToUniversalTime(),
+            CreatedAt = occurredAt.ToUniversalTime()
+        };
 }
