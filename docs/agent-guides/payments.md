@@ -243,13 +243,12 @@ settings.
 
 ## Focused verification
 
-The unit suite contains Domain/Application payment behavior, result handlers,
-Inbox failure handlers, and structured fault-mapping/consumer coverage.
-`StartPaymentAtomicityTests` exercises PostgreSQL transaction and idempotency
-boundaries. `PaymentMessagingTopologyTests` requires reachable RabbitMQ and its
-management API; it verifies durable topology and centralized fault delivery.
+The active unit suite contains Domain/Application payment behavior and payment
+result handlers. Inbox persistence, provider adapters, messaging topology, and
+transaction atomicity belong in the planned functional-test suite. That suite
+must exercise PostgreSQL transaction and idempotency behavior against a real
+database and messaging topology against reachable RabbitMQ infrastructure.
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded|FullyQualifiedName~Infrastructure.Messaging"
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore --filter "FullyQualifiedName~StartPaymentAtomicityTests|FullyQualifiedName~PaymentMessagingTopologyTests"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded"
 ```

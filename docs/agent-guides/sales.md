@@ -120,15 +120,14 @@ Vendor POS routes remain under
 
 ## Tests and verification
 
-Application cart coverage is in
-`tests/Haggly.UnitTests/Application/Modules/Sales/Handlers/CartApplicationHandlerTests.cs`.
-It covers enriched reads, add/update quantity limits, minimum quantity, remove,
-clear, successful multi-stall checkout, checkout after stock reduction, and
-empty checkout. There are currently no cart-specific API or PostgreSQL
-integration tests.
+Domain coverage is organized by Cart, Order, and POS aggregate behavior under
+`tests/Haggly.UnitTests/Domain/Modules/Sales`. Application coverage is organized
+by use case under `tests/Haggly.UnitTests/Application/Modules/Sales`; handlers
+are real and only their Application ports are substituted. Sales persistence,
+authentication, and HTTP behavior belongs in the planned functional-test suite.
 
 Focused command:
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~CartApplicationHandlerTests"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Sales"
 ```

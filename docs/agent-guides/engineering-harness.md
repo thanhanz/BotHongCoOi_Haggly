@@ -128,6 +128,14 @@ finishing:
 
 ## Verification protocol
 
+The active business suite is `tests/Haggly.UnitTests`:
+
+- `Domain` tests use real Domain types with no substitutes or DI container.
+- `Application` tests construct real handlers and substitute only Application
+  ports with NSubstitute.
+- Tests use Arrange/Act/Assert, deterministic fresh state, and
+  `Method_Scenario_ExpectedResult` names.
+
 Discover verification rather than trusting stale commands. Inspect:
 
 - `global.json`;
@@ -143,11 +151,12 @@ verification:
 1. Build the smallest affected project to catch compilation and nullable errors.
 2. Run the new or directly affected test.
 3. Run the affected test class or module filter.
-4. Run integration tests only for a real boundary or measured integration risk.
+4. Run functional tests only for a real boundary or measured integration risk,
+   and only after the functional-test project exists.
 
 Do not invent a lint command when the repository has none. Use the configured
-build and analyzers as the compilation/type check. Leave the complete unit and
-integration suites to pull-request or release CI unless the user explicitly
+build and analyzers as the compilation/type check. Leave the complete active unit and
+real-boundary suites to pull-request or release CI unless the user explicitly
 requests them locally.
 
 Full CI/release ladder when the workspace supports it:
@@ -161,8 +170,8 @@ dotnet test Haggly.slnx --no-build
 Focused examples:
 
 ```powershell
+dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Payments"
 dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj
-dotnet test tests/Haggly.IntegrationTests/Haggly.IntegrationTests.csproj
 ```
 
 Use real boundary tests for EF Core, Dapper, database constraints,
@@ -172,7 +181,7 @@ provider behavior.
 Add end-to-end, concurrency, load, or stress tests only for a named critical
 journey or measured risk with an explicit acceptance criterion. Do not disable
 xUnit parallelism for fast unit tests merely to make commands sequential;
-integration tests may remain non-parallel when they share real infrastructure.
+real-boundary tests may remain non-parallel when they share infrastructure.
 
 Never retry a failed test blindly. Read the assertion, exception, logs, and
 relevant implementation, classify the failure as production behavior, test
@@ -183,19 +192,10 @@ test merely to make CI pass.
 Never transform "not run," "not discovered," "unavailable," or a pre-existing
 failure into a passing result. Report the command, outcome, and limitation.
 
-## Current scaffold caveats
+## Current test-transition caveats
 
-These observations were true when this guide was created and must be rechecked,
-not assumed:
-
-- `Haggly.slnx` referenced
-  `tests/Haggly.ArchitectureTests/Haggly.ArchitectureTests.csproj`, but that
-  project was absent.
-- `src/Haggly.Api/Program.cs` was empty.
-- Module-local agent guides were empty placeholders.
-
-If still true, report them as pre-existing limitations. Do not invent missing
-implementation or claim the full solution passed.
+`Haggly.FunctionalTests` and `Haggly.ArchitectureTests` do not currently exist.
+Do not invent their paths or claim they ran.
 
 ## Definition of done
 

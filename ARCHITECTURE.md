@@ -49,13 +49,14 @@ offset `+00:00` at application boundaries, and persisted as PostgreSQL
 `timestamp with time zone`. Local time zones are used only when deriving a
 business calendar date for display or daily business rules.
 
-The repository does not currently reference FluentValidation,
-FluentAssertions, Testcontainers, or OpenTelemetry. They remain possible
-future choices, not current architectural dependencies.
+The repository uses xUnit for tests and NSubstitute only for Application-port
+substitutes in the active unit suite. It does not currently reference
+FluentValidation, FluentAssertions, Testcontainers, or OpenTelemetry.
 
 ## Current solution structure
 
-The solution contains four production projects and two test projects:
+The target solution structure contains four production projects and one active
+test project; the functional-test project is added in the next testing phase:
 
 ```text
 Haggly/
@@ -66,8 +67,7 @@ Haggly/
 |   |-- Haggly.Infrastructure/
 |   `-- Haggly.Api/
 |-- tests/
-|   |-- Haggly.UnitTests/
-|   `-- Haggly.IntegrationTests/
+|   `-- Haggly.UnitTests/
 |-- docs/
 |-- database/
 |-- deploy/
@@ -90,8 +90,7 @@ Haggly.Domain          -> no Haggly project
 Haggly.Application     -> Haggly.Domain
 Haggly.Infrastructure  -> Haggly.Application, Haggly.Domain
 Haggly.Api             -> Haggly.Application, Haggly.Infrastructure, Haggly.Domain
-Haggly.UnitTests       -> Domain, Application, Infrastructure
-Haggly.IntegrationTests -> Api
+Haggly.UnitTests              -> Domain, Application
 ```
 
 The intended rule is that business behavior remains independent of transport
@@ -395,21 +394,18 @@ EF Core mappings and repositories are adapters, not business-rule owners.
 
 ## Testing structure
 
-`Haggly.UnitTests` is organized by production boundary: `Domain`, `Application`,
-and `Infrastructure`, with module-specific folders under the relevant boundary.
-It covers current Identity, Markets, Catalog, Inventory, Sales Cart/Order/POS
-Application behavior, JWT services, persistence configuration, EF Core model
-metadata, migrations, and row mappers.
+`Haggly.UnitTests` is the active business-test project. Its `Domain` tree uses
+real entities and aggregates without substitutes. Its `Application` tree is
+organized by module and use case; tests construct real handlers and Domain
+objects while NSubstitute replaces only Application ports. Tests use explicit
+Arrange/Act/Assert sections, deterministic data, and
+`Method_Scenario_ExpectedResult` names. The project references Domain and
+Application only, so Infrastructure and API changes cannot leak into business
+unit tests.
 
-`Haggly.IntegrationTests` is organized under `Api` and `Infrastructure`. It
-covers authentication and authorization behavior, Identity, Markets, and
-Inventory endpoint contracts, Swagger, and Dapper Markets, Category, Product,
-and Inventory queries against PostgreSQL. Inventory boundary tests cover the
-real EF constraints/concurrency behavior and the full authenticated HTTP
-lifecycle. It also covers the Category and Product HTTP authorization and
-contributor creation paths. Payment boundary tests cover start-payment
-atomicity, result idempotency, RabbitMQ queue/exchange bindings, and centralized
-fault routing. The repository currently has no active architecture-test project.
+The repository currently has no active functional-test or architecture-test
+project. The next test phase will add `Haggly.FunctionalTests` for real HTTP,
+PostgreSQL, authentication, transaction, messaging, and provider boundaries.
 
 ## Module growth rules
 
@@ -423,8 +419,8 @@ existing boundaries:
    required.
 4. Add API endpoints only for transport concerns and map application failures
    to the established Problem Details contract.
-5. Add focused unit tests and real boundary/integration tests for persistence,
-   authentication, or external providers.
+5. Add focused tests to `Haggly.UnitTests`; add real boundary coverage only when
+   the change crosses persistence, authentication, messaging, HTTP, or a provider.
 
 Cross-module workflows should have one coordinating Application use case.
 Modules should communicate through explicit contracts and must not directly
@@ -440,6 +436,8 @@ The following is direction, not a description of files that currently exist:
   use case.
 - Add architecture tests only when an actual architecture-test project and its
   solution entry are created.
+- Add `Haggly.FunctionalTests` incrementally, starting from named critical
+  journeys rather than copying unit-test structure.
 - Add durable fault/incident storage, replay or reconciliation, and Loki/Grafana
   only when the payment workflow has an explicit operational recovery target.
 

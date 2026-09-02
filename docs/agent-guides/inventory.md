@@ -99,7 +99,9 @@ Focused commands:
 
 ```powershell
 dotnet build tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
-dotnet build tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-restore
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
-dotnet test tests\Haggly.IntegrationTests\Haggly.IntegrationTests.csproj --no-build --filter "FullyQualifiedName~Inventory"
+dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Inventory"
 ```
+
+Inventory PostgreSQL and API behavior belongs in `Haggly.FunctionalTests` after
+that project is introduced. Do not claim those boundaries were verified by the
+unit suite.
