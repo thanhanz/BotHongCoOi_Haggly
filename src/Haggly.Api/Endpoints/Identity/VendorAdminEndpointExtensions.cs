@@ -1,13 +1,12 @@
 using Haggly.Api.Authorization;
 using Haggly.Api.Responses;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Common;
 using Haggly.Application.Modules.Identity.Administration.Commands;
 using Haggly.Application.Modules.Identity.Administration.Queries;
 using Haggly.Application.Modules.Identity.Dtos;
 using Haggly.Domain.Modules.Identity;
 using MediatR;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -77,15 +76,12 @@ public static class VendorAdminEndpointExtensions
 
     private static async Task<IResult> ApproveVendorAsync(
         Guid vendorId,
-        HttpContext httpContext,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        if (!TryGetSubject(httpContext, out var adminId, out var problem))
-            return problem!;
-
         var result = await sender.Send(
-            new ApproveVendorCommand(vendorId, adminId),
+            new ApproveVendorCommand(vendorId, userContext.UserId),
             cancellationToken);
 
         return Results.Ok(
@@ -94,15 +90,12 @@ public static class VendorAdminEndpointExtensions
 
     private static async Task<IResult> RejectVendorAsync(
         Guid vendorId,
-        HttpContext httpContext,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        if (!TryGetSubject(httpContext, out var adminId, out var problem))
-            return problem!;
-
         var result = await sender.Send(
-            new RejectVendorCommand(vendorId, adminId),
+            new RejectVendorCommand(vendorId, userContext.UserId),
             cancellationToken);
 
         return Results.Ok(
@@ -111,39 +104,16 @@ public static class VendorAdminEndpointExtensions
 
     private static async Task<IResult> SuspendVendorAsync(
         Guid vendorId,
-        HttpContext httpContext,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
-        if (!TryGetSubject(httpContext, out var adminId, out var problem))
-            return problem!;
-
         var result = await sender.Send(
-            new SuspendVendorCommand(vendorId, adminId),
+            new SuspendVendorCommand(vendorId, userContext.UserId),
             cancellationToken);
 
         return Results.Ok(
             ApiResponse<VendorQueryDto>.Create(result, "Vendor suspended successfully."));
     }
 
-    private static bool TryGetSubject(
-        HttpContext httpContext,
-        out Guid userId,
-        out IResult? problem)
-    {
-        var subject = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-            ?? httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(subject, out userId))
-        {
-            problem = Results.Problem(
-                statusCode: StatusCodes.Status401Unauthorized,
-                title: "Authentication failed",
-                detail: "The access token is invalid.");
-            return false;
-        }
-
-        problem = null;
-        return true;
-    }
 }

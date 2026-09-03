@@ -56,6 +56,8 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             AuthenticationException
                 => (StatusCodes.Status401Unauthorized, "Authentication failed", exception.Message),
+            UnauthorizedAccessException
+                => (StatusCodes.Status401Unauthorized, "Authentication failed", "The access token is invalid."),
             RegistrationConflictException
                 => (StatusCodes.Status409Conflict, "Registration conflict", exception.Message),
             

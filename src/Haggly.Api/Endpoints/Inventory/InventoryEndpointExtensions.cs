@@ -1,9 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Inventory.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Common;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Modules.Inventory.Commands;
 using Haggly.Application.Modules.Inventory.Dtos;
 using Haggly.Application.Modules.Inventory.Queries;
@@ -28,22 +27,22 @@ public static class InventoryEndpointExtensions
     }
 
     private static async Task<IResult> GetInventoryAsync(
-            Guid stallId, HttpContext context,
+            Guid stallId, [FromServices] IUserContext userContext,
             [FromServices] ISender sender, 
             CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<InventoryDto>.Create(
-            await sender.Send(new GetInventoryQuery(stallId, CurrentUserId(context)), cancellationToken),
+            await sender.Send(new GetInventoryQuery(stallId, userContext.UserId), cancellationToken),
             "Inventory retrieved successfully."));
 
     private static async Task<IResult> AddItemAsync(
             Guid stallId, 
             AddInventoryItemRequest request,
-            HttpContext context, 
+            [FromServices] IUserContext userContext,
             [FromServices] ISender sender, 
             CancellationToken cancellationToken)
     {
         var result = await sender.Send(new AddInventoryItemCommand(
-            stallId, CurrentUserId(context), request.ProductStallId, request.CurrentQuantity), cancellationToken);
+            stallId, userContext.UserId, request.ProductStallId, request.CurrentQuantity), cancellationToken);
         return Results.Created($"/api/v1/vendor/stalls/{stallId}/inventory/items/{result.Id}",
             ApiResponse<InventoryItemDto>.Create(result, "Inventory item added successfully."));
     }
@@ -51,22 +50,22 @@ public static class InventoryEndpointExtensions
     private static async Task<IResult> GetItemAsync(
             Guid stallId, 
             Guid inventoryItemId,
-            HttpContext context, 
+            [FromServices] IUserContext userContext,
             [FromServices] ISender sender, 
             CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<InventoryItemDto>.Create(
-            await sender.Send(new GetInventoryItemQuery(stallId, inventoryItemId, CurrentUserId(context)), cancellationToken),
+            await sender.Send(new GetInventoryItemQuery(stallId, inventoryItemId, userContext.UserId), cancellationToken),
             "Inventory item retrieved successfully."));
 
     private static async Task<IResult> AdjustInventoryAsync(
             Guid stallId, 
             AdjustInventoryRequest request,
-            HttpContext context, 
+            [FromServices] IUserContext userContext,
             [FromServices] ISender sender, 
             CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<InventoryItemDto>.Create(
             await sender.Send(new AdjustInventoryCommand(stallId, request.InventoryItemId,
-                CurrentUserId(context), request.QuantityDelta, request.Reason, request.ExpectedVersion), cancellationToken),
+                userContext.UserId, request.QuantityDelta, request.Reason, request.ExpectedVersion), cancellationToken),
             "Inventory adjusted successfully."));
 
     private static async Task<IResult> GetLedgerAsync(
@@ -75,14 +74,11 @@ public static class InventoryEndpointExtensions
             [FromQuery] InventoryTransactionType? transactionType,
             [FromQuery] int? page, 
             [FromQuery] int? pageSize, 
-            HttpContext context,
+            [FromServices] IUserContext userContext,
             [FromServices] ISender sender, CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<PagedResult<InventoryLedgerDto>>.Create(
-            await sender.Send(new GetInventoryLedgerQuery(stallId, CurrentUserId(context), inventoryItemId,
+            await sender.Send(new GetInventoryLedgerQuery(stallId, userContext.UserId, inventoryItemId,
                 transactionType, page ?? 1, pageSize ?? 20), cancellationToken),
             "Inventory ledger retrieved successfully."));
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-            ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : Guid.Empty;
 }

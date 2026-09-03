@@ -1,6 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Authorization;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Api.Endpoints.Sales.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Common;
@@ -54,13 +53,13 @@ public static class OrderEndpointExtensions
 
     private static async Task<IResult> CreateAsync(
         CreateOrderRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
             new CreateOrderCommand(
-                CurrentUserId(context),
+                userContext.UserId,
                 request.Items?.Select(item => new CreateOrderLine(
                     item.InventoryItemId,
                     item.Quantity,
@@ -75,12 +74,12 @@ public static class OrderEndpointExtensions
     private static async Task<IResult> GetPageAsync(
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new GetOrdersQuery(CurrentUserId(context), page ?? 1, pageSize ?? 20),
+            new GetOrdersQuery(userContext.UserId, page ?? 1, pageSize ?? 20),
             cancellationToken);
 
         return Results.Ok(ApiResponse<PagedResult<OrderDto>>.Create(
@@ -90,12 +89,12 @@ public static class OrderEndpointExtensions
 
     private static async Task<IResult> GetDetailsAsync(
         Guid orderId,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new GetOrderDetailsQuery(orderId, CurrentUserId(context)),
+            new GetOrderDetailsQuery(orderId, userContext.UserId),
             cancellationToken);
 
         return Results.Ok(ApiResponse<OrderDto>.Create(
@@ -106,12 +105,12 @@ public static class OrderEndpointExtensions
     private static async Task<IResult> CancelAsync(
         Guid orderId,
         CancelOrderRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new CancelOrderCommand(orderId, CurrentUserId(context), request.Reason),
+            new CancelOrderCommand(orderId, userContext.UserId, request.Reason),
             cancellationToken);
 
         return Results.Ok(ApiResponse<OrderDto>.Create(
@@ -119,11 +118,4 @@ public static class OrderEndpointExtensions
             "Order cancelled successfully."));
     }
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(
-            context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier),
-            out var id)
-            ? id
-            : Guid.Empty;
 }

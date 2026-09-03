@@ -102,15 +102,11 @@ public static class IdentityEndpointExtensions
                 "Login successful."));
     }
 
-    private static IResult GetCurrentUser(HttpContext httpContext)
+    private static IResult GetCurrentUser(
+        HttpContext httpContext,
+        [FromServices] IUserContext userContext)
     {
         var principal = httpContext.User;
-        var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub)
-            ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(subject, out var userId))
-            return Problem(StatusCodes.Status401Unauthorized, "Authentication failed", "The access token is invalid.");
-
         var email = principal.FindFirstValue(JwtRegisteredClaimNames.Email)
             ?? principal.FindFirstValue(ClaimTypes.Email);
         var roles = principal.FindAll("roles")
@@ -120,10 +116,8 @@ public static class IdentityEndpointExtensions
 
         return Results.Ok(
             ApiResponse<CurrentUserResponse>.Create(
-                new CurrentUserResponse(userId, email, roles),
+                new CurrentUserResponse(userContext.UserId, email, roles),
                 "Current user retrieved successfully."));
     }
 
-    private static IResult Problem(int statusCode, string title, string detail)
-        => Results.Problem(statusCode: statusCode, title: title, detail: detail);
 }

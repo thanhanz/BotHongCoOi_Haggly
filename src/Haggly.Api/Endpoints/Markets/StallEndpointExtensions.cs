@@ -1,11 +1,10 @@
 using Haggly.Api.Authorization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Endpoints.Markets.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Modules.Markets.Commands.Stalls;
 using Haggly.Application.Modules.Markets.Dtos.Stalls;
 using Haggly.Application.Modules.Markets.Queries.Stalls;
+using Haggly.Application.Abstractions.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -53,7 +52,7 @@ public static class StallEndpointExtensions
 
     private static async Task<IResult> CreateStallAsync(
         CreateStallRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
@@ -61,7 +60,7 @@ public static class StallEndpointExtensions
             new CreateStallCommand(
                 request.MarketId,
                 request.VendorId,
-                CurrentUserId(context),
+                userContext.UserId,
                 request.Code,
                 request.Name,
                 request.LocationDescription,
@@ -72,14 +71,6 @@ public static class StallEndpointExtensions
             $"{StallRoutes.Prefix}/{result.Id}",
             ApiResponse<StallDto>.Create(result, "Stall created successfully."));
     }
-
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(
-            context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier),
-            out var id)
-            ? id
-            : Guid.Empty;
 
     private static async Task<IResult> GetStallsAsync(
         [FromServices] ISender sender,

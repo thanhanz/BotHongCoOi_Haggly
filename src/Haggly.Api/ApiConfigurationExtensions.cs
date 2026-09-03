@@ -1,5 +1,7 @@
 using Haggly.Api.Authorization;
+using Haggly.Api.Authentication;
 using Haggly.Api.Middleware;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Common.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +17,8 @@ public static class ApiConfigurationExtensions
     {
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContext, HttpUserContext>();
         services.AddHagglyAuthorization();
         services.AddSingleton<IBusinessClock>(_ => new BusinessClock(
             TimeProvider.System,

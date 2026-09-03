@@ -1,5 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Catalog.Requests;
 using Haggly.Api.Responses;
@@ -34,23 +33,21 @@ public static class ProductStallEndpointExtensions
     private static async Task<IResult> GetByIdAsync(Guid stallId, Guid id, ISender sender, CancellationToken ct)
         => Results.Ok(ApiResponse<ProductStallDto>.Create(await sender.Send(new GetProductStallByIdQuery(stallId, id), ct), "Product retrieved successfully."));
 
-    private static async Task<IResult> CreateAsync(Guid stallId, CreateProductStallRequest request, HttpContext context, ISender sender, CancellationToken ct)
+    private static async Task<IResult> CreateAsync(Guid stallId, CreateProductStallRequest request, IUserContext userContext, ISender sender, CancellationToken ct)
     {
-        var actor = CurrentUserId(context);
+        var actor = userContext.UserId;
         var result = await sender.Send(new CreateProductStallCommand(stallId, request.ProductId, actor, request.DisplayName,
             request.SellingUnit, request.MinimumOrderQuantity, request.CurrentUnitPrice, request.IsNegotiable), ct);
         return Results.Created($"{ProductStallRoutes.Prefix.Replace("{stallId:guid}", stallId.ToString())}/{result.Id}",
             ApiResponse<ProductStallDto>.Create(result, "Product added to stall successfully."));
     }
 
-    private static async Task<IResult> UpdateAsync(Guid stallId, Guid id, UpdateProductStallRequest request, HttpContext context, ISender sender, CancellationToken ct)
+    private static async Task<IResult> UpdateAsync(Guid stallId, Guid id, UpdateProductStallRequest request, IUserContext userContext, ISender sender, CancellationToken ct)
     {
-        var result = await sender.Send(new UpdateProductStallCommand(stallId, id, CurrentUserId(context), request.DisplayName,
+        var result = await sender.Send(new UpdateProductStallCommand(stallId, id, userContext.UserId, request.DisplayName,
             request.SellingUnit, request.MinimumOrderQuantity, request.CurrentUnitPrice, request.IsNegotiable,
             request.IsActive, request.ExpectedVersion), ct);
         return Results.Ok(ApiResponse<ProductStallDto>.Create(result, "Stall product updated successfully."));
     }
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : Guid.Empty;
 }

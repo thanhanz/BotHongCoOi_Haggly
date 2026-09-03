@@ -1,6 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Authorization;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Api.Endpoints.Payments.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Modules.Payments.Commands;
@@ -31,12 +30,12 @@ public static class PaymentEndpointExtensions
 
     private static async Task<IResult> StartAsync(
         StartPaymentRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new StartPaymentCommand(request.OrderId, CurrentUserId(context)),
+            new StartPaymentCommand(request.OrderId, userContext.UserId),
             cancellationToken);
 
         return Results.Accepted(
@@ -44,11 +43,4 @@ public static class PaymentEndpointExtensions
             ApiResponse<PaymentDto>.Create(result, "Payment accepted for asynchronous processing."));
     }
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(
-            context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier),
-            out var id)
-            ? id
-            : Guid.Empty;
 }

@@ -1,6 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Authorization;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Api.Endpoints.Sales.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Modules.Sales.Commands;
@@ -66,22 +65,22 @@ public static class CartEndpointExtensions
     }
 
     private static async Task<IResult> GetAsync(
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<CartDto>.Create(
-            await sender.Send(new GetCartQuery(CurrentUserId(context)), cancellationToken),
+            await sender.Send(new GetCartQuery(userContext.UserId), cancellationToken),
             "Cart retrieved successfully."));
 
     private static async Task<IResult> AddItemAsync(
         AddCartItemRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<CartDto>.Create(
             await sender.Send(
                 new AddCartItemCommand(
-                    CurrentUserId(context),
+                    userContext.UserId,
                     request.InventoryItemId,
                     request.Quantity,
                     request.Notes),
@@ -91,13 +90,13 @@ public static class CartEndpointExtensions
     private static async Task<IResult> UpdateItemAsync(
         Guid cartItemId,
         UpdateCartItemRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<CartDto>.Create(
             await sender.Send(
                 new UpdateCartItemCommand(
-                    CurrentUserId(context),
+                    userContext.UserId,
                     cartItemId,
                     request.Quantity,
                     request.Notes),
@@ -106,32 +105,32 @@ public static class CartEndpointExtensions
 
     private static async Task<IResult> RemoveItemAsync(
         Guid cartItemId,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<CartDto>.Create(
             await sender.Send(
-                new RemoveCartItemCommand(CurrentUserId(context), cartItemId),
+                new RemoveCartItemCommand(userContext.UserId, cartItemId),
                 cancellationToken),
             "Cart item removed successfully."));
 
     private static async Task<IResult> ClearAsync(
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => Results.Ok(ApiResponse<CartDto>.Create(
             await sender.Send(
-                new ClearCartCommand(CurrentUserId(context)),
+                new ClearCartCommand(userContext.UserId),
                 cancellationToken),
             "Cart cleared successfully."));
 
     private static async Task<IResult> CheckoutAsync(
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new CheckoutCartCommand(CurrentUserId(context)),
+            new CheckoutCartCommand(userContext.UserId),
             cancellationToken);
 
         return Results.Created(
@@ -139,11 +138,4 @@ public static class CartEndpointExtensions
             ApiResponse<OrderDto>.Create(result, "Cart checked out successfully."));
     }
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(
-            context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier),
-            out var id)
-            ? id
-            : Guid.Empty;
 }

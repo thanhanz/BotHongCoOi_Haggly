@@ -1,9 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Haggly.Api.Authorization;
 using Haggly.Api.Endpoints.Sales.Requests;
 using Haggly.Api.Responses;
 using Haggly.Application.Common;
+using Haggly.Application.Abstractions.Identity;
 using Haggly.Application.Modules.Sales.Commands;
 using Haggly.Application.Modules.Sales.Dtos;
 using Haggly.Application.Modules.Sales.Queries;
@@ -48,14 +47,14 @@ public static class PosSaleEndpointExtensions
     private static async Task<IResult> CompleteAsync(
         Guid stallId,
         CompletePosSaleRequest request,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
             new CompletePosSaleCommand(
                 stallId,
-                CurrentUserId(context),
+                userContext.UserId,
                 request.ClientRequestId,
                 request.Items.Select(item => new PosSaleLineInput(
                     item.InventoryItemId,
@@ -75,14 +74,14 @@ public static class PosSaleEndpointExtensions
         Guid stallId,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
             new GetPosSalesQuery(
                 stallId,
-                CurrentUserId(context),
+                userContext.UserId,
                 page ?? 1,
                 pageSize ?? 20),
             cancellationToken);
@@ -95,7 +94,7 @@ public static class PosSaleEndpointExtensions
     private static async Task<IResult> GetDetailAsync(
         Guid stallId,
         Guid posSaleId,
-        HttpContext context,
+        [FromServices] IUserContext userContext,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
@@ -103,7 +102,7 @@ public static class PosSaleEndpointExtensions
             new GetPosSaleDetailsQuery(
                 stallId,
                 posSaleId,
-                CurrentUserId(context)),
+                userContext.UserId),
             cancellationToken);
 
         return Results.Ok(ApiResponse<PosSaleDto>.Create(
@@ -111,11 +110,4 @@ public static class PosSaleEndpointExtensions
             "POS sale details retrieved successfully."));
     }
 
-    private static Guid CurrentUserId(HttpContext context)
-        => Guid.TryParse(
-            context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-                ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier),
-            out var id)
-            ? id
-            : Guid.Empty;
 }
