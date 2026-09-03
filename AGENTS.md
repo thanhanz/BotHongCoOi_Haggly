@@ -80,6 +80,38 @@ For business behavior, inspect in this order:
 
 Do not put business decisions in endpoints, EF mappings, or adapters.
 
+## Object-oriented design and SOLID
+
+Use object-oriented design to keep business behavior explicit and changes
+local. Apply SOLID as design guidance, not as a reason to create layers,
+interfaces, or patterns that the current behavior does not need.
+
+- Give each type one cohesive responsibility and place behavior with the state
+  and rules it governs. Prefer intention-revealing methods over public setters
+  and anemic domain objects.
+- Keep invariants valid through construction and state transitions. Encapsulate
+  mutable state and expose the smallest useful public API.
+- Extend behavior through focused composition or polymorphism when a real
+  variation exists. Do not add speculative inheritance hierarchies, strategy
+  interfaces, factories, or extension points.
+- Derived implementations must honor the contract and expectations of the
+  abstraction they implement. Do not weaken validation or change observable
+  semantics unexpectedly.
+- Keep interfaces small and capability-oriented. Create an interface at a real
+  boundary or when multiple behaviors/substitution are required, not for every
+  class.
+- Make high-level Application policy depend on Domain concepts and narrow
+  ports; keep EF Core, Dapper, HTTP, and provider details in Infrastructure or
+  API adapters.
+- Prefer composition over inheritance, explicit dependencies over service
+  location, and cohesive types over generic `Manager`, `Helper`, or `Service`
+  classes.
+
+Before introducing an abstraction, identify the concrete responsibility or
+variation it isolates. Choose the simplest design that satisfies current
+requirements, and refactor when evidence shows responsibilities or reasons to
+change have diverged.
+
 ## Risk-based testing and verification
 
 Test behavior Haggly owns. Do not test framework internals, library behavior,
@@ -87,20 +119,29 @@ trivial data containers, or implementation details. Test each behavior at the
 lowest layer that can prove it. Do not repeat the same business scenario at
 multiple layers unless each test covers a distinct risk.
 
-Strict red-green-refactor TDD is required for:
+TDD is encouraged when it helps clarify behavior, but a strict
+red-green-refactor sequence is not required. Tests are required when they give
+meaningful confidence in Haggly-owned behavior or data correctness, especially:
 
-- Domain invariants, calculations, policies, and state transitions.
-- Critical MVP workflows involving inventory, orders, payments, authorization,
-  or cross-module consistency.
-- Bug fixes, using a regression test that reproduces the defect.
+- Accuracy-sensitive domain invariants, calculations, policies, state
+  transitions, money, quantity, allocation, and cross-module consistency.
+- Critical workflows involving inventory, orders, payments, authorization, or
+  other behavior where an incorrect result can corrupt or expose data.
+- Bug fixes, preferably with a regression test that reproduces the defect when
+  the behavior can be tested reliably at a useful layer.
+- Real integration and technology boundaries Haggly relies on, including
+  database constraints, transactions, EF/Dapper mappings and queries,
+  serialization, authentication, and external provider adapters.
 
 For these changes:
 
 1. Add the smallest test that proves the behavior, named
    `Method_Scenario_ExpectedResult`.
-2. Run it and confirm it fails for the expected reason.
-3. Implement the smallest production change.
-4. Run the focused test again and refactor while it remains passing.
+2. Implement the smallest production change; writing and running the test first
+   is optional unless the user explicitly requests strict TDD.
+3. Run the focused test and confirm it proves the intended behavior at the
+   appropriate layer.
+4. Refactor only while the relevant tests remain passing.
 
 Choose the test layer by responsibility:
 
@@ -118,10 +159,14 @@ Choose the test layer by responsibility:
 - End-to-end, concurrency, load, and stress tests are added intentionally for
   named critical journeys or measured risks, not as default feature coverage.
 
-A new test is normally unnecessary for DTO-only changes, trivial property
-mapping, pass-through queries, framework wiring already covered by a boundary
-test, or refactoring with unchanged observable behavior. When omitting tests,
-state why existing coverage and verification are sufficient.
+A new test is normally unnecessary for DTO-only changes, trivial in-memory
+property assignment, pass-through code, framework wiring already covered by a
+boundary test, or refactoring with unchanged observable behavior. Do not add
+tests only to increase test counts or coverage percentages. Mapping or query
+behavior that depends on EF Core, Dapper, SQL, serialization, or provider
+conventions is not trivial and should be proven at the real boundary. When
+omitting tests, state why the change has low behavioral risk or which existing
+coverage is sufficient.
 
 Every new unit test uses visible Arrange, Act, and Assert sections, is named
 `Method_Scenario_ExpectedResult`, creates fresh deterministic state, and must not

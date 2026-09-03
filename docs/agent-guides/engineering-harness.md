@@ -37,7 +37,7 @@ Evidence rules:
 | Mode | Operating rule |
 |---|---|
 | Explain, review, diagnose | Inspect and report; do not modify code unless asked. |
-| Bug fix | Identify the failing path and owning rule, add the smallest regression test, make the smallest fix. |
+| Bug fix | Identify the failing path and owning rule, add a focused regression test when it provides reliable value, and make the smallest fix. |
 | New behavior | Find the requirement and business rule, then implement one vertical slice using the root risk-based test policy. |
 | Refactor | Preserve observable behavior, establish coverage first, avoid feature work. |
 | API change | Inspect business owner, application contract, validation, authorization, OpenAPI, integration tests. |
@@ -90,6 +90,26 @@ scaffolded. Establish the smallest convention consistent with
 - Update a module guide when the change establishes or invalidates durable
   module knowledge.
 
+## Design review
+
+Apply the root SOLID and object-oriented design guidance proportionally to the
+change. Before adding or changing a type, check:
+
+- Does it have one cohesive responsibility and an intention-revealing name?
+- Is business state encapsulated and kept valid by its public operations?
+- Are dependencies explicit, narrow, and directed toward Domain or Application
+  abstractions rather than infrastructure details?
+- Does each interface represent a real consumer capability or boundary?
+- Would composition keep the design simpler and safer than inheritance?
+- Is a proposed abstraction justified by current variation or responsibility,
+  rather than a possible future requirement?
+
+SOLID is not measured by the number of classes or interfaces. Avoid splitting
+cohesive behavior into pass-through types, creating one-implementation
+interfaces without a boundary need, or applying patterns mechanically. When a
+type has multiple reasons to change, separate those responsibilities at the
+nearest valid layer without expanding the requested vertical slice.
+
 ## Repository artifact hygiene
 
 Implementation work must leave only task-required deliverables in the
@@ -135,6 +155,14 @@ The active business suite is `tests/Haggly.UnitTests`:
   ports with NSubstitute.
 - Tests use Arrange/Act/Assert, deterministic fresh state, and
   `Method_Scenario_ExpectedResult` names.
+
+Strict test-first sequencing is optional unless the user requests it. Select
+tests by the cost and likelihood of failure: prioritize accuracy-sensitive
+business rules and real integration, persistence, mapping, serialization,
+authentication, transaction, and provider boundaries. Skip new tests for
+trivial containers, pass-through behavior, or refactors already protected by
+relevant coverage, and record the reason instead of manufacturing low-value
+tests.
 
 Discover verification rather than trusting stale commands. Inspect:
 
