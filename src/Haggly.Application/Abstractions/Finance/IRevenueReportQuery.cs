@@ -4,6 +4,11 @@ namespace Haggly.Application.Abstractions.Finance;
 
 public interface IRevenueReportQuery
 {
+    Task<bool> IsStallOwnedByVendorAsync(
+        Guid stallId,
+        Guid vendorId,
+        CancellationToken cancellationToken);
+
     Task<VendorRevenueReportResponse> GetVendorReportAsync(
         Guid vendorId,
         VendorRevenueReportRequest request,
