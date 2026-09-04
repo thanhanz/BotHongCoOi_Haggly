@@ -9,6 +9,7 @@ using Haggly.Application.Modules.Catalog.Exceptions.ProductStalls;
 using Haggly.Application.Modules.Inventory.Exceptions;
 using Haggly.Application.Modules.Sales.Exceptions;
 using Haggly.Application.Modules.Payments.Exceptions;
+using Haggly.Application.Modules.Finance.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -150,6 +151,11 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status404NotFound, "Order not found", exception.Message),
             PaymentConflictException
                 => (StatusCodes.Status409Conflict, "Payment conflict", exception.Message),
+
+            RevenueReportValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            RevenueReportNotFoundException
+                => (StatusCodes.Status404NotFound, "Revenue report resource not found", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",
