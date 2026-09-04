@@ -24,7 +24,7 @@ and Finance. Sales currently implements buyer carts, cart checkout into
 multi-stall negotiating orders, buyer order reads/cancellation, and vendor POS;
 POS revenue and simulated online payment completion are also implemented.
 Negotiation, reservation expiration, pickup/fulfillment transitions, real
-payment provider integration, and broader Finance reporting remain future workflows.
+payment provider integration, and detailed Finance reporting remain future workflows.
 
 ## Technology actually used
 
@@ -125,7 +125,7 @@ are:
 | Negotiation | `NegotiationSession`, `NegotiationOffer`, `NegotiationOfferItem`, `NegotiationMessage`, related enums | Domain model scaffold only |
 | Sales | `Cart`, `CartItem`, `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, `PosSaleItem`, related enums | Buyer cart/checkout and order create/read/cancel implemented; POS completion and history implemented; later order lifecycle remains incomplete |
 | Payments | `Payment`, `PaymentAllocation`, `PaymentMethod`, `PaymentTransaction`, related enums | Simulated processing atomically persists the Payment, attempt, per-stall allocations, and result event containing allocation IDs |
-| Finance | `RevenueLedger`, `RevenueEntryType` | Append-only POS and online-payment revenue implemented; a dedicated MassTransit PaymentSucceeded consumer invokes the Finance handler and appends one row per allocation |
+| Finance | `RevenueLedger`, `RevenueEntryType` | Append-only POS and online-payment revenue plus vendor/admin summary reporting implemented; a dedicated MassTransit PaymentSucceeded consumer invokes the Finance handler and appends one row per allocation |
 
 Negotiation is currently a top-level Domain module under
 `Modules/Negotiation`; it is not nested under `Modules/Sales`.
@@ -189,6 +189,11 @@ by default; Category slugs are normalized to lowercase and unique among
 non-deleted categories, while Product names are unique within a category among
 non-deleted products.
 
+Finance Application code includes payment-success revenue orchestration and
+summary report queries for vendors and administrators. Report handlers normalize
+and validate UTC periods, enforce vendor stall ownership, and depend on the
+capability-oriented `IRevenueReportQuery` read port.
+
 ### Infrastructure
 
 `Haggly.Infrastructure` contains:
@@ -197,7 +202,7 @@ non-deleted products.
   Catalog, Inventory, Sales, Payments, and Finance repositories, the design-time context
   factory, and their migrations.
 - `Persistence/DapperDbContext` and Dapper query adapters for Identity,
-  Markets, Catalog, Inventory, Cart, Order, and POS Sales reads. EF Core remains
+  Markets, Catalog, Inventory, Cart, Order, POS Sales, and Finance summary reads. EF Core remains
   the transactional write adapter for cart/order changes, cart checkout, POS
   completion, and POS inventory/revenue ledger updates.
 - `Authentication/JwtTokenService`, JWT options/configuration, and
@@ -302,6 +307,18 @@ and require the `VendorOnly` policy:
 | `POST` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Complete an idempotent sale and deduct inventory atomically |
 | `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales` | Page the stall's completed POS history |
 | `GET` | `/api/v1/vendor/stalls/{stallId}/pos-sales/{posSaleId}` | Return one POS sale with its item details |
+
+Finance exposes summary-only revenue reports:
+
+| Method | Route | Behavior |
+|---|---|---|
+| `GET` | `/api/v1/vendor/reports/revenue` | Return revenue totals and per-stall summaries for the authenticated vendor; requires `VendorOnly` |
+| `GET` | `/api/v1/admin/reports/revenue` | Return system totals grouped by vendor and stall; supports market, vendor, stall, period, and channel filters; requires `AdminOnly` |
+
+Both routes accept optional UTC `from` and `to` values and `saleChannel` values
+`ALL`, `POS`, or `ONLINE`. Vendor reports additionally accept `stallId`; admin
+reports accept `marketId`, `vendorId`, and `stallId`. The responses do not echo
+the effective filters.
 
 Buyer cart routes are grouped under `/api/v1/cart` and require the `BuyerOnly`
 policy:
@@ -430,8 +447,9 @@ mutate another module's entities.
 
 The following is direction, not a description of files that currently exist:
 
-- Complete reservation expiration, Negotiation, payment retries, fulfillment/pickup, and
-  broader Payments/Finance workflows around the existing Cart and Order slices.
+- Complete reservation expiration, Negotiation, payment retries, fulfillment/pickup,
+  refunds, and detailed Payments/Finance workflows around the existing Cart and
+  Order slices.
 - Extend EF Core configuration and migrations as each module gains a persisted
   use case.
 - Add architecture tests only when an actual architecture-test project and its
