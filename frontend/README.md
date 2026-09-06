@@ -7,12 +7,13 @@ primitives, and a development-only showcase at `/dev/design-system`.
 ## Commands
 
 ```powershell
-npm.cmd install
-npm.cmd run dev
-npm.cmd run typecheck
-npm.cmd run lint
-npm.cmd run test
-npm.cmd run build
+corepack enable
+pnpm install
+pnpm dev
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
 ```
 
 The website consumes the API from `../backend`. Business rules remain in the
