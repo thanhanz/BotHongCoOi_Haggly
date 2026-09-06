@@ -19,3 +19,14 @@ pnpm build
 The website consumes the API from `../backend`. Business rules remain in the
 backend; frontend feature modules compose generic primitives from
 `src/shared/ui`.
+
+## API client
+
+Set `NEXT_PUBLIC_API_BASE_URL` to the API origin. Local development defaults to
+`http://localhost:58558`, matching the backend HTTP launch profile.
+
+Shared Axios transport, success envelopes, pagination, and Problem Details
+contracts live in `src/shared/api`. Endpoint-specific requests and response
+contracts remain with their owning feature under `src/features/<feature>/api`.
+Access tokens are passed explicitly to authenticated API calls; the shared
+client does not read browser storage.
