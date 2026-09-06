@@ -15,6 +15,14 @@ export default function Home() {
         <Typography variant="bodyLg" className="max-w-2xl text-foreground-secondary">
           Nền tảng đang được xây dựng. Bộ nền giao diện đã sẵn sàng để phát triển các hành trình mua bán.
         </Typography>
+        <div>
+          <Link
+            href="/register"
+            className="inline-flex h-10 items-center rounded-control bg-brand-primary px-md font-data text-sm font-semibold text-foreground-inverse hover:bg-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+          >
+            Thử đăng ký người mua
+          </Link>
+        </div>
         {process.env.NODE_ENV === "development" && (
           <div>
             <Link
