@@ -8,13 +8,13 @@ catalog Product; daily availability remains an Inventory concern.
 
 ## Entry points
 
-- Application commands and queries: `src/Haggly.Application/Modules/Catalog`.
-- Application ports: `src/Haggly.Application/Abstractions/Catalog`.
+- Application commands and queries: `backend/src/Haggly.Application/Modules/Catalog`.
+- Application ports: `backend/src/Haggly.Application/Abstractions/Catalog`.
 - EF configuration and command repository:
-  `src/Haggly.Infrastructure/Persistence/Configurations/Catalog` and
+  `backend/src/Haggly.Infrastructure/Persistence/Configurations/Catalog` and
   `Repositories/Catalog`.
 - Dapper active Category, Product, and ProductStall reads: `Persistence/Queries/Catalog`.
-- HTTP endpoints: `src/Haggly.Api/Endpoints/Catalog`.
+- HTTP endpoints: `backend/src/Haggly.Api/Endpoints/Catalog`.
 
 ## Category rules
 
@@ -73,7 +73,7 @@ catalog Product; daily availability remains an Inventory concern.
 ## Focused verification
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Catalog"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Catalog"
 ```
 
 Catalog HTTP and PostgreSQL behavior belongs in the planned functional-test

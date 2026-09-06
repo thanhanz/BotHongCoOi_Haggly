@@ -36,11 +36,11 @@ Start PostgreSQL for local development and restore the solution:
 
 ```powershell
 docker compose up -d postgres
-dotnet restore Haggly.slnx
+dotnet restore backend\Haggly.slnx
 ```
 
 The development database uses the `HagglyDatabase` connection string from
-`src/Haggly.Api/appsettings.Development.json` and PostgreSQL port `5433`.
+`backend/src/Haggly.Api/appsettings.Development.json` and PostgreSQL port `5433`.
 Development credentials must not be reused in production.
 
 Future functional tests must use a separate `haggly_test` database and may read
@@ -182,16 +182,16 @@ The primary suite is `Haggly.UnitTests`:
 Run the focused module or class while developing, then the complete active unit suite:
 
 ```powershell
-dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Inventory"
-dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj
+dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Inventory"
+dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj
 ```
 
 Before opening or updating a PR, run the full local verification ladder:
 
 ```powershell
-dotnet restore Haggly.slnx
-dotnet build Haggly.slnx --no-restore
-dotnet test Haggly.slnx --no-build
+dotnet restore backend/Haggly.slnx
+dotnet build backend/Haggly.slnx --no-restore
+dotnet test backend/Haggly.slnx --no-build
 ```
 
 Persistence, authentication, transaction, messaging, and provider changes

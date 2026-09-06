@@ -60,24 +60,27 @@ test project; the functional-test project is added in the next testing phase:
 
 ```text
 Haggly/
-|-- Haggly.slnx
-|-- src/
-|   |-- Haggly.Domain/
-|   |-- Haggly.Application/
-|   |-- Haggly.Infrastructure/
-|   `-- Haggly.Api/
-|-- tests/
-|   `-- Haggly.UnitTests/
+|-- backend/
+|   |-- Haggly.slnx
+|   |-- src/
+|   |   |-- Haggly.Domain/
+|   |   |-- Haggly.Application/
+|   |   |-- Haggly.Infrastructure/
+|   |   `-- Haggly.Api/
+|   |-- tests/
+|   |   `-- Haggly.UnitTests/
+|   |-- database/
+|   |-- Directory.Build.props
+|   |-- Directory.Packages.props
+|   `-- global.json
+|-- frontend/
+|   `-- (reserved for the future React website)
 |-- docs/
-|-- database/
 |-- deploy/
-|-- Directory.Build.props
-|-- Directory.Packages.props
-|-- global.json
 `-- README.md
 ```
 
-There is a `tests/Haggly.ArchitectureTests` directory containing build output,
+There is a `backend/tests/Haggly.ArchitectureTests` directory containing build output,
 but no project file and no solution entry for it. It is therefore not an
 active test project.
 
@@ -113,7 +116,7 @@ implemented in an endpoint.
 ## Domain modules
 
 All current business model files are in
-`src/Haggly.Domain/Modules`. The module folders and their observed model types
+`backend/src/Haggly.Domain/Modules`. The module folders and their observed model types
 are:
 
 | Module | Current Domain types | Current implementation state |
@@ -235,7 +238,7 @@ and MassTransit consumers.
 
 ### API
 
-`src/Haggly.Api/Program.cs` composes the application by registering persistence,
+`backend/src/Haggly.Api/Program.cs` composes the application by registering persistence,
 token services, and API services. The request pipeline uses exception handling,
 authentication, and authorization middleware.
 

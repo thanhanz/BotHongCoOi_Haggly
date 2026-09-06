@@ -2,9 +2,18 @@
 
 ## Purpose
 
-Haggly is intended to be a .NET 10 modular monolith. Use this file as a map,
-not as proof that planned code exists. Ground every change in the current
-workspace and implement the smallest complete vertical slice.
+Haggly is a monorepo containing a .NET 10 modular-monolith backend and a
+reserved React frontend. Use this file as a repository map, not as proof that
+planned code exists. Ground every change in the current workspace and implement
+the smallest complete vertical slice.
+
+Repository routing:
+
+- Backend work belongs under `backend/`; read `backend/AGENTS.md`.
+- Frontend work belongs under `frontend/`; read `frontend/AGENTS.md`.
+- Cross-stack work must preserve the HTTP contract between both directories.
+- Shared requirements, Compose, CI, deployment, and documentation remain at
+  the repository root.
 
 ## Start here
 
@@ -55,9 +64,11 @@ that has no implementation or guide content.
 | EF Core, Dapper, mappings, migrations | Persistence + business owner | `docs/agent-guides/persistence.md` | `Infrastructure/Persistence`, `database` |
 | HTTP, middleware, Problem Details, OpenAPI | API + business owner | `docs/agent-guides/api.md` | `Haggly.Api` |
 
-Code roots are under `src/Haggly.Domain`, `src/Haggly.Application`,
-`src/Haggly.Infrastructure`, and `src/Haggly.Api`. Expected roots are routing
-targets, not evidence that directories already exist.
+Backend code roots are under `backend/src/Haggly.Domain`,
+`backend/src/Haggly.Application`, `backend/src/Haggly.Infrastructure`, and
+`backend/src/Haggly.Api`. Expected roots are routing targets, not evidence that
+directories already exist. Frontend source is under `frontend/` and is not yet
+implemented.
 
 Ambiguity rules:
 
@@ -145,9 +156,9 @@ For these changes:
 
 Choose the test layer by responsibility:
 
-- Domain tests in `tests/Haggly.UnitTests/Domain` use real Domain objects and
+- Domain tests in `backend/tests/Haggly.UnitTests/Domain` use real Domain objects and
   prove invariants, calculations, and state transitions without mocks or DI.
-- Application tests in `tests/Haggly.UnitTests/Application` use real handlers
+- Application tests in `backend/tests/Haggly.UnitTests/Application` use real handlers
   and Domain objects. Substitute only Application ports with NSubstitute to
   prove meaningful orchestration, authorization decisions, and failure handling;
   do not test pass-through handlers.
@@ -244,25 +255,25 @@ Preserve public contracts unless the request explicitly changes them.
 
 ## Verification
 
-Inspect `global.json`, shared props, `Haggly.slnx`, affected `.csproj` files, and
+Inspect `backend/global.json`, backend shared props, `backend/Haggly.slnx`, affected `.csproj` files, and
 CI before choosing commands. Confirm referenced projects exist. Full CI/release
 ladder:
 
 ```powershell
-dotnet restore Haggly.slnx
-dotnet build Haggly.slnx --no-restore
-dotnet test Haggly.slnx --no-build
+dotnet restore backend\Haggly.slnx
+dotnet build backend\Haggly.slnx --no-restore
+dotnet test backend\Haggly.slnx --no-build
 ```
 
 For local verification, follow the risk-based ladder above instead of running
-the full solution suite by default. Run `tests/Haggly.UnitTests` first. For
+the full solution suite by default. Run `backend/tests/Haggly.UnitTests` first. For
 persistence, authentication, transactions, messaging, HTTP, or providers, add
 coverage to `Haggly.FunctionalTests` once that project exists; do not simulate
 those boundaries in the unit project.
 
 ```powershell
-dotnet build tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
+dotnet build backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
 ```
 
 When a persistence model changes, use the migration command documented in
@@ -270,8 +281,8 @@ When a persistence model changes, use the migration command documented in
 
 ```powershell
 dotnet ef migrations add CreateMarketAndStallEntities `
-    --project src\Haggly.Infrastructure\Haggly.Infrastructure.csproj `
-    --startup-project src\Haggly.Api\Haggly.Api.csproj `
+    --project backend\src\Haggly.Infrastructure\Haggly.Infrastructure.csproj `
+    --startup-project backend\src\Haggly.Api\Haggly.Api.csproj `
     -- `
     --connection "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
 ```

@@ -14,14 +14,14 @@ the time of a completed sale.
 
 ## Layer map
 
-- Domain: `src/Haggly.Domain/Modules/Inventory` contains `Inventory`,
+- Domain: `backend/src/Haggly.Domain/Modules/Inventory` contains `Inventory`,
   `InventoryItem`, and `InventoryLedger`.
-- Application: `src/Haggly.Application/Modules/Inventory` contains add, read,
+- Application: `backend/src/Haggly.Application/Modules/Inventory` contains add, read,
   adjustment, and ledger use cases plus ownership checks and persistence ports.
 - Infrastructure: EF configurations and repositories are under
   `Persistence/Configurations/Inventory` and `Repositories/Inventory`; Dapper
   reads are in `Queries/Inventory/DapperInventoryQuery.cs`.
-- API: `src/Haggly.Api/Endpoints/Inventory` exposes vendor-only continuous
+- API: `backend/src/Haggly.Api/Endpoints/Inventory` exposes vendor-only continuous
   inventory routes.
 
 Payment start reserves active OrderItem quantities. Successful online payments
@@ -98,8 +98,8 @@ pre-migration database backup.
 Focused commands:
 
 ```powershell
-dotnet build tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Inventory"
+dotnet build backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Inventory"
 ```
 
 Inventory PostgreSQL and API behavior belongs in `Haggly.FunctionalTests` after

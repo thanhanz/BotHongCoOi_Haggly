@@ -2,7 +2,7 @@
 
 ## Purpose and ownership
 
-Use this guide for work in `src/Haggly.Api`: HTTP routes, request binding,
+Use this guide for work in `backend/src/Haggly.Api`: HTTP routes, request binding,
 authentication and authorization at the transport boundary, response envelopes,
 Problem Details, middleware, and OpenAPI metadata.
 
@@ -18,18 +18,18 @@ belong in their module guides, such as `sales.md` or `inventory.md`.
 
 ## Current entry points
 
-- `src/Haggly.Api/Program.cs` configures the application pipeline and maps all
+- `backend/src/Haggly.Api/Program.cs` configures the application pipeline and maps all
   endpoint modules.
-- `src/Haggly.Api/ApiConfigurationExtensions.cs` registers API services,
+- `backend/src/Haggly.Api/ApiConfigurationExtensions.cs` registers API services,
   Problem Details, authorization, OpenAPI, and JWT challenge/forbid responses.
-- `src/Haggly.Api/Endpoints/ApiRoutes.cs` owns the shared `/api/v1` prefix.
-- `src/Haggly.Api/Endpoints/<Module>` contains module route constants, request
+- `backend/src/Haggly.Api/Endpoints/ApiRoutes.cs` owns the shared `/api/v1` prefix.
+- `backend/src/Haggly.Api/Endpoints/<Module>` contains module route constants, request
   contracts, and Minimal API endpoint extension methods.
-- `src/Haggly.Api/Authorization/IdentityPolicies.cs` contains reusable policy
+- `backend/src/Haggly.Api/Authorization/IdentityPolicies.cs` contains reusable policy
   names; `AuthorizationConfigurationExtensions.cs` maps those policies to roles.
-- `src/Haggly.Api/Middleware/ApiExceptionHandler.cs` centrally maps Application
+- `backend/src/Haggly.Api/Middleware/ApiExceptionHandler.cs` centrally maps Application
   exceptions to HTTP Problem Details.
-- `src/Haggly.Api/Responses/ApiResponse.cs` defines the successful response
+- `backend/src/Haggly.Api/Responses/ApiResponse.cs` defines the successful response
   envelope.
 
 `Program.cs` currently registers persistence and token services, then API
@@ -154,7 +154,7 @@ development for behavior changes and use the nearest real-boundary style:
   serialization, and exception translation through an HTTP application;
 - Swagger contract tests verify the generated document and Development routes.
 
-Application use-case tests belong in `tests/Haggly.UnitTests/Application` and prove
+Application use-case tests belong in `backend/tests/Haggly.UnitTests/Application` and prove
 business behavior independently of HTTP. API tests should not become duplicate
 business-rule test suites. When persistence, transactions, or providers are
 part of the behavior, use the appropriate real-boundary integration tests
@@ -163,8 +163,8 @@ described by the persistence and owning-module guides.
 Focused commands currently used by the repository are:
 
 ```powershell
-dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Application"
-dotnet test Haggly.slnx --no-build
+dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Application"
+dotnet test backend/Haggly.slnx --no-build
 ```
 
 Inspect the solution, projects, and current build state before adding

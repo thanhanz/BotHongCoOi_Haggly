@@ -17,14 +17,14 @@ Application ports. They do not mutate Inventory entities directly.
 
 ## Layer map
 
-- Domain: `src/Haggly.Domain/Modules/Sales` contains `Cart`, `CartItem`,
+- Domain: `backend/src/Haggly.Domain/Modules/Sales` contains `Cart`, `CartItem`,
   `Order`, `OrderItem`, `StallFulfillment`, `PosSale`, and `PosSaleItem`.
-- Application: `src/Haggly.Application/Modules/Sales` contains cart, order, and
+- Application: `backend/src/Haggly.Application/Modules/Sales` contains cart, order, and
   POS commands, queries, DTOs, validation, and exception contracts.
 - Infrastructure: EF repositories/configurations and Dapper read adapters are
   under `Persistence/Repositories/Sales`, `Configurations/Sales`, and
   `Queries/Sales`.
-- API: `src/Haggly.Api/Endpoints/Sales` exposes buyer cart/order routes and
+- API: `backend/src/Haggly.Api/Endpoints/Sales` exposes buyer cart/order routes and
   vendor POS routes.
 
 ## Cart invariants and behavior
@@ -121,13 +121,13 @@ Vendor POS routes remain under
 ## Tests and verification
 
 Domain coverage is organized by Cart, Order, and POS aggregate behavior under
-`tests/Haggly.UnitTests/Domain/Modules/Sales`. Application coverage is organized
-by use case under `tests/Haggly.UnitTests/Application/Modules/Sales`; handlers
+`backend/tests/Haggly.UnitTests/Domain/Modules/Sales`. Application coverage is organized
+by use case under `backend/tests/Haggly.UnitTests/Application/Modules/Sales`; handlers
 are real and only their Application ports are substituted. Sales persistence,
 authentication, and HTTP behavior belongs in the planned functional-test suite.
 
 Focused command:
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Sales"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build --filter "FullyQualifiedName~Sales"
 ```

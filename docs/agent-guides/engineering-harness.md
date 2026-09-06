@@ -1,5 +1,9 @@
 # Haggly Engineering Harness
 
+Haggly is a monorepo. Backend paths such as `src/`, `tests/`, `database/`,
+`global.json`, and `Haggly.slnx` in historical guidance are relative to
+`backend/`; from the repository root use the corresponding `backend/` prefix.
+
 This document contains the detailed operating protocol referenced by the root
 `AGENTS.md`. The root file stays short so it can act as a high-signal routing
 map in agent context.
@@ -148,7 +152,7 @@ finishing:
 
 ## Verification protocol
 
-The active business suite is `tests/Haggly.UnitTests`:
+The active business suite is `backend/tests/Haggly.UnitTests`:
 
 - `Domain` tests use real Domain types with no substitutes or DI container.
 - `Application` tests construct real handlers and substitute only Application
@@ -190,16 +194,16 @@ requests them locally.
 Full CI/release ladder when the workspace supports it:
 
 ```powershell
-dotnet restore Haggly.slnx
-dotnet build Haggly.slnx --no-restore
-dotnet test Haggly.slnx --no-build
+dotnet restore backend/Haggly.slnx
+dotnet build backend/Haggly.slnx --no-restore
+dotnet test backend/Haggly.slnx --no-build
 ```
 
 Focused examples:
 
 ```powershell
-dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Payments"
-dotnet test tests/Haggly.UnitTests/Haggly.UnitTests.csproj
+dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Payments"
+dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj
 ```
 
 Use real boundary tests for EF Core, Dapper, database constraints,

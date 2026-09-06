@@ -1,8 +1,8 @@
 # Markets Testing
 
-Markets Domain behavior belongs in `tests/Haggly.UnitTests/Domain/Modules/Markets`
+Markets Domain behavior belongs in `backend/tests/Haggly.UnitTests/Domain/Modules/Markets`
 when an entity gains an invariant or state transition. Application command and
-query behavior belongs in `tests/Haggly.UnitTests/Application/Modules/Markets`.
+query behavior belongs in `backend/tests/Haggly.UnitTests/Application/Modules/Markets`.
 Use real handlers and Domain objects; substitute only `IMarketCommandRepository`,
 `IStallCommandRepository`, `IMarketQuery`, `IStallQuery`, clocks, or other
 Application ports.
@@ -12,5 +12,5 @@ validation, ownership decision, defaulting, or failure translation. Market and
 Stall PostgreSQL mappings and HTTP contracts remain boundary concerns.
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Markets"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Markets"
 ```

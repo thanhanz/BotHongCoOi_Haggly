@@ -142,5 +142,5 @@ and query behavior belong in the active unit suite. Authentication token and
 HTTP authorization pipelines remain real-boundary concerns.
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Identity"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Identity"
 ```

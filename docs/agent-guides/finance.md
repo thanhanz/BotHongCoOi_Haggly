@@ -23,8 +23,8 @@ implemented.
 ## Application and persistence
 
 Report requests, responses, MediatR queries, handlers, validation, and exceptions
-are under `src/Haggly.Application/Modules/Finance/Reports` and
-`src/Haggly.Application/Modules/Finance/Exceptions`.
+are under `backend/src/Haggly.Application/Modules/Finance/Reports` and
+`backend/src/Haggly.Application/Modules/Finance/Exceptions`.
 `IRevenueReportQuery` is the Application read port. Infrastructure implements it
 with `DapperRevenueReportRepository`, which projects the existing Finance,
 Markets, and Identity tables.
@@ -64,7 +64,7 @@ binding, authorization, and message delivery require real-boundary coverage and
 must not be simulated as Finance unit tests.
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Finance"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --filter "FullyQualifiedName~Finance"
 ```
 
 The active `Haggly.FunctionalTests` project does not yet exist. The report SQL

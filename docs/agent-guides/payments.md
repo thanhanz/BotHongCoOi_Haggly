@@ -18,17 +18,17 @@ are not implemented.
 
 ## Layer and adapter map
 
-- Domain: `src/Haggly.Domain/Modules/Payments` owns `Payment`,
+- Domain: `backend/src/Haggly.Domain/Modules/Payments` owns `Payment`,
   `PaymentTransaction`, `PaymentAllocation`, `PaymentMethod`, and their status
   transitions and value constraints.
-- Application: `src/Haggly.Application/Modules/Payments` owns payment start and
+- Application: `backend/src/Haggly.Application/Modules/Payments` owns payment start and
   provider-result orchestration. Capability-oriented ports under
   `Application/Abstractions/Payments` isolate persistence and the provider.
 - Infrastructure: EF payment repositories and `EfPaymentUnitOfWork` persist the
   aggregate; `SimulatedPaymentProvider` implements `IPaymentProvider`; the
   messaging folder owns RabbitMQ, MassTransit, outbox, Inbox, consumer adapters,
   and technical-fault logging.
-- API: `src/Haggly.Api/Endpoints/Payments` maps the authenticated buyer request
+- API: `backend/src/Haggly.Api/Endpoints/Payments` maps the authenticated buyer request
   to the Application command and returns `202 Accepted`. It does not process a
   provider result or mutate another module directly.
 
@@ -222,7 +222,7 @@ command-like `PaymentRequested` consumer still has its own retry and default
 - `Payments:Simulator:Outcome` and `FailureReason` configure the local provider
   adapter.
 
-Development values exist in `src/Haggly.Api/appsettings.Development.json` and
+Development values exist in `backend/src/Haggly.Api/appsettings.Development.json` and
 the local PostgreSQL/RabbitMQ services are declared in `docker-compose.yml`.
 Production secrets must come from deployment configuration, not committed
 settings.
@@ -250,5 +250,5 @@ must exercise PostgreSQL transaction and idempotency behavior against a real
 database and messaging topology against reachable RabbitMQ infrastructure.
 
 ```powershell
-dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded"
+dotnet test backend\tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-restore --filter "FullyQualifiedName~Payment|FullyQualifiedName~FinancePaymentSucceeded|FullyQualifiedName~InventoryPaymentSucceeded|FullyQualifiedName~OrderPaymentSucceeded"
 ```
