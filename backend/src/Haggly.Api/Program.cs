@@ -25,6 +25,22 @@ public partial class Program
         builder.Services.AddTokenServices(builder.Configuration);
         builder.Services.AddApiServices();
 
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>()
+            ?? throw new InvalidOperationException("Cors:AllowedOrigins must be configured.");
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("Frontend", policy =>
+            {
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -37,6 +53,7 @@ public partial class Program
 
         //Middleware start here
         app.UseExceptionHandler();
+        app.UseCors("Frontend");
         app.UseAuthentication();
         app.UseAuthorization();
 
