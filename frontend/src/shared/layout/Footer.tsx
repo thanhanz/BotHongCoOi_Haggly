@@ -16,10 +16,7 @@ const footerGroups = [
 
 export function Footer() {
   return (
-    <footer
-      className="flex shrink-0 flex-col overflow-y-auto bg-brand-primary text-foreground-inverse"
-      style={{ height: "320px", minHeight: "320px", maxHeight: "320px" }}
-    >
+    <footer className="flex min-h-[320px] flex-col bg-brand-primary text-foreground-inverse">
       <Container  className="
         grid flex-1 content-center gap-xl py-xl
         md:grid-cols-[minmax(20rem,1.4fr)_repeat(2,minmax(10rem,0.6fr))]
