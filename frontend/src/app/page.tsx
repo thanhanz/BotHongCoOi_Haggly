@@ -1,4 +1,5 @@
 import { CategorySection } from "@/features/categories/components";
+import { ProductListingSection } from "@/features/product-listings/components";
 
 export default function Home() {
   return (
@@ -39,6 +40,7 @@ export default function Home() {
       </section> */}
 
       <CategorySection />
+      <ProductListingSection />
     </>
   );
 }
