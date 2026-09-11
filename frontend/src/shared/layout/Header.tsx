@@ -33,8 +33,8 @@ function CartIcon() {
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border-subtle bg-surface-raised/95 backdrop-blur">
-      <Container className="flex min-h-16 items-center gap-sm py-xs md:gap-md">
+    <header className="z-40 h-16 shrink-0 border-b border-border-subtle bg-surface-raised/95 backdrop-blur">
+      <Container className="flex h-full items-center gap-sm md:gap-md">
         <Link
           href="/"
           aria-label="Haggly - Trang chủ"

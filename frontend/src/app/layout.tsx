@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Space_Grotesk } from "next/font/google";
+import { BaseLayout } from "@/shared/layout";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="vi" className={`${beVietnamPro.variable} ${spaceGrotesk.variable}`}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <BaseLayout>{children}</BaseLayout>
+        </Providers>
       </body>
     </html>
   );

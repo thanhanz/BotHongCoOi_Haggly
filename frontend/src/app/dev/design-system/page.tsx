@@ -100,7 +100,7 @@ export default function DesignSystemPage() {
   if (process.env.NODE_ENV !== "development") notFound();
 
   return (
-    <main className="py-xl md:py-2xl">
+    <section className="py-xl md:py-2xl">
       <Container className="grid gap-2xl">
         <header className="grid max-w-3xl gap-sm">
           <Badge variant="primary">Developer preview</Badge>
@@ -243,6 +243,6 @@ export default function DesignSystemPage() {
           </CardContent></Card>
         </Section>
       </Container>
-    </main>
+    </section>
   );
 }

@@ -4,7 +4,7 @@ import { Typography } from "@/shared/ui/typography";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center py-2xl">
+    <section className="flex min-h-[70vh] items-center py-2xl">
       <Container className="grid max-w-3xl gap-md">
         <Typography as="p" variant="labelLg" className="text-brand-secondary">
           Haggly
@@ -34,6 +34,6 @@ export default function Home() {
           </div>
         )}
       </Container>
-    </main>
+    </section>
   );
 }

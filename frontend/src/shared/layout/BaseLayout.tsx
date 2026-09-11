@@ -8,9 +8,9 @@ export interface BaseLayoutProps {
 
 export function BaseLayout({ children }: BaseLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-dvh flex-col overflow-hidden">
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="mx-[10px] min-h-0 flex-1 overflow-y-auto">{children}</main>
       <Footer />
     </div>
   );

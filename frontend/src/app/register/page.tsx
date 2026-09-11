@@ -46,7 +46,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center py-xl">
+    <section className="flex min-h-[70vh] items-center py-xl">
       <Container className="max-w-xl">
         <Card>
           <CardHeader className="grid gap-xs">
@@ -96,6 +96,6 @@ export default function RegisterPage() {
           </form>
         </Card>
       </Container>
-    </main>
+    </section>
   );
 }

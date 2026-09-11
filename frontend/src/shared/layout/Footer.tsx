@@ -16,16 +16,28 @@ const footerGroups = [
 
 export function Footer() {
   return (
-    <footer className="bg-brand-primary text-foreground-inverse">
-      <Container className="grid gap-xl py-xl md:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(10rem,0.6fr))] md:py-2xl">
-        <div className="max-w-md">
+    <footer
+      className="flex shrink-0 flex-col overflow-y-auto bg-brand-primary text-foreground-inverse"
+      style={{ height: "320px", minHeight: "320px", maxHeight: "320px" }}
+    >
+      <Container  className="
+        grid flex-1 content-center gap-xl py-xl
+        md:grid-cols-[minmax(20rem,1.4fr)_repeat(2,minmax(10rem,0.6fr))]
+        ">
+        <div
+          className="w-full"
+          style={{ minWidth: "min(20rem, 100%)", maxWidth: "32rem" }}
+        >
           <Link
             href="/"
             className="font-data text-2xl font-bold tracking-[-0.03em] text-foreground-inverse focus-visible:rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground-inverse"
           >
             Haggly
           </Link>
-          <Typography className="mt-sm text-white/75">
+          <Typography
+            className="mt-sm text-white/75"
+            style={{ overflowWrap: "normal", wordBreak: "normal", whiteSpace: "normal" }}
+          >
             Mang nhịp chợ Việt lên không gian số — gần gũi, minh bạch và thuận tiện cho cả người mua lẫn tiểu thương.
           </Typography>
         </div>
