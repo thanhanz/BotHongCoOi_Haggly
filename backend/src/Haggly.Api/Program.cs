@@ -70,6 +70,7 @@ public partial class Program
         app.MapProductEndpoints();
         app.MapProductStallEndpoints();
         app.MapInventoryEndpoints();
+        app.MapProductListingEndpoints();
         app.MapPosSaleEndpoints();
         app.MapCartEndpoints();
         app.MapOrderEndpoints();

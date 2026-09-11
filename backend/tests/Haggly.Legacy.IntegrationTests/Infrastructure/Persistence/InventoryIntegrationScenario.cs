@@ -8,7 +8,8 @@ internal sealed record InventoryIntegrationScenario(
     Guid StallId,
     Guid InventoryId,
     Guid ProductStallId,
-    Guid ProductId);
+    Guid ProductId,
+    Guid CategoryId);
 
 internal static class InventoryIntegrationScenarioFactory
 {
@@ -86,6 +87,6 @@ internal static class InventoryIntegrationScenarioFactory
                 Now = now
             });
 
-        return new(ownerId, stallId, inventoryId, productStallId, productId);
+        return new(ownerId, stallId, inventoryId, productStallId, productId, categoryId);
     }
 }

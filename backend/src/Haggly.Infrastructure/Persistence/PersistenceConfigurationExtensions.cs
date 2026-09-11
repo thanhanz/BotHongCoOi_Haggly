@@ -101,6 +101,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IStallQuery, DapperStallQuery>();
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
         services.AddScoped<IInventoryQuery, DapperInventoryQuery>();
+        services.AddScoped<IProductListingReader, DapperProductListingRepository>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();
