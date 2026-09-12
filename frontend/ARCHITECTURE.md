@@ -92,10 +92,28 @@ The `/dev/design-system` route is the current visual inventory for shared
 primitives. It supports development review but is not an automated acceptance
 suite.
 
+## Design source
+
+User-authored Stitch projects are the external visual and interaction source of
+truth for frontend UX/UI work. At the start of every new UX/UI task, the agent
+must inspect the relevant Stitch project and screens through the connected
+Stitch MCP server before editing source. Previous-session descriptions, local
+code, and the design-system showcase do not replace this fresh inspection.
+
+Stitch defines intended composition, hierarchy, spacing, typography, color,
+responsive presentation, assets, and represented interaction states. The
+repository architecture still defines code ownership, component boundaries,
+API access, accessibility requirements, and implementation quality. Translate
+the design into existing tokens and primitives where they match; do not copy
+generated code blindly or weaken accessible behavior to reproduce an image.
+
+If Stitch MCP is unavailable, unauthorized, or cannot expose the relevant
+design, UX/UI implementation is blocked until the user connects it or identifies
+an accessible Stitch project/screen. See `docs/agent-guides/stitch-design.md`.
+
 ## Verification boundary
 
 Frontend delivery uses TypeScript, ESLint, and production build checks according
 to `AGENTS.md`. The user owns interactive and visual acceptance. Existing tests
 remain in the repository but new test work is not required unless explicitly
 requested.
-

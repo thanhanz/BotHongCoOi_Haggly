@@ -31,6 +31,8 @@ for them.
 
 ## Placement decisions
 
+- For visual feature work, inspect the relevant Stitch project/screens through
+  MCP before choosing composition or component boundaries.
 - Keep a component feature-local while its language, data, or behavior belongs
   to one capability.
 - Move a component to `src/shared/ui` only after it has a stable generic API and
@@ -44,5 +46,5 @@ for them.
 
 Before designing a reusable component API, clarify real callers, required
 states, responsive behavior, and expected variants when current code does not
-answer them.
-
+answer them. Do not ask for visual information that is already observable in
+the selected Stitch design.

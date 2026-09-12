@@ -10,17 +10,20 @@ then use this file for frontend-only work.
 ## Start here
 
 1. Read `ARCHITECTURE.md` and the relevant guide in `docs/agent-guides/`.
-2. Inspect the target route, feature, shared primitive, API adapter, and nearest
+2. For UX/UI work, complete the mandatory Stitch MCP preflight in
+   `docs/agent-guides/stitch-design.md` before editing code.
+3. Inspect the target route, feature, shared primitive, API adapter, and nearest
    working example before editing.
-3. Confirm the backend route and public contract when real API data is involved.
-4. Implement the smallest usable, maintainable component or vertical UI slice.
-5. Apply the shared evidence and hygiene rules in
+4. Confirm the backend route and public contract when real API data is involved.
+5. Implement the smallest usable, maintainable component or vertical UI slice.
+6. Apply the shared evidence and hygiene rules in
    `../docs/agent-guides/engineering-harness.md`.
 
 ## Frontend routing
 
 | Concern | Owner | Read next |
 |---|---|---|
+| UX/UI design, visual implementation, responsive layout, interaction states | Stitch design | `docs/agent-guides/stitch-design.md` |
 | Pages, layouts, route parameters, providers, metadata | App Router | `docs/agent-guides/app-routing.md` |
 | Feature components and feature-local API code | Feature | `docs/agent-guides/features.md` |
 | Axios transport, envelopes, Problem Details, authentication token flow | Shared API | `docs/agent-guides/api-client.md` |
@@ -29,6 +32,8 @@ then use this file for frontend-only work.
 
 ## Implementation policy
 
+- Treat the relevant design read from Stitch through MCP as the visual and
+  interaction source of truth for UX/UI implementation.
 - Compose routes in `src/app` from feature and shared modules.
 - Keep endpoint-specific calls and TypeScript contracts in
   `src/features/<feature>/api`.
@@ -63,6 +68,11 @@ Do not turn routine implementation into an interview. Infer answers from nearby
 code when evidence exists; otherwise choose the smallest reversible design and
 state the assumption.
 
+For UX/UI work, first use Stitch MCP discovery to identify the relevant project
+and screen. Ask the user which design to use only when multiple plausible
+Stitch screens remain or the requested scope is not represented in the design.
+Do not ask the user to restate visual details that Stitch already provides.
+
 ## Frontend test and verification policy
 
 Do not create or expand frontend unit, component, integration, or end-to-end
@@ -86,5 +96,7 @@ check cannot run, report the limitation without substituting an invented check.
 
 Report the pages/components/contracts changed, exact typecheck/lint/build
 commands run, skipped checks, and any interactive states left for the user to
-verify. Update `ARCHITECTURE.md` or a frontend guide only when the change
-establishes or invalidates durable knowledge.
+verify. For UX/UI work, also report the Stitch project/screens inspected through
+MCP and any design details that could not be retrieved. Update `ARCHITECTURE.md`
+or a frontend guide only when the change establishes or invalidates durable
+knowledge.

@@ -11,6 +11,8 @@ dialog, divider, input, radio, select, textarea, and typography components.
 
 ## Rules
 
+- Inspect the relevant Stitch design through MCP before changing the visual
+  language or implementing a UX/UI component.
 - Reuse existing semantic tokens for brand, surface, text, border, state,
   spacing, shape, elevation, and control sizing.
 - Prefer semantic variants such as intent, size, and state over arbitrary style
@@ -29,5 +31,5 @@ feature-specific use, keep it in that feature until a stable reusable contract
 is demonstrated.
 
 When a shared primitive changes, review its current callers and the design-system
-showcase. Interactive and visual acceptance remains with the user.
-
+showcase, and compare it with the relevant Stitch screens. Interactive and
+visual acceptance remains with the user.
