@@ -47,7 +47,27 @@ public static class StallEndpointExtensions
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        endpoints.MapGet(StallRoutes.PublicById, GetPublicStallDetailsAsync)
+            .AllowAnonymous()
+            .WithTags("Stalls")
+            .Produces<ApiResponse<PublicStallDetailsDto>>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         return endpoints;
+    }
+
+    private static async Task<IResult> GetPublicStallDetailsAsync(
+        Guid id,
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetPublicStallDetailsQuery(id), cancellationToken);
+
+        return Results.Ok(
+            ApiResponse<PublicStallDetailsDto>.Create(
+                result,
+                "Stall details retrieved successfully."));
     }
 
     private static async Task<IResult> CreateStallAsync(

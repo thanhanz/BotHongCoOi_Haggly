@@ -266,6 +266,10 @@ CRUD operations. Market and stall write operations require the configured admin
 authorization policy; reads use Application query contracts backed by Dapper
 adapters.
 
+The anonymous buyer storefront uses `GET /api/v1/stalls/{id}` to read the
+buyer-safe details of an active stall. Administrative stall contracts remain
+under `/api/v1/markets/stalls`.
+
 Category routes are grouped under `/api/v1/categories`:
 
 | Method | Route | Behavior |
