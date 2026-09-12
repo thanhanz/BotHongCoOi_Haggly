@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { ProductListing } from "@/features/product-listings/api";
 import { PRODUCT_UNITS, type ProductUnit } from "@/features/products/api";
 import { Button } from "@/shared/ui/button";
@@ -78,12 +79,15 @@ export function ProductCard({ listing }: { listing: ProductListing }) {
       </div>
 
       <div className="flex flex-1 flex-col p-xs">
-        <div className="mb-2xs flex items-center gap-2xs text-xs text-foreground-secondary">
+        <Link
+          href={`/stalls/${encodeURIComponent(listing.stallId)}`}
+          className="mb-2xs flex items-center gap-2xs rounded-control text-xs text-foreground-secondary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
           <span className="rounded-badge bg-ready-background px-xs py-2xs font-data font-semibold text-brand-primary">
             {listing.stallCode}
           </span>
           <span className="truncate">{listing.stallName}</span>
-        </div>
+        </Link>
 
         <Typography as="h3" variant="labelLg" className="line-clamp-2 min-h-12">
           {name}

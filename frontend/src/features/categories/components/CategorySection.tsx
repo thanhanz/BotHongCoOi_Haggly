@@ -9,11 +9,18 @@ import { Typography } from "@/shared/ui/typography";
 
 const CATEGORY_PAGE_SIZE = 6;
 
-function CategoryCard({ category }: { category: Category }) {
+interface CategoryCardProps {
+  category: Category;
+  href: string;
+  isSelected?: boolean;
+}
+
+function CategoryCard({ category, href, isSelected = false }: CategoryCardProps) {
   return (
     <Link
-      href={`/products?categoryId=${encodeURIComponent(category.id)}`}
-      className="group flex min-h-32 flex-col items-center justify-center gap-xs rounded-card border border-brand-primary/10 bg-ready-background p-sm text-center shadow-card transition hover:-translate-y-0.5 hover:border-brand-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+      href={href}
+      aria-current={isSelected ? "page" : undefined}
+      className={`group flex min-h-32 flex-col items-center justify-center gap-xs rounded-card border bg-ready-background p-sm text-center shadow-card transition hover:-translate-y-0.5 hover:border-brand-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 ${isSelected ? "border-brand-primary ring-2 ring-brand-primary/20" : "border-brand-primary/10"}`}
     >
       <span
         aria-hidden="true"
@@ -41,7 +48,25 @@ function CategorySkeleton() {
   );
 }
 
-export function CategorySection() {
+interface CategorySectionProps {
+  stallId?: string;
+  selectedCategoryId?: string;
+}
+
+function categoryHref(categoryId: string, stallId?: string): string {
+  const query = `categoryId=${encodeURIComponent(categoryId)}`;
+  return stallId ? `/stalls/${encodeURIComponent(stallId)}?${query}` : `/products?${query}`;
+}
+
+function categoryParams(stallId?: string) {
+  return {
+    ...(stallId ? { stallId } : {}),
+    page: 1,
+    pageSize: CATEGORY_PAGE_SIZE,
+  };
+}
+
+export function CategorySection({ stallId, selectedCategoryId }: CategorySectionProps = {}) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -52,7 +77,7 @@ export function CategorySection() {
 
     try {
       const result = await getCategories(
-        { page: 1, pageSize: CATEGORY_PAGE_SIZE },
+        categoryParams(stallId),
       );
       setCategories(result.items);
     } catch {
@@ -60,12 +85,12 @@ export function CategorySection() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [stallId]);
 
   useEffect(() => {
     const controller = new AbortController();
     void getCategories(
-      { page: 1, pageSize: CATEGORY_PAGE_SIZE },
+      categoryParams(stallId),
       { signal: controller.signal },
     ).then((result) => {
       setCategories(result.items);
@@ -77,7 +102,7 @@ export function CategorySection() {
       }
     });
     return () => controller.abort();
-  }, []);
+  }, [stallId]);
 
   return (
     <section id="categories" aria-labelledby="categories-heading" className="py-xl md:py-2xl">
@@ -115,9 +140,29 @@ export function CategorySection() {
           )}
 
           {!isLoading && !error && categories.length > 0 && (
-            <div className="grid grid-cols-2 gap-sm sm:grid-cols-3 lg:grid-cols-6">
-              {categories.map((category) => <CategoryCard key={category.id} category={category} />)}
-            </div>
+            <>
+              {stallId && (
+                <div className="mb-sm">
+                  <Link
+                    href={`/stalls/${encodeURIComponent(stallId)}`}
+                    aria-current={!selectedCategoryId ? "page" : undefined}
+                    className={`inline-flex min-h-10 items-center rounded-pill border px-sm font-data text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${!selectedCategoryId ? "border-brand-primary bg-brand-primary text-foreground-inverse" : "border-border-prominent bg-surface-raised text-foreground-primary hover:border-brand-primary"}`}
+                  >
+                    Tất cả sản phẩm
+                  </Link>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-sm sm:grid-cols-3 lg:grid-cols-6">
+                {categories.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    category={category}
+                    href={categoryHref(category.id, stallId)}
+                    isSelected={selectedCategoryId === category.id}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </Container>

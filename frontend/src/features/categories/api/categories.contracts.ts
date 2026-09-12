@@ -18,6 +18,7 @@ export interface Category {
 }
 
 export interface CategoryListParams {
+  stallId?: string;
   page?: number;
   pageSize?: number;
 }

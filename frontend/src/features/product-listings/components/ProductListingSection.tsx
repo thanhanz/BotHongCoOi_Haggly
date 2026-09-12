@@ -15,6 +15,7 @@ interface ProductListingSectionProps {
   categoryId?: string;
   stallId?: string;
   title?: string;
+  useDemoData?: boolean;
 }
 
 const PAGE_SIZE = 5;
@@ -130,11 +131,12 @@ export function ProductListingSection({
   categoryId,
   stallId,
   title = "Sản phẩm hôm nay",
+  useDemoData = true,
 }: ProductListingSectionProps) {
   const [listings, setListings] = useState<ProductListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  const showDemoData = !isLoading && (error || listings.length === 0);
+  const showDemoData = useDemoData && !isLoading && (error || listings.length === 0);
   const displayedListings = showDemoData ? DEMO_LISTINGS : listings;
 
   const loadListings = useCallback(async () => {
@@ -181,14 +183,22 @@ export function ProductListingSection({
         {!isLoading && error && (
           <div role="alert" className="rounded-card border border-border-subtle bg-surface-raised p-md text-center">
             <Typography as="h3" variant="titleMd">Chưa tải được sản phẩm</Typography>
-            <Typography className="mt-2xs text-foreground-secondary">Đang hiển thị dữ liệu minh họa. Vui lòng kiểm tra kết nối rồi thử lại.</Typography>
+            <Typography className="mt-2xs text-foreground-secondary">
+              {useDemoData ? "Đang hiển thị dữ liệu minh họa. " : ""}Vui lòng kiểm tra kết nối rồi thử lại.
+            </Typography>
             <Button className="mt-sm" onClick={() => void loadListings()}>Thử lại</Button>
           </div>
         )}
 
-        {!isLoading && !error && listings.length === 0 && (
+        {!isLoading && !error && listings.length === 0 && useDemoData && (
           <div className="mb-md rounded-card bg-surface-sunken p-sm text-center text-foreground-secondary">
             Chưa có sản phẩm thật. Dưới đây là dữ liệu minh họa giao diện.
+          </div>
+        )}
+
+        {!isLoading && !error && listings.length === 0 && !useDemoData && (
+          <div className="rounded-card bg-surface-sunken p-md text-center text-foreground-secondary">
+            Sạp chưa có sản phẩm đang bán.
           </div>
         )}
 

@@ -1,0 +1,1 @@
+export { StallInformation } from "./StallInformation";
