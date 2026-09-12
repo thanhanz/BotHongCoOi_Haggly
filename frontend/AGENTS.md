@@ -9,14 +9,20 @@ then use this file for frontend-only work.
 
 ## Start here
 
-1. Read `ARCHITECTURE.md` and the relevant guide in `docs/agent-guides/`.
-2. For UX/UI work, complete the mandatory Stitch MCP preflight in
+1. Read `../docs/frontend-api-contract.md` before implementing or changing any
+   feature that calls the backend. It is the frontend's single API contract;
+   do not inspect backend source merely to rediscover HTTP shapes.
+2. Read `ARCHITECTURE.md` and the relevant guide in `docs/agent-guides/` for
+   non-HTTP architecture or business context.
+3. For UX/UI work, complete the mandatory Stitch MCP preflight in
    `docs/agent-guides/stitch-design.md` before editing code.
-3. Inspect the target route, feature, shared primitive, API adapter, and nearest
+4. Inspect the target route, feature, shared primitive, API adapter, and nearest
    working example before editing.
-4. Confirm the backend route and public contract when real API data is involved.
-5. Implement the smallest usable, maintainable component or vertical UI slice.
-6. Apply the shared evidence and hygiene rules in
+5. Confirm the route and public contract in `../docs/frontend-api-contract.md`
+   when real API data is involved. If executable behavior proves the document
+   stale, correct the document in the same change.
+6. Implement the smallest usable, maintainable component or vertical UI slice.
+7. Apply the shared evidence and hygiene rules in
    `../docs/agent-guides/engineering-harness.md`.
 
 ## Frontend routing

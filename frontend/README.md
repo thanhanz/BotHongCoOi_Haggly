@@ -26,6 +26,11 @@ frontend boundaries are in `ARCHITECTURE.md`, with focused guides under
 
 ## API client
 
+The complete frontend-facing API reference is
+[`../docs/frontend-api-contract.md`](../docs/frontend-api-contract.md). It is
+the canonical source for routes, authorization, filters, request/response
+shapes, enums, pagination, and error handling.
+
 Set `NEXT_PUBLIC_API_BASE_URL` to the API origin. Local development defaults to
 `http://localhost:58558`, matching the backend HTTP launch profile.
 
