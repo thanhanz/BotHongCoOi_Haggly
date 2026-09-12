@@ -20,6 +20,10 @@ The website consumes the API from `../backend`. Business rules remain in the
 backend; frontend feature modules compose generic primitives from
 `src/shared/ui`.
 
+Agent routing and frontend implementation policy are in `AGENTS.md`; current
+frontend boundaries are in `ARCHITECTURE.md`, with focused guides under
+`docs/agent-guides/`.
+
 ## API client
 
 Set `NEXT_PUBLIC_API_BASE_URL` to the API origin. Local development defaults to

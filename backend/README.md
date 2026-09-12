@@ -31,8 +31,14 @@ backend/
 ├── src/
 ├── tests/
 ├── database/
+├── docs/agent-guides/
+├── AGENTS.md
+├── ARCHITECTURE.md
 ├── Haggly.slnx
 ├── global.json
 ├── Directory.Build.props
 └── Directory.Packages.props
 ```
+
+Agent routing and backend implementation policy are in `AGENTS.md`; current
+backend boundaries and implementation state are in `ARCHITECTURE.md`.

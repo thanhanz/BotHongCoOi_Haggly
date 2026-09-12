@@ -6,12 +6,16 @@ Haggly is organized as a monorepo with two application boundaries:
 
 - `backend/` contains the .NET modular monolith, API, database migrations, and
   tests.
-- `frontend/` is reserved for the future React/TypeScript website and is not
-  implemented yet.
+- `frontend/` contains the Next.js App Router website, feature API clients, and
+  shared UI primitives.
 - Root files contain shared product requirements, architecture, Compose,
   deployment, and contributor guidance.
 
 Backend setup and verification details are in [backend/README.md](backend/README.md).
+Frontend setup and commands are in [frontend/README.md](frontend/README.md).
+Repository routing starts in [AGENTS.md](AGENTS.md); detailed architecture is
+split between [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md) and
+[frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md).
 
 ## Software Requirements Specification (MVP)
 

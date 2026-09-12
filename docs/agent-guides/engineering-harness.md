@@ -1,260 +1,105 @@
-# Haggly Engineering Harness
+# Haggly Shared Engineering Harness
 
-Haggly is a monorepo. Backend paths such as `src/`, `tests/`, `database/`,
-`global.json`, and `Haggly.slnx` in historical guidance are relative to
-`backend/`; from the repository root use the corresponding `backend/` prefix.
-
-This document contains the detailed operating protocol referenced by the root
-`AGENTS.md`. The root file stays short so it can act as a high-signal routing
-map in agent context.
+This is the application-neutral operating protocol referenced by the root,
+backend, and frontend `AGENTS.md` files. Side-specific implementation and
+verification policies remain in the owning application directory.
 
 ## Grounding contract
 
 Before editing:
 
-1. Read the root `AGENTS.md` and run `git status --short`.
-2. Determine the request type, owning module, governing requirement, and
-   affected layers.
-3. Use `rg --files` and targeted `rg` searches to confirm referenced paths,
-   projects, symbols, callers, and tests exist.
-4. Read affected files completely enough to understand their contracts.
-5. Find one nearby working implementation and its tests.
-6. Define the smallest observable behavior that satisfies the request.
+1. Read the root router and the owning side's `AGENTS.md`.
+2. Run `git status --short` and preserve the ownership baseline.
+3. Determine request type, owning boundary, governing requirement, and affected
+   files or layers.
+4. Use `rg --files` and targeted `rg` searches to confirm paths, symbols,
+   callers, contracts, and configured checks exist.
+5. Read the affected implementation and one nearby working precedent.
+6. Define the smallest observable result that satisfies the request.
 
 Evidence rules:
 
-- A proposed tree in `ARCHITECTURE.md` is direction, not implemented fact.
-- Empty files and missing paths provide no evidence.
-- Existing executable behavior outranks descriptive documentation when they
-  disagree, unless the user's request explicitly changes that behavior.
-- General .NET habits do not establish a Haggly convention.
-- Do not invent classes, endpoints, database objects, configuration, commands,
-  or test results.
-- State meaningful conclusions as observed, inferred, or proposed when they
-  could otherwise be confused.
-- Show material conflicts with file evidence. Ask only when the choice changes
-  behavior significantly; otherwise use the smallest reversible interpretation
-  and disclose it.
+- Proposed trees and future-state sections are direction, not implemented fact.
+- Empty guides and missing paths provide no evidence.
+- Executable behavior outranks descriptive documentation unless the user
+  explicitly changes that behavior.
+- General framework habits do not establish a Haggly convention.
+- Never invent files, commands, output, test results, or runtime behavior.
+- Expose material conflicts. Ask only when the choice significantly changes
+  behavior or a public contract.
 
 ## Request modes
 
 | Mode | Operating rule |
 |---|---|
-| Explain, review, diagnose | Inspect and report; do not modify code unless asked. |
-| Bug fix | Identify the failing path and owning rule, add a focused regression test when it provides reliable value, and make the smallest fix. |
-| New behavior | Find the requirement and business rule, then implement one vertical slice using the root risk-based test policy. |
-| Refactor | Preserve observable behavior, establish coverage first, avoid feature work. |
-| API change | Inspect business owner, application contract, validation, authorization, OpenAPI, integration tests. |
-| Persistence change | Inspect ownership, application port, mapping/query, transaction, migration, integration tests. |
-| Architecture change | Read all of `ARCHITECTURE.md`, inspect references, verify dependency boundaries. |
-| Documentation | Verify every statement against code/configuration; label future plans. |
-
-Product ownership wins over transport or storage. An Inventory endpoint remains
-Inventory-owned and merely exposed through API. A database change is owned by
-Persistence and the affected business module.
-
-For cross-module behavior, select one coordinating Application use case. Other
-modules expose explicit behavior or contracts; the coordinator must not mutate
-their entities directly.
+| Explain, review, diagnose | Inspect and report; do not modify unless asked. |
+| Bug fix | Find the failing path and owning rule, then apply the side-specific regression and verification policy. |
+| New behavior | Implement the smallest complete slice within the owning boundary. |
+| Refactor | Preserve observable behavior and avoid unrelated feature work. |
+| Contract change | Inspect producers and consumers; keep public shapes and failure behavior synchronized. |
+| Architecture change | Read the root and affected side architecture completely; verify references and boundaries. |
+| Documentation | Verify statements against current code/configuration and label future plans. |
 
 ## Implementation record
 
-Before a non-trivial edit, be able to fill in:
+Before a non-trivial edit, be able to identify:
 
 ```text
 Request type:
-Owning module:
+Owning application and concern:
 Governing requirement or rule:
 Observed implementation path:
-Affected layers:
 Nearest precedent:
-Tests to add or change:
-Verification commands:
+Checks to run:
 Open assumptions or conflicts:
 ```
 
-Keep this in working notes unless it helps the user review a consequential
-decision. If no implementation path or precedent exists, say that the area is
-scaffolded. Establish the smallest convention consistent with
-`ARCHITECTURE.md`; do not claim it was already present.
+Keep this in working notes unless it helps review a consequential decision.
 
 ## Editing rules
 
-- Keep the diff inside the smallest valid module and layer boundary.
-- Put invariants and state transitions in Domain.
-- Put orchestration, validation, authorization requirements, and external ports
-  in Application.
-- Put persistence and provider implementations in Infrastructure.
-- Put only transport mapping and public HTTP concerns in API.
+- Keep the diff within the smallest valid ownership boundary.
 - Follow a local pattern only after locating it in current code.
-- Do not add unrelated cleanup, formatting, package upgrades, or abstractions.
-- Do not edit generated files directly or expose secret values.
-- Update public contracts, migrations, configuration, and documentation when
-  behavior affects them.
-- Update a module guide when the change establishes or invalidates durable
-  module knowledge.
-
-## Design review
-
-Apply the root SOLID and object-oriented design guidance proportionally to the
-change. Before adding or changing a type, check:
-
-- Does it have one cohesive responsibility and an intention-revealing name?
-- Is business state encapsulated and kept valid by its public operations?
-- Are dependencies explicit, narrow, and directed toward Domain or Application
-  abstractions rather than infrastructure details?
-- Does each interface represent a real consumer capability or boundary?
-- Would composition keep the design simpler and safer than inheritance?
-- Is a proposed abstraction justified by current variation or responsibility,
-  rather than a possible future requirement?
-
-SOLID is not measured by the number of classes or interfaces. Avoid splitting
-cohesive behavior into pass-through types, creating one-implementation
-interfaces without a boundary need, or applying patterns mechanically. When a
-type has multiple reasons to change, separate those responsibilities at the
-nearest valid layer without expanding the requested vertical slice.
+- Do not add unrelated cleanup, formatting, dependencies, abstractions, or
+  generated artifacts.
+- Do not expose secrets or edit generated files directly.
+- Preserve public contracts unless the request changes them.
+- Update directly affected configuration and documentation when behavior makes
+  them stale.
+- Update an agent guide only with durable, verified local knowledge.
 
 ## Repository artifact hygiene
 
-Implementation work must leave only task-required deliverables in the
-repository. Allowed tracked changes are production source, test source,
-required migrations or other generated source, required configuration, and
-directly affected documentation. Do not create an additional file merely to
-record working notes, command output, analysis, test results, or a completion
-report.
+Create only task-required production source, tests required by the owning
+policy, migrations or generated source, configuration, and directly affected
+documentation. Do not create repository-local working-note, log, report,
+coverage, cache, download, SDK-home, package-cache, or scratch paths.
 
-Build and test commands may create the repository's existing ignored `bin/`
-and `obj/` directories. Unless the user explicitly requests one as a
-deliverable, do not create repository-local paths for:
+Build tools may update their standard ignored output, such as backend `bin/` and
+`obj/` or frontend `.next/` and TypeScript build information. Do not change
+ignore rules merely to conceal artifacts.
 
-- `.build`, `.tools`, `.dotnet`, `artifacts`, or `TestResults`;
-- coverage output, logs, reports, downloads, or scratch data;
-- a .NET CLI home, SDK installation, NuGet/package cache, or tool cache;
-- redirected build output or intermediate output outside the standard ignored
-  `bin/` and `obj/` paths.
+Before finishing:
 
-Use the operating system's temporary directory for unavoidable temporary data
-and remove data created there when it is no longer needed. Use an existing
-tool manifest only when the task requires it; do not create a tool manifest or
-local tool folder solely to run verification. Do not change `.gitignore` to
-conceal a generated path.
-
-Preserve the initial `git status --short` as the ownership baseline. Before
-finishing:
-
-1. Run `git status --short` again and account for every changed or new path.
-2. Search the repository for prohibited artifact paths created during the
-   task.
-3. Remove only artifacts created by the current task. Never delete or clean a
-   pre-existing ignored, modified, or untracked user path.
-4. Report remaining changes by category: source, tests, migrations or generated
-   source, configuration, and documentation.
+1. Run `git status --short` and account for every path.
+2. Remove only artifacts created by the current task.
+3. Never delete or clean pre-existing modified, ignored, or untracked user data.
+4. Report changes by application boundary and artifact category.
 
 ## Verification protocol
 
-The active business suite is `backend/tests/Haggly.UnitTests`:
+Discover checks from current manifests, project files, scripts, and CI. Use the
+owning side's verification ladder. Run checks sequentially by default so the
+first failure has a clear cause. Never transform unavailable, skipped, or
+undiscovered checks into a passing result.
 
-- `Domain` tests use real Domain types with no substitutes or DI container.
-- `Application` tests construct real handlers and substitute only Application
-  ports with NSubstitute.
-- Tests use Arrange/Act/Assert, deterministic fresh state, and
-  `Method_Scenario_ExpectedResult` names.
-
-Strict test-first sequencing is optional unless the user requests it. Select
-tests by the cost and likelihood of failure: prioritize accuracy-sensitive
-business rules and real integration, persistence, mapping, serialization,
-authentication, transaction, and provider boundaries. Skip new tests for
-trivial containers, pass-through behavior, or refactors already protected by
-relevant coverage, and record the reason instead of manufacturing low-value
-tests.
-
-Discover verification rather than trusting stale commands. Inspect:
-
-- `global.json`;
-- `Directory.Build.props` and `Directory.Packages.props`;
-- `Haggly.slnx` and affected `.csproj` files;
-- CI workflows and repository scripts;
-- the relevant test projects.
-
-Confirm every project referenced by a solution or command exists. Run commands
-sequentially and stop at the first failure so its cause remains clear. For local
-verification:
-
-1. Build the smallest affected project to catch compilation and nullable errors.
-2. Run the new or directly affected test.
-3. Run the affected test class or module filter.
-4. Run functional tests only for a real boundary or measured integration risk,
-   and only after the functional-test project exists.
-
-Do not invent a lint command when the repository has none. Use the configured
-build and analyzers as the compilation/type check. Leave the complete active unit and
-real-boundary suites to pull-request or release CI unless the user explicitly
-requests them locally.
-
-Full CI/release ladder when the workspace supports it:
-
-```powershell
-dotnet restore backend/Haggly.slnx
-dotnet build backend/Haggly.slnx --no-restore
-dotnet test backend/Haggly.slnx --no-build
-```
-
-Focused examples:
-
-```powershell
-dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj --filter "FullyQualifiedName~Payments"
-dotnet test backend/tests/Haggly.UnitTests/Haggly.UnitTests.csproj
-```
-
-Use real boundary tests for EF Core, Dapper, database constraints,
-transactions, authentication, and external adapters. Mocks cannot prove
-provider behavior.
-
-Add end-to-end, concurrency, load, or stress tests only for a named critical
-journey or measured risk with an explicit acceptance criterion. Do not disable
-xUnit parallelism for fast unit tests merely to make commands sequential;
-real-boundary tests may remain non-parallel when they share infrastructure.
-
-Never retry a failed test blindly. Read the assertion, exception, logs, and
-relevant implementation, classify the failure as production behavior, test
-setup, environment, or instability, and fix the root cause. Never loosen an
-assertion, remove an important scenario, add an arbitrary delay, or disable a
-test merely to make CI pass.
-
-Never transform "not run," "not discovered," "unavailable," or a pre-existing
-failure into a passing result. Report the command, outcome, and limitation.
-
-## Current test-transition caveats
-
-`Haggly.FunctionalTests` and `Haggly.ArchitectureTests` do not currently exist.
-Do not invent their paths or claim they ran.
+When a check fails, read its output and relevant implementation, classify the
+cause, and fix the root problem within scope. Do not loosen assertions, disable
+checks, or add arbitrary delays merely to obtain a passing command.
 
 ## Definition of done
 
-A code change is complete only when:
-
-- requested observable behavior is implemented in the owning module;
-- governing rules and important assumptions are preserved or disclosed;
-- risk-selected tests required by the root policy exist, and omitted tests are
-  justified;
-- architecture and module boundaries remain valid;
-- focused verification passes, or failures are accurately reported;
-- affected contracts, migrations, configuration, and documentation agree;
-- the final report identifies behavior, files, checks, skipped checks, and
-  remaining risk.
-
-## Maintaining module guides
-
-Treat `docs/agent-guides/<module>.md` as a cache of verified local knowledge,
-not speculative design. Include only:
-
-- current responsibilities and explicit non-responsibilities;
-- real entry points and paths;
-- invariants linked to implementation and tests;
-- cross-module contracts and transaction boundaries;
-- adapters and configuration key names, never secret values;
-- focused commands known to work;
-- dated decisions and known gaps that could mislead future work.
-
-Correct stale statements when a change invalidates them. An empty guide grants
-no permission to invent its contents.
+Work is complete when the requested observable result is present, boundaries
+and contracts remain consistent, the side-specific verification policy has
+been followed, affected documentation agrees with implementation, and the
+final report identifies exact checks, skipped checks, assumptions, and risks.

@@ -123,26 +123,32 @@ emergency. A bypassed commit will still fail the pull-request CI check.
 
 Before editing, read:
 
-- `AGENTS.md` for repository-wide engineering rules.
-- `ARCHITECTURE.md` for current project boundaries and implementation state.
+- `AGENTS.md` for repository routing and shared rules.
+- `backend/AGENTS.md` or `frontend/AGENTS.md` for the owning application's
+  implementation and verification policy.
+- The root and owning application `ARCHITECTURE.md` files for current boundaries
+  and implementation state.
 - `README.md` for MVP requirements and business rules.
-- The nearest existing implementation and its tests.
+- The nearest existing implementation and relevant checks.
 
-For a new behavior or behavior change, follow test-first development:
+For backend business behavior, add risk-selected tests at the lowest layer that
+proves Haggly-owned rules or real technology boundaries. Test-first sequencing
+is useful but not mandatory unless a task requires it.
 
-1. Add or update the focused test cases.
-2. Run the tests and confirm the new test fails for the expected reason.
-3. Implement the smallest complete change.
-4. Run the tests again.
-5. Refactor while keeping the tests passing.
+Frontend changes do not require new unit, component, integration, or end-to-end
+tests unless explicitly requested. Preserve existing tests and use typecheck,
+lint, and production build checks according to `frontend/AGENTS.md`; the user
+owns final interactive and visual acceptance.
 
 Keep changes focused on the task. Do not include unrelated cleanup, package
 upgrades, formatting changes, or speculative abstractions in the same PR.
 
 ## 5. Architecture and ownership rules
 
-Haggly is a .NET modular monolith. Keep business behavior in the correct
-layer:
+Haggly has a Next.js frontend and a .NET modular-monolith backend. The backend
+owns business behavior and its HTTP contract; the frontend owns presentation
+and consumes that contract through typed feature adapters. Within the backend,
+keep behavior in the correct layer:
 
 - Domain: entities, value objects, invariants, state transitions, and business
   rules. Domain must not depend on ASP.NET Core, EF Core, Dapper, or providers.
@@ -158,7 +164,7 @@ Use the business module as the owner of behavior. Current module ownership is:
 - Identity: users, profiles, roles, and authentication-related contracts.
 - Markets: markets, stalls, vendors, and ownership.
 - Catalog: categories and reusable product definitions.
-- Inventory: daily sessions, stock, listings, and reservations.
+- Inventory: continuous stock, listings, availability, and reservations.
 - Negotiation: negotiation sessions, offers, and messages.
 - Sales: orders and stall fulfillment.
 - Payments: collection, payment status, transactions, and allocation.
@@ -170,7 +176,7 @@ directly mutate another module's entities.
 
 ## 6. Testing and verification
 
-The primary suite is `Haggly.UnitTests`:
+The primary backend suite is `Haggly.UnitTests`:
 
 - `Domain` tests use real entities and aggregates without mocks.
 - `Application` tests use real handlers and Domain objects; NSubstitute replaces
@@ -198,6 +204,18 @@ Persistence, authentication, transaction, messaging, and provider changes
 require tests at the real boundary where practical. NSubstitute-based unit tests
 do not prove database, HTTP, broker, or provider behavior. A dedicated
 `Haggly.FunctionalTests` project is planned but does not exist yet.
+
+For frontend source changes, use the configured commands selected by risk:
+
+```powershell
+pnpm --dir frontend typecheck
+pnpm --dir frontend lint
+pnpm --dir frontend build
+```
+
+`pnpm --dir frontend test` is available for existing tests but is not a default
+completion gate. The current pull-request CI workflow builds and tests the
+backend only; frontend checks are local until CI is explicitly expanded.
 
 ## 7. Pull-request checklist
 

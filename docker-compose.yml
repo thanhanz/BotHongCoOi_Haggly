@@ -1,6 +1,6 @@
-# Shared local infrastructure for both application boundaries. The React
-# frontend is intentionally not implemented yet, and the API is currently run
-# from `backend/` on the host during development.
+# Shared local infrastructure for both application boundaries. The Next.js
+# frontend and .NET API are currently run from their respective directories on
+# the host during development.
 services:
   postgres:
     image: postgres:17
