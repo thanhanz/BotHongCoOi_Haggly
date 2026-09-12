@@ -54,6 +54,21 @@ export function Header() {
           />
         </div>
 
+        <nav aria-label="Điều hướng chính" className="hidden shrink-0 items-center gap-xs lg:flex">
+          <Link
+            href="/products"
+            className="rounded-control px-xs py-2xs text-sm font-semibold text-foreground-secondary transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            Sản phẩm
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-control px-xs py-2xs text-sm font-semibold text-foreground-secondary transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            Đăng ký
+          </Link>
+        </nav>
+
         <div className="flex shrink-0 items-center gap-2xs">
           <Button type="button" variant="ghost" size="icon" aria-label="Giỏ hàng">
             <CartIcon />
