@@ -53,6 +53,9 @@ catalog Product; daily availability remains an Inventory concern.
   `MARKET_ADMIN`, or `PLATFORM_ADMIN`).
 - `GET /api/v1/categories` and `GET /api/v1/categories/{id}` require an
   authenticated user.
+- `GET /api/v1/categories` accepts an optional `stallId` and, when supplied,
+  returns distinct active categories represented by active products attached
+  to that stall, with pagination.
 - Category validation, conflict, and not-found exceptions map to Problem
   Details responses.
 - `POST /api/v1/products` requires `CatalogContributor` (`VENDOR`,

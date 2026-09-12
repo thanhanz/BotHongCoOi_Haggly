@@ -10,5 +10,10 @@ public interface ICategoryQuery
         CategoryListFilter filter,
         CancellationToken cancellationToken);
 
+    Task<PagedResult<Category>> GetPageByStallIdAsync(
+        Guid stallId,
+        CategoryListFilter filter,
+        CancellationToken cancellationToken);
+
     Task<Category?> GetActiveByIdAsync(Guid id, CancellationToken cancellationToken);
 }

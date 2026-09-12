@@ -68,13 +68,14 @@ public static class CategoryEndpointExtensions
     }
 
     private static async Task<IResult> GetCategoriesAsync(
+        [FromQuery] Guid? stallId,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(
-            new GetCategoriesQuery(page ?? 1, pageSize ?? 20),
+            new GetCategoriesQuery(page ?? 1, pageSize ?? 20, stallId),
             cancellationToken);
 
         return Results.Ok(

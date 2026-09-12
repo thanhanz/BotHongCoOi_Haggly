@@ -20,9 +20,13 @@ public sealed class GetCategoriesHandler(ICategoryQuery query)
         if (request.PageSize is < 1 or > 100)
             throw new CategoryValidationException("Page size must be between 1 and 100.");
 
-        var categories = await query.GetPageAsync(
-            new CategoryListFilter(request.Page, request.PageSize),
-            cancellationToken);
+        if (request.StallId == Guid.Empty)
+            throw new CategoryValidationException("A valid stall ID is required.");
+
+        var filter = new CategoryListFilter(request.Page, request.PageSize);
+        var categories = request.StallId is { } stallId
+            ? await query.GetPageByStallIdAsync(stallId, filter, cancellationToken)
+            : await query.GetPageAsync(filter, cancellationToken);
 
         return new PagedResult<CategoryDto>(
             categories.Items.Select(CategoryDto.From).ToArray(),

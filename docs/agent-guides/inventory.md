@@ -87,6 +87,12 @@ All routes require `VendorOnly` and use
 | `POST` | `/adjustments` | Apply a signed adjustment |
 | `GET` | `/ledger` | Filter and page quantity history |
 
+The anonymous buyer storefront route `GET /api/v1/product-listings` returns a
+page of active catalog products from active stalls that have positive available
+quantity (`CurrentQuantity - ReservedQuantity`). It accepts optional
+`categoryId`, `stallId`, and `sort=home` filters plus `page` and `pageSize`.
+Omitted sorting uses the same recently-stocked ordering as `home`.
+
 ## Persistence and verification
 
 `RefactorContinuousInventory` backfills one Inventory per existing Stall,
