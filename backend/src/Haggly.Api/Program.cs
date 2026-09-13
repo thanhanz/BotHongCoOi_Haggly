@@ -46,7 +46,7 @@ public partial class Program
         if (app.Environment.IsDevelopment())
         {
             await using var scope = app.Services.CreateAsyncScope();
-            await DevelopmentAdminSeeder.SeedAsync(
+            await ApplicationDataSeeder.SeedAsync(
                 scope.ServiceProvider.GetRequiredService<HagglyDbContext>(),
                 scope.ServiceProvider.GetRequiredService<Haggly.Application.Abstractions.Identity.IPasswordHasher>());
         }
