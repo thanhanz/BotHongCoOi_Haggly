@@ -5,12 +5,14 @@
 `src/shared/api` owns transport behavior common to every endpoint:
 
 - `config.ts` normalizes `NEXT_PUBLIC_API_BASE_URL` and defines `/api/v1`;
-- `http-client.ts` owns the Axios instance, explicit bearer-token header, success
-  envelope unwrapping, and error conversion;
+- `http-client.ts` owns the Axios instance, automatic bearer-token header, success
+  envelope unwrapping, authenticated `401` signaling, and error conversion;
+- `auth-session.ts` owns browser-session persistence shared by transport and the
+  authentication provider;
 - `contracts/` owns generic API response, pagination, and Problem Details types;
 - `api-error.ts` owns the application-neutral error representation.
 
-Do not add endpoint paths, feature DTOs, or browser-storage access here.
+Do not add endpoint paths or feature DTOs here.
 
 ## Feature adapters
 
@@ -19,8 +21,9 @@ Endpoint-specific requests and wire contracts belong in
 nullability, and optionality aligned with the backend contract. Use the shared
 request helper instead of creating feature-specific Axios instances.
 
-Authenticated functions accept the access token explicitly. Cancellation uses
-the standard request signal when applicable.
+Feature adapters do not accept or forward access tokens. The shared client attaches
+the current session automatically. Cancellation uses the standard request signal
+when applicable.
 
 ## Contract changes
 
@@ -37,4 +40,3 @@ contract from a design. Account for:
 
 The backend owns enforcement. Frontend checks provide earlier feedback and must
 not be the only protection for a business rule.
-

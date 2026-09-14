@@ -53,6 +53,12 @@ export interface UpdateCartItemRequest {
   notes: string | null;
 }
 
+export interface AddCartItemRequest {
+  inventoryItemId: string;
+  quantity: number;
+  notes: string | null;
+}
+
 export interface CreateOrderRequest {
   items: Array<{ inventoryItemId: string; quantity: number; notes: string | null }>;
 }

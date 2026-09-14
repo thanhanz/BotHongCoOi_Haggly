@@ -7,16 +7,13 @@ import axios, {
 import { ApiError, toApiError } from "./api-error";
 import { API_V1_BASE_URL } from "./config";
 import type { ApiResponse } from "./contracts/api-response";
+import { readAuthSession, signalUnauthorized } from "./auth-session";
 
 export interface ApiRequestOptions {
-  accessToken?: string;
   signal?: AbortSignal;
 }
 
-export interface ApiRequestConfig<TBody = unknown>
-  extends Omit<AxiosRequestConfig<TBody>, "baseURL"> {
-  accessToken?: string;
-}
+export type ApiRequestConfig<TBody = unknown> = Omit<AxiosRequestConfig<TBody>, "baseURL">;
 
 export const apiClient = axios.create({
   baseURL: API_V1_BASE_URL,
@@ -28,16 +25,16 @@ export const apiClient = axios.create({
 export async function apiRequest<TResponse, TBody = unknown>(
   config: ApiRequestConfig<TBody>,
 ): Promise<TResponse> {
-  const { accessToken, ...axiosConfig } = config;
+  const accessToken = readAuthSession()?.accessToken;
   const headers = AxiosHeaders.from(
-    axiosConfig.headers as AxiosHeaders | RawAxiosHeaders | undefined,
+    config.headers as AxiosHeaders | RawAxiosHeaders | undefined,
   );
 
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
 
   try {
     const response: AxiosResponse<ApiResponse<TResponse>> = await apiClient.request({
-      ...axiosConfig,
+      ...config,
       headers,
     });
 
@@ -51,6 +48,9 @@ export async function apiRequest<TResponse, TBody = unknown>(
 
     return response.data.data;
   } catch (error) {
+    if (accessToken && axios.isAxiosError(error) && error.response?.status === 401) {
+      signalUnauthorized();
+    }
     throw toApiError(error);
   }
 }

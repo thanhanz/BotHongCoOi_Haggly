@@ -52,7 +52,7 @@ function BinIcon() {
 
 export function CartDetails() {
   const router = useRouter();
-  const { session, isReady, clearSession } = useAuth();
+  const { session, isReady } = useAuth();
   const [cart, setCart] = useState<Cart>();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -64,27 +64,21 @@ export function CartDetails() {
   const updateTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const updateRevisions = useRef(new Map<string, number>());
 
-  const handleUnauthorized = useCallback(() => {
-    clearSession();
-    router.replace("/login?returnTo=%2Fcart");
-  }, [clearSession, router]);
-
   const load = useCallback(async (initial = false) => {
     if (!session) return;
     setIsLoading(true);
     setError(undefined);
     try {
-      const result = await getCart({ accessToken: session.accessToken });
+      const result = await getCart();
       setCart(result);
       const available = result.stalls.flatMap(group => group.items).filter(item => item.isQuantityAvailable).map(item => item.cartItemId);
       setSelected(previous => initial ? new Set(available) : new Set(available.filter(id => previous.has(id))));
     } catch (requestError) {
-      if (requestError instanceof ApiError && requestError.status === 401) handleUnauthorized();
-      else setError(messageFor(requestError));
+      setError(messageFor(requestError));
     } finally {
       setIsLoading(false);
     }
-  }, [handleUnauthorized, session]);
+  }, [session]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -154,8 +148,7 @@ export function CartDetails() {
     try {
       applyCart(await action());
     } catch (requestError) {
-      if (requestError instanceof ApiError && requestError.status === 401) handleUnauthorized();
-      else setError(messageFor(requestError));
+      setError(messageFor(requestError));
     } finally {
       setPendingId(undefined);
     }
@@ -174,18 +167,15 @@ export function CartDetails() {
     updateTimers.current.set(item.cartItemId, setTimeout(async () => {
       updateTimers.current.delete(item.cartItemId);
       try {
-        const nextCart = await updateCartItem(item.cartItemId, request, { accessToken: session.accessToken });
+        const nextCart = await updateCartItem(item.cartItemId, request);
         if (updateRevisions.current.get(item.cartItemId) !== revision) return;
         discardDraft(item.cartItemId);
         applyCart(nextCart);
       } catch (requestError) {
         if (updateRevisions.current.get(item.cartItemId) !== revision) return;
         discardDraft(item.cartItemId);
-        if (requestError instanceof ApiError && requestError.status === 401) handleUnauthorized();
-        else {
-          setError(messageFor(requestError));
-          void load(false);
-        }
+        setError(messageFor(requestError));
+        void load(false);
       }
     }, UPDATE_DEBOUNCE_MS));
   }
@@ -201,12 +191,11 @@ export function CartDetails() {
         inventoryItemId: item.inventoryItemId,
         quantity: item.quantity,
         notes: item.notes,
-      })) }, { accessToken: session.accessToken });
+      })) });
       setSuccess(`Đã tạo đơn ${order.orderNo} thành công.`);
       await load(false);
     } catch (requestError) {
-      if (requestError instanceof ApiError && requestError.status === 401) handleUnauthorized();
-      else setError(messageFor(requestError));
+      setError(messageFor(requestError));
     } finally {
       setPendingId(undefined);
     }
@@ -239,7 +228,7 @@ export function CartDetails() {
             <Button variant="ghost" size="sm" disabled={Boolean(pendingId)} onClick={() => {
               if (confirm("Xóa toàn bộ giỏ hàng?")) {
                 discardAllDrafts();
-                void mutate("clear", () => clearCart({ accessToken: session.accessToken }));
+                void mutate("clear", () => clearCart());
               }
             }}>Xóa toàn bộ</Button>
           </div>
@@ -326,7 +315,7 @@ export function CartDetails() {
                             aria-label={`Xóa ${itemName(item)} khỏi giỏ hàng`}
                             title="Xóa món"
                             disabled={disabled}
-                            onClick={() => void mutate(item.cartItemId, () => removeCartItem(item.cartItemId, { accessToken: session.accessToken }))}
+                            onClick={() => void mutate(item.cartItemId, () => removeCartItem(item.cartItemId))}
                           >
                             <BinIcon />
                           </Button>

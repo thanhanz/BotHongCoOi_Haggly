@@ -76,7 +76,9 @@ must remain independent of endpoint-specific DTOs.
 Each `src/features/<feature>/api` directory owns its route calls and TypeScript
 request/response contracts. `NEXT_PUBLIC_API_BASE_URL` supplies the backend
 origin; the current default is `http://localhost:58558`, and the shared client
-appends `/api/v1`. Access tokens are passed explicitly to authenticated calls.
+appends `/api/v1`. It reads the current browser session and attaches its bearer
+token automatically. Authenticated `401` responses clear the session and notify
+the authentication provider to route the user to login.
 
 The backend remains authoritative for business rules and authorization.
 

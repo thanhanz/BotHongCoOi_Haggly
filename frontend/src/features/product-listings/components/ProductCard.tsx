@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { addCartItem } from "@/features/cart/api";
+import { useAuth } from "@/features/identity/components";
 import type { ProductListing } from "@/features/product-listings/api";
 import { PRODUCT_UNITS, type ProductUnit } from "@/features/products/api";
+import { ApiError } from "@/shared/api";
 import { Button } from "@/shared/ui/button";
 import { Typography } from "@/shared/ui/typography";
 
@@ -40,9 +44,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ listing, showNegotiation = true, showStall = true }: ProductCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { session, isReady } = useAuth();
   const step = listing.minimumOrderQuantity > 0 ? listing.minimumOrderQuantity : 1;
   const canOrder = listing.availableQuantity >= step;
   const [quantity, setQuantity] = useState(String(canOrder ? step : 0));
+  const [isAdding, setIsAdding] = useState(false);
+  const [cartStatus, setCartStatus] = useState<{ kind: "success" | "error"; message: string }>();
   const name = listing.displayName?.trim() || listing.productName;
 
   const numericQuantity = Number(quantity) || 0;
@@ -60,6 +69,50 @@ export function ProductCard({ listing, showNegotiation = true, showStall = true 
 
     setQuantity(String(clampQuantity(numericQuantity)));
   };
+
+  async function handleAddToCart() {
+    setCartStatus(undefined);
+    if (!session) {
+      router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+      return;
+    }
+    if (!session.roles.some(role => role.toLowerCase() === "buyer")) {
+      setCartStatus({ kind: "error", message: "Chỉ tài khoản người mua mới có thể thêm vào giỏ." });
+      return;
+    }
+
+    const requestedQuantity = Number(quantity);
+    if (!Number.isFinite(requestedQuantity) || requestedQuantity < step || requestedQuantity > listing.availableQuantity) {
+      setCartStatus({ kind: "error", message: "Số lượng đã chọn không hợp lệ." });
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addCartItem({ inventoryItemId: listing.inventoryItemId, quantity: requestedQuantity, notes: null });
+      setCartStatus({ kind: "success", message: `Đã thêm ${requestedQuantity} ${UNIT_LABELS[listing.sellingUnit]} vào giỏ.` });
+    } catch (requestError) {
+      if (requestError instanceof ApiError) {
+        console.error("[Add to cart] Backend request failed", {
+          inventoryItemId: listing.inventoryItemId,
+          requestedQuantity,
+          status: requestError.status,
+          problem: requestError.problem,
+        });
+      } else {
+        console.error("[Add to cart] Unexpected request failure", requestError);
+      }
+
+      const message = requestError instanceof ApiError && requestError.status === 409
+        ? requestError.problem.detail || "Tồn kho vừa thay đổi. Vui lòng tải lại sản phẩm."
+        : requestError instanceof ApiError && requestError.status === 400
+          ? requestError.message
+          : "Chưa thể thêm món vào giỏ. Vui lòng thử lại.";
+      setCartStatus({ kind: "error", message });
+    } finally {
+      setIsAdding(false);
+    }
+  }
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-card border border-border-subtle bg-surface-raised shadow-card">
@@ -148,9 +201,14 @@ export function ProductCard({ listing, showNegotiation = true, showStall = true 
             </button>
           </div>
 
-          <Button disabled size="sm" className="w-full" title="Tính năng giỏ hàng sẽ được bổ sung sau">
-            Thêm vào giỏ
+          <Button disabled={!isReady || !canOrder} loading={isAdding} size="sm" className="w-full" onClick={() => void handleAddToCart()}>
+            {isAdding ? "Đang thêm…" : "Thêm vào giỏ"}
           </Button>
+          {cartStatus && (
+            <p role={cartStatus.kind === "error" ? "alert" : "status"} className={`mt-2xs text-xs ${cartStatus.kind === "error" ? "text-state-error" : "text-ready-text"}`}>
+              {cartStatus.message}
+            </p>
+          )}
         </div>
       </div>
     </article>

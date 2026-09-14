@@ -35,8 +35,10 @@ Application ports. They do not mutate Inventory entities directly.
   `ICartCatalog` to require an active Market, Stall, Product, and ProductStall.
 - Requested quantity must be at least the ProductStall minimum order quantity
   and no greater than `CurrentQuantity - ReservedQuantity`.
-- Duplicate item additions are conflicts; updates and removals require an item
-  in the authenticated buyer's cart.
+- Adding an InventoryItem already present in the cart increments its quantity;
+  the combined quantity is validated against live availability, and a null incoming
+  note preserves the existing note. Updates and removals require an item in the
+  authenticated buyer's cart.
 - `GET /api/v1/cart` returns an empty `CartDto` when no persisted cart exists.
   The empty response uses `Guid.Empty` as its cart ID.
 - Cart reads use current ProductStall price and configuration. They group lines

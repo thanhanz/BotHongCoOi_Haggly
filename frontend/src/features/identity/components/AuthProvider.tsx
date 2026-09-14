@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import type { Login } from "@/features/identity/api";
-
-const SESSION_KEY = "haggly.buyer-session";
+import { AUTH_UNAUTHORIZED_EVENT, clearAuthSession, readAuthSession, writeAuthSession } from "@/shared/api";
 
 interface AuthContextValue {
   session: Login | null;
@@ -25,6 +25,8 @@ function isValidSession(value: unknown): value is Login {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [session, updateSession] = useState<Login | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -32,12 +34,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true;
     let storedSession: Login | null = null;
     try {
-      const raw = sessionStorage.getItem(SESSION_KEY);
-      const stored: unknown = raw ? JSON.parse(raw) : null;
+      const stored: unknown = readAuthSession();
       if (isValidSession(stored)) storedSession = stored;
-      else sessionStorage.removeItem(SESSION_KEY);
+      else clearAuthSession();
     } catch {
-      sessionStorage.removeItem(SESSION_KEY);
+      clearAuthSession();
     }
     queueMicrotask(() => {
       if (!active) return;
@@ -47,15 +48,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    function handleUnauthorized() {
+      updateSession(null);
+      if (pathname !== "/login") {
+        router.replace(`/login?returnTo=${encodeURIComponent(pathname)}`);
+      }
+    }
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+  }, [pathname, router]);
+
   const value = useMemo<AuthContextValue>(() => ({
     session,
     isReady,
     setSession(nextSession) {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextSession));
+      writeAuthSession(nextSession);
       updateSession(nextSession);
     },
     clearSession() {
-      sessionStorage.removeItem(SESSION_KEY);
+      clearAuthSession();
       updateSession(null);
     },
   }), [isReady, session]);
