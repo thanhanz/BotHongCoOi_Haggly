@@ -19,6 +19,9 @@ export default async function StallDetailsPage({ params, searchParams }: StallDe
         categoryId={categoryId}
         title={categoryId ? "Sản phẩm theo danh mục" : "Sản phẩm của sạp"}
         useDemoData={false}
+        pageSize={20}
+        showNegotiation={false}
+        showStall={false}
       />
     </>
   );

@@ -33,7 +33,13 @@ function normalizeQuantity(value: number, step: number): number {
   return Number(value.toFixed(Math.max(decimalPlaces(step), 2)));
 }
 
-export function ProductCard({ listing }: { listing: ProductListing }) {
+interface ProductCardProps {
+  listing: ProductListing;
+  showNegotiation?: boolean;
+  showStall?: boolean;
+}
+
+export function ProductCard({ listing, showNegotiation = true, showStall = true }: ProductCardProps) {
   const step = listing.minimumOrderQuantity > 0 ? listing.minimumOrderQuantity : 1;
   const canOrder = listing.availableQuantity >= step;
   const [quantity, setQuantity] = useState(String(canOrder ? step : 0));
@@ -71,7 +77,7 @@ export function ProductCard({ listing }: { listing: ProductListing }) {
           </div>
         )}
 
-        {listing.isNegotiable && (
+        {showNegotiation && listing.isNegotiable && (
           <span className="absolute left-2 top-2 rounded-pill bg-brand-secondary px-xs py-2xs font-data text-[11px] font-semibold text-white">
             Có thể trả giá
           </span>
@@ -79,7 +85,7 @@ export function ProductCard({ listing }: { listing: ProductListing }) {
       </div>
 
       <div className="flex flex-1 flex-col p-xs">
-        <Link
+        {showStall && <Link
           href={`/stalls/${encodeURIComponent(listing.stallId)}`}
           className="mb-2xs flex items-center gap-2xs rounded-control text-xs text-foreground-secondary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
@@ -87,7 +93,7 @@ export function ProductCard({ listing }: { listing: ProductListing }) {
             {listing.stallCode}
           </span>
           <span className="truncate">{listing.stallName}</span>
-        </Link>
+        </Link>}
 
         <Typography as="h3" variant="labelLg" className="line-clamp-2 min-h-12">
           {name}

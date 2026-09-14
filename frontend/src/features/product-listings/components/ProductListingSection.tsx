@@ -16,6 +16,9 @@ interface ProductListingSectionProps {
   stallId?: string;
   title?: string;
   useDemoData?: boolean;
+  pageSize?: number;
+  showNegotiation?: boolean;
+  showStall?: boolean;
 }
 
 const PAGE_SIZE = 5;
@@ -103,13 +106,13 @@ const DEMO_LISTINGS: ProductListing[] = [
   },
 ];
 
-function buildParams(categoryId?: string, stallId?: string): ProductListingParams {
+function buildParams(categoryId?: string, stallId?: string, pageSize = PAGE_SIZE): ProductListingParams {
   return {
     categoryId,
     stallId,
     sort: "home",
     page: 1,
-    pageSize: PAGE_SIZE,
+    pageSize,
   };
 }
 
@@ -132,6 +135,9 @@ export function ProductListingSection({
   stallId,
   title = "Sản phẩm hôm nay",
   useDemoData = true,
+  pageSize = PAGE_SIZE,
+  showNegotiation = true,
+  showStall = true,
 }: ProductListingSectionProps) {
   const [listings, setListings] = useState<ProductListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -143,18 +149,18 @@ export function ProductListingSection({
     setIsLoading(true);
     setError(false);
     try {
-      const result = await getProductListings(buildParams(categoryId, stallId));
+      const result = await getProductListings(buildParams(categoryId, stallId, pageSize));
       setListings(result.items);
     } catch {
       setError(true);
     } finally {
       setIsLoading(false);
     }
-  }, [categoryId, stallId]);
+  }, [categoryId, pageSize, stallId]);
 
   useEffect(() => {
     const controller = new AbortController();
-    void getProductListings(buildParams(categoryId, stallId), { signal: controller.signal }).then((result) => {
+    void getProductListings(buildParams(categoryId, stallId, pageSize), { signal: controller.signal }).then((result) => {
       setListings(result.items);
       setIsLoading(false);
     }).catch(() => {
@@ -164,7 +170,7 @@ export function ProductListingSection({
       }
     });
     return () => controller.abort();
-  }, [categoryId, stallId]);
+  }, [categoryId, pageSize, stallId]);
 
   return (
     <section aria-labelledby="product-listings-heading" className="pb-xl md:pb-2xl">
@@ -175,8 +181,8 @@ export function ProductListingSection({
         </div>
 
         {isLoading && (
-          <div role="status" aria-label="Đang tải sản phẩm" className="grid grid-cols-1 gap-sm sm:grid-cols-2 lg:grid-cols-5">
-            {Array.from({ length: 5 }, (_, index) => <ProductCardSkeleton key={index} />)}
+          <div role="status" aria-label="Đang tải sản phẩm" className="grid grid-cols-1 gap-sm sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {Array.from({ length: Math.min(pageSize, 10) }, (_, index) => <ProductCardSkeleton key={index} />)}
           </div>
         )}
 
@@ -203,8 +209,15 @@ export function ProductListingSection({
         )}
 
         {!isLoading && displayedListings.length > 0 && (
-          <div className={`${error ? "mt-md " : ""}grid grid-cols-1 gap-sm sm:grid-cols-2 lg:grid-cols-5`}>
-            {displayedListings.map((listing) => <ProductCard key={listing.productStallId} listing={listing} />)}
+          <div className={`${error ? "mt-md " : ""}grid grid-cols-1 gap-sm sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5`}>
+            {displayedListings.map((listing) => (
+              <ProductCard
+                key={listing.productStallId}
+                listing={listing}
+                showNegotiation={showNegotiation}
+                showStall={showStall}
+              />
+            ))}
           </div>
         )}
       </Container>

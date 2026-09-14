@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getPublicStallDetails, type PublicStallDetails } from "@/features/stalls/api";
 import { ApiError } from "@/shared/api";
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Container } from "@/shared/ui/container";
@@ -28,9 +29,17 @@ export function StallInformation({ stallId }: { stallId: string }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    void loadStall(controller.signal);
+    void getPublicStallDetails(stallId, { signal: controller.signal }).then((result) => {
+      setStall(result);
+      setIsLoading(false);
+    }).catch((requestError: unknown) => {
+      if (!controller.signal.aborted) {
+        setError(requestError);
+        setIsLoading(false);
+      }
+    });
     return () => controller.abort();
-  }, [loadStall]);
+  }, [stallId]);
 
   return (
     <section aria-labelledby="stall-heading" className="py-xl md:py-2xl">
@@ -60,21 +69,26 @@ export function StallInformation({ stallId }: { stallId: string }) {
         )}
 
         {!isLoading && !error && stall && (
-          <div className="overflow-hidden rounded-modal border border-brand-primary/15 bg-surface-raised shadow-card">
-            <div className="bg-brand-primary px-md py-lg text-foreground-inverse md:px-lg">
-              <Badge variant="tertiary" size="sm">{stall.code}</Badge>
-              <Typography as="h1" id="stall-heading" variant="headlineLgMobile" className="mt-sm text-foreground-inverse md:text-5xl">
-                {stall.name}
-              </Typography>
-            </div>
-            <div className="grid gap-sm p-md text-foreground-secondary md:grid-cols-2 md:px-lg">
-              <div>
-                <Typography as="p" variant="labelSm" className="text-brand-secondary">Vị trí</Typography>
-                <Typography className="mt-2xs">{stall.locationDescription || "Đang cập nhật"}</Typography>
-              </div>
-              <div>
-                <Typography as="p" variant="labelSm" className="text-brand-secondary">Liên hệ</Typography>
-                <Typography className="mt-2xs">{stall.phoneNumber || "Đang cập nhật"}</Typography>
+          <div className="overflow-hidden rounded-modal border border-border-subtle bg-surface-raised shadow-card">
+            <div className="min-h-40 border-b border-border-subtle bg-white px-md py-lg md:flex md:min-h-52 md:items-end md:px-lg">
+              <div className="flex items-center gap-sm md:gap-md">
+                <Avatar className="h-20 w-20 rounded-modal border-2 border-white bg-ready-background text-2xl shadow-card md:h-30 md:w-30 md:text-3xl">
+                  <AvatarFallback >{stall.name.charAt(0).toLocaleUpperCase("vi")}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="mb-xs flex flex-wrap gap-xs text-sm text-foreground-secondary">
+                    <span className="rounded-pill bg-surface-sunken px-sm py-2xs">
+                      {stall.locationDescription || "Địa chỉ đang cập nhật"}
+                    </span>
+                    <span className="rounded-pill bg-surface-sunken px-sm py-2xs">
+                      {stall.phoneNumber || "Số điện thoại đang cập nhật"}
+                    </span>
+                  </div>
+                  <Typography as="h1" id="stall-heading" variant="headlineLgMobile" className="text-foreground-primary md:text-5xl">
+                    {stall.name}
+                  </Typography>
+                  <Badge variant="tertiary" size="sm" className="mt-xs">{stall.code}</Badge>
+                </div>
               </div>
             </div>
           </div>

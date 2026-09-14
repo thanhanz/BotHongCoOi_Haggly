@@ -13,23 +13,35 @@ interface CategoryCardProps {
   category: Category;
   href: string;
   isSelected?: boolean;
+  compact?: boolean;
 }
 
-function CategoryCard({ category, href, isSelected = false }: CategoryCardProps) {
+function CategoryCard({ category, href, isSelected = false, compact = false }: CategoryCardProps) {
+  const appearance = isSelected
+    ? "border-brand-primary bg-brand-primary text-foreground-inverse"
+    : compact
+      ? "border-brand-primary/10 bg-surface-raised hover:border-brand-primary"
+      : "border-brand-primary/10 bg-ready-background hover:border-brand-primary/30";
+
   return (
     <Link
       href={href}
       aria-current={isSelected ? "page" : undefined}
-      className={`group flex min-h-32 flex-col items-center justify-center gap-xs rounded-card border bg-ready-background p-sm text-center shadow-card transition hover:-translate-y-0.5 hover:border-brand-primary/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 ${isSelected ? "border-brand-primary ring-2 ring-brand-primary/20" : "border-brand-primary/10"}`}
+      scroll={false}
+      className={`group flex items-center justify-center border text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 ${compact ? "min-h-10 shrink-0 whitespace-nowrap rounded-pill px-sm py-xs shadow-none" : "min-h-32 flex-col gap-xs rounded-card p-sm shadow-card hover:-translate-y-0.5 hover:shadow-md"} ${appearance}`}
     >
       <span
         aria-hidden="true"
-        className="flex size-14 items-center justify-center rounded-full bg-surface-sunken bg-cover bg-center font-data text-xl font-bold text-brand-primary ring-1 ring-border-subtle transition-transform group-hover:scale-105"
+        className={`${compact ? "hidden" : "flex"} size-14 items-center justify-center rounded-full bg-surface-sunken bg-cover bg-center font-data text-xl font-bold text-brand-primary ring-1 ring-border-subtle transition-transform group-hover:scale-105`}
         style={category.imageUrl ? { backgroundImage: `url(${JSON.stringify(category.imageUrl)})` } : undefined}
       >
         {!category.imageUrl && category.name.charAt(0).toLocaleUpperCase("vi")}
       </span>
-      <Typography as="span" variant="labelMd" className="line-clamp-2">
+      <Typography
+        as="span"
+        variant="labelMd"
+        className={`line-clamp-2 ${isSelected ? "text-foreground-inverse" : "text-foreground-primary"}`}
+      >
         {category.name}
       </Typography>
     </Link>
@@ -105,10 +117,10 @@ export function CategorySection({ stallId, selectedCategoryId }: CategorySection
   }, [stallId]);
 
   return (
-    <section id="categories" aria-labelledby="categories-heading" className="py-xl md:py-2xl">
+    <section id="categories" aria-labelledby="categories-heading" className={stallId ? "pb-lg" : "py-xl md:py-2xl"}>
       <Container>
-        <div className="rounded-modal border border-border-prominent bg-surface-container p-sm md:p-md">
-          <div className="mb-md flex items-end justify-between gap-md">
+        <div className={stallId ? "" : "rounded-modal border border-border-prominent bg-surface-container p-sm md:p-md"}>
+          <div className={stallId ? "sr-only" : "mb-md flex items-end justify-between gap-md"}>
             <div>
               <Typography as="p" variant="labelMd" className="mb-2xs text-brand-secondary">
                 Mua theo nhu cầu
@@ -140,29 +152,27 @@ export function CategorySection({ stallId, selectedCategoryId }: CategorySection
           )}
 
           {!isLoading && !error && categories.length > 0 && (
-            <>
+            <div className={stallId ? "flex flex-nowrap gap-xs overflow-x-auto pb-xs" : "grid grid-cols-2 gap-sm sm:grid-cols-3 lg:grid-cols-6"}>
               {stallId && (
-                <div className="mb-sm">
-                  <Link
-                    href={`/stalls/${encodeURIComponent(stallId)}`}
-                    aria-current={!selectedCategoryId ? "page" : undefined}
-                    className={`inline-flex min-h-10 items-center rounded-pill border px-sm font-data text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${!selectedCategoryId ? "border-brand-primary bg-brand-primary text-foreground-inverse" : "border-border-prominent bg-surface-raised text-foreground-primary hover:border-brand-primary"}`}
-                  >
-                    Tất cả sản phẩm
-                  </Link>
-                </div>
+                <Link
+                  href={`/stalls/${encodeURIComponent(stallId)}`}
+                  scroll={false}
+                  aria-current={!selectedCategoryId ? "page" : undefined}
+                  className={`inline-flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-pill border px-sm font-data text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${!selectedCategoryId ? "border-brand-primary bg-brand-primary text-foreground-inverse" : "border-border-prominent bg-surface-raised text-foreground-primary hover:border-brand-primary"}`}
+                >
+                  Tất cả sản phẩm
+                </Link>
               )}
-              <div className="grid grid-cols-2 gap-sm sm:grid-cols-3 lg:grid-cols-6">
-                {categories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    href={categoryHref(category.id, stallId)}
-                    isSelected={selectedCategoryId === category.id}
-                  />
-                ))}
-              </div>
-            </>
+              {categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  href={categoryHref(category.id, stallId)}
+                  isSelected={selectedCategoryId === category.id}
+                  compact={Boolean(stallId)}
+                />
+              ))}
+            </div>
           )}
         </div>
       </Container>
