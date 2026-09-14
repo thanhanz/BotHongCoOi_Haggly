@@ -34,9 +34,16 @@ public sealed class Cart : AuditableEntity
             throw new ArgumentException("A valid inventory item ID is required.", nameof(inventoryItemId));
         }
 
-        if (Items.Any(item => item.InventoryItemId == inventoryItemId))
+        var existingItem = Items.SingleOrDefault(item => item.InventoryItemId == inventoryItemId);
+        if (existingItem is not null)
         {
-            throw new InvalidOperationException("An inventory item can occur only once in a cart.");
+            existingItem.Update(
+                existingItem.Quantity + quantity,
+                notes ?? existingItem.Notes,
+                occurredAt,
+                BuyerId);
+            Touch(occurredAt);
+            return existingItem;
         }
 
         var item = CartItem.Create(Id, inventoryItemId, quantity, notes, occurredAt, BuyerId);

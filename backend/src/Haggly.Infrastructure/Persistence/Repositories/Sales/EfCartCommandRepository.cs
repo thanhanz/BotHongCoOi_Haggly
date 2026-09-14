@@ -2,11 +2,14 @@ using Haggly.Application.Abstractions.Sales;
 using Haggly.Application.Modules.Sales.Exceptions;
 using Haggly.Domain.Modules.Sales;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Haggly.Infrastructure.Persistence.Repositories.Sales;
 
-public sealed class EfCartCommandRepository(HagglyDbContext dbContext)
+public sealed class EfCartCommandRepository(HagglyDbContext dbContext,
+  ILogger<EfCartCommandRepository> logger
+)
     : ICartCommandRepository
 {
     public Task<Cart?> FindByBuyerIdAsync(
@@ -28,8 +31,17 @@ public sealed class EfCartCommandRepository(HagglyDbContext dbContext)
         {
             await dbContext.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException exception)
         {
+          logger.LogError(
+            exception,
+            "Cart concurrency failure. Entries: {Entries}",
+            exception.Entries.Select(entry => new
+            {
+              Entity = entry.Metadata.ClrType.Name,
+              State = entry.State.ToString()
+            }));
+          
             throw new CartConflictException(
                 "The cart was changed by another request. Refresh and retry.");
         }

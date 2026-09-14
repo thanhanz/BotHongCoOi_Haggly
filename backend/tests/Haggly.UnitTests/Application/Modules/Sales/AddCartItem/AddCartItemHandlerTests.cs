@@ -57,7 +57,7 @@ public sealed class AddCartItemHandlerTests
     }
 
     [Fact]
-    public async Task Handle_DuplicateCartItem_ThrowsConflictWithoutSaving()
+    public async Task Handle_ExistingCartItem_IncreasesQuantityAndSaves()
     {
         // Arrange
         var fixture = CreateFixture();
@@ -68,12 +68,32 @@ public sealed class AddCartItemHandlerTests
         _query.GetAsync(fixture.BuyerId, Arg.Any<CancellationToken>()).Returns((CartReadModel?)null);
 
         // Act
-        var action = () => CreateSubject().Handle(
+        await CreateSubject().Handle(
             new AddCartItemCommand(fixture.BuyerId, fixture.InventoryItemId, 2m, null),
             CancellationToken.None);
 
         // Assert
-        await Assert.ThrowsAsync<CartConflictException>(action);
+        Assert.Equal(3m, Assert.Single(cart.Items).Quantity);
+        await _repository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_ExistingCartItemCombinedQuantityExceedsRemaining_ThrowsValidationWithoutMutation()
+    {
+        // Arrange
+        var fixture = CreateFixture(remainingQuantity: 5m);
+        var cart = Cart.Create(fixture.BuyerId, fixture.Now);
+        cart.AddItem(fixture.InventoryItemId, 4m, null, fixture.Now);
+        ConfigureSnapshot(fixture);
+        _repository.FindByBuyerIdAsync(fixture.BuyerId, Arg.Any<CancellationToken>()).Returns(cart);
+        var command = new AddCartItemCommand(fixture.BuyerId, fixture.InventoryItemId, 2m, null);
+
+        // Act
+        var action = () => CreateSubject().Handle(command, CancellationToken.None);
+
+        // Assert
+        await Assert.ThrowsAsync<CartValidationException>(action);
+        Assert.Equal(4m, Assert.Single(cart.Items).Quantity);
         await _repository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

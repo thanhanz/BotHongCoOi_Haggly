@@ -21,11 +21,14 @@ public sealed class AddCartItemHandler(
         CancellationToken cancellationToken)
     {
         CartValidation.Validate(command);
+        var existingCart = await repository.FindByBuyerIdAsync(command.BuyerId, cancellationToken);
+        var existingItem = existingCart?.Items.SingleOrDefault(
+            item => item.InventoryItemId == command.InventoryItemId);
         var snapshots = await catalog.GetItemsAsync([command.InventoryItemId], cancellationToken);
         var snapshot = CartHandlerHelpers.RequireSnapshot(snapshots, command.InventoryItemId);
-        CartHandlerHelpers.EnsureQuantity(snapshot, command.Quantity);
+        var resultingQuantity = (existingItem?.Quantity ?? 0m) + command.Quantity;
+        CartHandlerHelpers.EnsureQuantity(snapshot, resultingQuantity);
 
-        var existingCart = await repository.FindByBuyerIdAsync(command.BuyerId, cancellationToken);
         var cart = existingCart ?? Cart.Create(command.BuyerId, businessClock.GetNow());
 
         try

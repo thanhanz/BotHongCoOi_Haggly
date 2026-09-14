@@ -23,20 +23,22 @@ public sealed class CartItemManagementTests
     }
 
     [Fact]
-    public void AddItem_DuplicateInventoryItem_RejectsWithoutMutation()
+    public void AddItem_ExistingInventoryItem_IncreasesQuantityAndPreservesNote()
     {
         // Arrange
         var cart = CreateCart();
-        cart.AddItem(InventoryItemId, 2m, null, AddedAt);
+        cart.AddItem(InventoryItemId, 2m, "ripe", AddedAt);
 
         // Act
-        var action = () => cart.AddItem(InventoryItemId, 3m, null, UpdatedAt);
+        var result = cart.AddItem(InventoryItemId, 3m, null, UpdatedAt);
 
         // Assert
-        Assert.Throws<InvalidOperationException>(action);
         var item = Assert.Single(cart.Items);
-        Assert.Equal(2m, item.Quantity);
-        Assert.Equal(AddedAt, cart.UpdatedAt);
+        Assert.Same(item, result);
+        Assert.Equal(5m, item.Quantity);
+        Assert.Equal("ripe", item.Notes);
+        Assert.Equal(UpdatedAt, item.UpdatedAt);
+        Assert.Equal(UpdatedAt, cart.UpdatedAt);
     }
 
     [Fact]
