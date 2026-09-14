@@ -12,6 +12,7 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
     {
         builder.ToTable("carts", "sales");
         builder.HasKey(cart => cart.Id);
+        builder.Property(cart => cart.Id).ValueGeneratedNever();
         builder.HasIndex(cart => cart.BuyerId).IsUnique();
         builder.Property(cart => cart.BuyerId).IsRequired();
         builder.ConfigureAuditable();

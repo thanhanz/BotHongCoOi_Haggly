@@ -17,6 +17,7 @@ internal sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
                 "\"Quantity\" > 0");
         });
         builder.HasKey(item => item.Id);
+        builder.Property(item => item.Id).ValueGeneratedNever();
         builder.HasIndex(item => new { item.CartId, item.InventoryItemId }).IsUnique();
         builder.Property(item => item.CartId).IsRequired();
         builder.Property(item => item.InventoryItemId).IsRequired();
