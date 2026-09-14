@@ -1,3 +1,2 @@
-export { registerBuyer } from "./identity.api";
-export type { RegisterBuyerRequest, Registration } from "./identity.contracts";
-
+export { login, registerBuyer } from "./identity.api";
+export type { Login, LoginRequest, RegisterBuyerRequest, Registration } from "./identity.contracts";

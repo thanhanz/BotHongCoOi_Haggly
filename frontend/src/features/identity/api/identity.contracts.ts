@@ -11,3 +11,17 @@ export interface Registration {
   status: string;
   role: string;
 }
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface Login {
+  userId: string;
+  email: string;
+  accessToken: string;
+  tokenType: string;
+  expiresAt: string;
+  roles: string[];
+}

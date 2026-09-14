@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useAuth } from "@/features/identity/components";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Container } from "@/shared/ui/container";
@@ -32,6 +35,8 @@ function CartIcon() {
 }
 
 export function Header() {
+  const { session, isReady, clearSession } = useAuth();
+
   return (
     <header className="z-40 h-16 shrink-0 border-b border-border-subtle bg-surface-raised/95 backdrop-blur">
       <Container className="flex h-full items-center gap-sm md:gap-md">
@@ -70,14 +75,18 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2xs">
-          <Button type="button" variant="ghost" size="icon" aria-label="Giỏ hàng">
+          <Link href="/cart" aria-label="Giỏ hàng" className="inline-flex size-10 items-center justify-center rounded-control text-foreground-primary hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
             <CartIcon />
-          </Button>
-          <Button type="button" variant="ghost" size="icon" aria-label="Tài khoản">
-            <Avatar size="sm">
-              <AvatarFallback>HA</AvatarFallback>
-            </Avatar>
-          </Button>
+          </Link>
+          {isReady && session ? (
+            <Button type="button" variant="ghost" size="icon" aria-label={`Đăng xuất ${session.email}`} title={`Đăng xuất ${session.email}`} onClick={clearSession}>
+              <Avatar size="sm"><AvatarFallback>{session.email.slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
+            </Button>
+          ) : (
+            <Link href="/login" aria-label="Đăng nhập" className="inline-flex size-10 items-center justify-center rounded-control text-foreground-primary hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+              <Avatar size="sm"><AvatarFallback>ĐN</AvatarFallback></Avatar>
+            </Link>
+          )}
         </div>
       </Container>
     </header>

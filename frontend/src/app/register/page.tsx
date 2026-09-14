@@ -46,9 +46,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="flex min-h-[70vh] items-center py-xl">
-      <Container className="max-w-xl">
-        <Card>
+    <section className="py-lg md:py-xl">
+      <Container>
+        <Card className="w-full">
           <CardHeader className="grid gap-xs">
             <Typography as="h1" variant="headlineSm">
               Đăng ký người mua
