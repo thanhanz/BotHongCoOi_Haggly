@@ -7,8 +7,8 @@ namespace Haggly.Infrastructure.Persistence.Queries.Discovery;
 public sealed class DapperDiscoveryQueryRepository(DapperDbContext dbContext)
     : IDiscoveryQuery
 {
-    public async Task<CommonDishResult?> FindDishAsync(
-        string normalizedName,
+    public async Task<IReadOnlyList<CommonDishResult>> FindDishesAsync(
+        string normalizedQuery,
         CancellationToken cancellationToken)
     {
         const string sql = """
@@ -19,16 +19,31 @@ public sealed class DapperDiscoveryQueryRepository(DapperDbContext dbContext)
                 "Category"
             FROM discovery.common_dishes
             WHERE "IsActive" = TRUE
-              AND "NormalizedName" = @NormalizedName;
+              AND POSITION(@NormalizedName IN "NormalizedName") > 0
+            ORDER BY
+                CASE
+                    WHEN "NormalizedName" = @NormalizedName THEN 0
+                    WHEN "NormalizedName" LIKE @Prefix THEN 1
+                    ELSE 2
+                END,
+                LENGTH("NormalizedName"),
+                "Name",
+                "Id"
+            LIMIT 20;
             """;
 
         await using var connection = await dbContext.OpenConnectionAsync(cancellationToken);
         var command = new CommandDefinition(
             sql,
-            new { NormalizedName = normalizedName },
+            new
+            {
+                NormalizedName = normalizedQuery,
+                Prefix = normalizedQuery + "%"
+            },
             cancellationToken: cancellationToken);
 
-        return await connection.QuerySingleOrDefaultAsync<CommonDishResult>(command);
+        var dishes = await connection.QueryAsync<CommonDishResult>(command);
+        return dishes.AsList();
     }
 
     public async Task<bool> DishExistsAsync(

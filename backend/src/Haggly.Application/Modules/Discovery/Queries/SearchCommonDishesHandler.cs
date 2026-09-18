@@ -19,8 +19,8 @@ public sealed class SearchCommonDishesHandler(IDiscoveryQuery query)
         }
 
         var normalizedQuery = VietnameseNameNormalizer.Normalize(request.Query);
-        var dish = await query.FindDishAsync(normalizedQuery, cancellationToken);
+        var dishes = await query.FindDishesAsync(normalizedQuery, cancellationToken);
 
-        return new CommonDishSearchResult(dish is null ? [] : [dish]);
+        return new CommonDishSearchResult(dishes);
     }
 }

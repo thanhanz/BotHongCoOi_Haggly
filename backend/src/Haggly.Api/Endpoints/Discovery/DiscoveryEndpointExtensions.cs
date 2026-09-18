@@ -22,8 +22,15 @@ public static class DiscoveryEndpointExtensions
         endpoints.MapPatch(DiscoveryRoutes.ProductMapping, SetMappingAsync).WithTags("Dish Discovery").RequireAuthorization(IdentityPolicies.AdminOnly).Produces(StatusCodes.Status204NoContent).ProducesProblem(400).ProducesProblem(401).ProducesProblem(403).ProducesProblem(404);
         return endpoints;
     }
-    private static async Task<IResult> SearchAsync([FromQuery] string? q, ISender sender, CancellationToken ct) => Results.Ok(ApiResponse<CommonDishSearchResult>.Create(await sender.Send(new SearchCommonDishesQuery(q ?? string.Empty), ct), "Dish search completed."));
-    private static async Task<IResult> ProposalAsync(Guid dishId, ISender sender, CancellationToken ct) => Results.Ok(ApiResponse<DishProposalResult>.Create(await sender.Send(new GetDishProposalQuery(dishId), ct), "Dish proposal retrieved."));
-    private static async Task<IResult> FindIngredientsAsync([FromQuery] string? q, ISender sender, CancellationToken ct) => Results.Ok(ApiResponse<IReadOnlyList<CanonicalIngredientResult>>.Create(await sender.Send(new FindCanonicalIngredientsQuery(q ?? string.Empty), ct), "Canonical ingredients retrieved."));
-    private static async Task<IResult> SetMappingAsync(Guid productId, SetProductIngredientMappingRequest request, ISender sender, CancellationToken ct) { await sender.Send(new SetProductIngredientMappingCommand(productId, request.CanonicalIngredientId, request.Status), ct); return Results.NoContent(); }
+    
+    private static async Task<IResult> SearchAsync([FromQuery] string? q, ISender sender, CancellationToken ct) 
+      => Results.Ok(ApiResponse<CommonDishSearchResult>.Create(await sender.Send(new SearchCommonDishesQuery(q ?? string.Empty), ct), "Dish search completed."));
+    private static async Task<IResult> ProposalAsync(Guid dishId, ISender sender, CancellationToken ct) 
+      => Results.Ok(ApiResponse<DishProposalResult>.Create(await sender.Send(new GetDishProposalQuery(dishId), ct), "Dish proposal retrieved."));
+    private static async Task<IResult> FindIngredientsAsync([FromQuery] string? q, ISender sender, CancellationToken ct) 
+      => Results.Ok(ApiResponse<IReadOnlyList<CanonicalIngredientResult>>
+                .Create(await sender.Send(new FindCanonicalIngredientsQuery(q ?? string.Empty), ct), "Canonical ingredients retrieved."));
+    private static async Task<IResult> SetMappingAsync(Guid productId, SetProductIngredientMappingRequest request, ISender sender, CancellationToken ct) 
+    { await sender.Send(new SetProductIngredientMappingCommand(productId, request.CanonicalIngredientId, request.Status), ct); 
+      return Results.NoContent(); }
 }

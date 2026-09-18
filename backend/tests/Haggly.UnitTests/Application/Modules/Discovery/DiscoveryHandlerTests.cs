@@ -15,7 +15,10 @@ public sealed class DiscoveryHandlerTests
     {
         // Arrange
         var dishId = Guid.NewGuid();
-        var query = new FakeDiscoveryQuery { Dish = new(dishId, "dish3428", "Bún bò Huế", "mon nuoc") };
+        var query = new FakeDiscoveryQuery
+        {
+            Dishes = [new(dishId, "dish3428", "Bún bò Huế", "mon nuoc")]
+        };
         var handler = new SearchCommonDishesHandler(query);
 
         // Act
@@ -24,6 +27,30 @@ public sealed class DiscoveryHandlerTests
         // Assert
         Assert.Single(result.Candidates);
         Assert.Equal("bun bo hue", query.LastNormalizedQuery);
+    }
+
+    [Fact]
+    public async Task Search_MultiplePartialHits_ReturnsAllCandidates()
+    {
+        // Arrange
+        var query = new FakeDiscoveryQuery
+        {
+            Dishes =
+            [
+                new(Guid.NewGuid(), "dish1", "Bún mắm", "mon nuoc"),
+                new(Guid.NewGuid(), "dish2", "Bún bò Huế", "mon nuoc")
+            ]
+        };
+        var handler = new SearchCommonDishesHandler(query);
+
+        // Act
+        var result = await handler.Handle(
+            new SearchCommonDishesQuery("bun"),
+            CancellationToken.None);
+
+        // Assert
+        Assert.Equal(2, result.Candidates.Count);
+        Assert.Equal(query.Dishes, result.Candidates);
     }
 
     [Fact]
@@ -92,10 +119,10 @@ public sealed class DiscoveryHandlerTests
 
     private sealed class FakeDiscoveryQuery : IDiscoveryQuery
     {
-        public CommonDishResult? Dish { get; init; }
+        public IReadOnlyList<CommonDishResult> Dishes { get; init; } = [];
         public IReadOnlyList<ProposalSourceRow> Rows { get; init; } = [];
         public string? LastNormalizedQuery { get; private set; }
-        public Task<CommonDishResult?> FindDishAsync(string normalizedName, CancellationToken cancellationToken) { LastNormalizedQuery = normalizedName; return Task.FromResult(Dish); }
+        public Task<IReadOnlyList<CommonDishResult>> FindDishesAsync(string normalizedQuery, CancellationToken cancellationToken) { LastNormalizedQuery = normalizedQuery; return Task.FromResult(Dishes); }
         public Task<bool> DishExistsAsync(Guid dishId, CancellationToken cancellationToken) => Task.FromResult(true);
         public Task<IReadOnlyList<ProposalSourceRow>> GetProposalRowsAsync(Guid dishId, CancellationToken cancellationToken) => Task.FromResult(Rows);
         public Task<IReadOnlyList<CanonicalIngredientResult>> FindCanonicalIngredientsAsync(string normalizedQuery, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<CanonicalIngredientResult>>([]);

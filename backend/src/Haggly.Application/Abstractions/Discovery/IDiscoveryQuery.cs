@@ -4,8 +4,8 @@ namespace Haggly.Application.Abstractions.Discovery;
 
 public interface IDiscoveryQuery
 {
-    Task<CommonDishResult?> FindDishAsync(
-        string normalizedName,
+    Task<IReadOnlyList<CommonDishResult>> FindDishesAsync(
+        string normalizedQuery,
         CancellationToken cancellationToken);
 
     Task<bool> DishExistsAsync(

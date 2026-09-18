@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Haggly.Infrastructure.Persistence;
 
-public static class ApplicationDataSeeder
+public static partial class ApplicationDataSeeder
 {
     private const string SeedMarkerEmail = "deliverer5@example.vn";
     private const string DevelopmentPassword = "Admin123!";
@@ -29,31 +29,34 @@ public static class ApplicationDataSeeder
             $"SELECT pg_advisory_xact_lock({SeedLockId})",
             cancellationToken);
 
-        if (await dbContext.Users.IgnoreQueryFilters().AnyAsync(
-                user => user.Email == SeedMarkerEmail,
-                cancellationToken))
+        var now = new DateTimeOffset(2026, 9, 1, 1, 0, 0, TimeSpan.Zero);
+        var baseSeedExists = await dbContext.Users.IgnoreQueryFilters().AnyAsync(
+            user => user.Email == SeedMarkerEmail,
+            cancellationToken);
+
+        if (!baseSeedExists)
         {
-            await transaction.CommitAsync(cancellationToken);
-            return;
+            var roles = await EnsureRolesAsync(dbContext, now, cancellationToken);
+
+            var admins = CreateAdmins(dbContext, passwordHasher, roles, now);
+            var buyers = CreateBuyers(dbContext, passwordHasher, roles, now);
+            var vendors = CreateVendors(dbContext, passwordHasher, roles, admins[0].Id, now);
+            CreateDeliverers(dbContext, passwordHasher, roles, now);
+
+            var markets = CreateMarkets(dbContext, admins[0].Id, now);
+            var stalls = CreateStalls(dbContext, markets, vendors, now);
+            var products = CreateCatalog(dbContext, admins[0].Id, now);
+            var listings = CreateListings(dbContext, stalls, products, vendors, now);
+            var inventoryItems = CreateInventories(dbContext, stalls, listings, vendors, now);
+            CreateCarts(dbContext, buyers, inventoryItems, now);
+            var orders = CreateOrders(dbContext, buyers, stalls, inventoryItems, products, now);
+            var posSales = CreatePosSales(dbContext, stalls, vendors, inventoryItems, products, now);
+            CreatePaymentsAndRevenue(dbContext, orders, posSales, now);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        var now = new DateTimeOffset(2026, 9, 1, 1, 0, 0, TimeSpan.Zero);
-        var roles = await EnsureRolesAsync(dbContext, now, cancellationToken);
-
-        var admins = CreateAdmins(dbContext, passwordHasher, roles, now);
-        var buyers = CreateBuyers(dbContext, passwordHasher, roles, now);
-        var vendors = CreateVendors(dbContext, passwordHasher, roles, admins[0].Id, now);
-        CreateDeliverers(dbContext, passwordHasher, roles, now);
-
-        var markets = CreateMarkets(dbContext, admins[0].Id, now);
-        var stalls = CreateStalls(dbContext, markets, vendors, now);
-        var products = CreateCatalog(dbContext, admins[0].Id, now);
-        var listings = CreateListings(dbContext, stalls, products, vendors, now);
-        var inventoryItems = CreateInventories(dbContext, stalls, listings, vendors, now);
-        CreateCarts(dbContext, buyers, inventoryItems, now);
-        var orders = CreateOrders(dbContext, buyers, stalls, inventoryItems, products, now);
-        var posSales = CreatePosSales(dbContext, stalls, vendors, inventoryItems, products, now);
-        CreatePaymentsAndRevenue(dbContext, orders, posSales, now);
+        await EnsureDiscoveryMarketplaceAsync(dbContext, now, cancellationToken);
 
         await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
