@@ -206,6 +206,47 @@ interface ProductListing {
 available stock. Use it for buyer product grids. `/stalls/{stallId}/products`
 is configuration and does not prove current availability.
 
+## Dish discovery
+
+| Method and route | Access | Input | Success |
+|---|---|---|---|
+| `GET /common-dishes/search` | Anonymous | Required `q`, 1–200 characters | `200 ApiResponse<CommonDishSearchResult>` |
+| `GET /common-dishes/{dishId}/proposal` | Anonymous | Path GUID | `200 ApiResponse<DishProposal>` |
+| `GET /canonical-ingredients` | Catalog contributor | Required `q`, 1–200 characters | `200 ApiResponse<CanonicalIngredient[]>` |
+| `PATCH /products/{productId}/canonical-ingredient` | Admin | `ProductIngredientMappingRequest` | `204` |
+
+Search normalizes Vietnamese accents, punctuation, case, and whitespace and
+performs an exact match only. A miss returns an empty `candidates` array.
+Proposal reads are advisory and do not reserve inventory.
+
+```ts
+interface CommonDishSearchResult { candidates: CommonDishCandidate[] }
+interface CommonDishCandidate {
+  dishId: string; externalId: string; name: string; category: string | null;
+}
+type ProposalIngredientStatus =
+  | "AVAILABLE" | "NO_PRODUCT" | "NO_ACTIVE_LISTING" | "OUT_OF_STOCK";
+interface ProposalListing {
+  productId: string; productName: string; displayName: string;
+  inventoryItemId: string; stallId: string; stallName: string; sellingUnit: string;
+  minimumOrderQuantity: number; currentUnitPrice: number; availableQuantity: number;
+}
+interface ProposalIngredient {
+  canonicalIngredientId: string; code: string; name: string;
+  status: ProposalIngredientStatus; selectedListing: ProposalListing | null;
+  alternatives: ProposalListing[];
+}
+interface DishProposal { dishId: string; dishName: string; ingredients: ProposalIngredient[] }
+interface CanonicalIngredient { id: string; code: string; name: string; category: string | null }
+interface ProductIngredientMappingRequest {
+  canonicalIngredientId: string | null; status?: "APPROVED" | "REJECTED" | null;
+}
+```
+
+Blank or oversized queries return `400`; a missing/inactive proposal dish or
+mapping target returns `404`. Sending `canonicalIngredientId: null` clears a
+Product mapping. Only approved mappings participate in proposals.
+
 ## Vendor inventory
 
 All routes require Vendor role and ownership of the active Stall.

@@ -1,0 +1,1358 @@
+﻿[
+    {
+        "code":  "CI_BA_CHI_BO",
+        "name_vi":  "Ba chỉ bò",
+        "name_normalized":  "ba chi bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_BAC_HA",
+        "name_vi":  "Bạc hà",
+        "name_normalized":  "bac ha",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_BACH_TUOT",
+        "name_vi":  "Bạch tuột",
+        "name_normalized":  "bach tuot",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_BANH_CANH_BOT_GAO",
+        "name_vi":  "Bánh canh bột gạo",
+        "name_normalized":  "banh canh bot gao",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BANH_TRANG",
+        "name_vi":  "Bánh tráng",
+        "name_normalized":  "banh trang",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_BANH_TRANG_CUON_CHA_GIO",
+        "name_vi":  "Bánh tráng cuốn chả giò",
+        "name_normalized":  "banh trang cuon cha gio",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_BANH_TRANG_MONG",
+        "name_vi":  "Bánh tráng mỏng",
+        "name_normalized":  "banh trang mong",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_BAP_BO",
+        "name_vi":  "Bắp bò",
+        "name_normalized":  "bap bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_BAP_CAI",
+        "name_vi":  "Bắp cải",
+        "name_normalized":  "bap cai",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_BAP_CHUOI_BAO_SAN",
+        "name_vi":  "Bắp chuối bào sẵn",
+        "name_normalized":  "bap chuoi bao san",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_BAU",
+        "name_vi":  "Bầu",
+        "name_normalized":  "bau",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_BI_DAO",
+        "name_vi":  "Bí đao",
+        "name_normalized":  "bi dao",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_BI_DO",
+        "name_vi":  "Bí đỏ",
+        "name_normalized":  "bi do",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_BO_DAU_PHONG",
+        "name_vi":  "Bơ đậu phộng",
+        "name_normalized":  "bo dau phong",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_BO_VIEN",
+        "name_vi":  "Bò viên",
+        "name_normalized":  "bo vien",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_BOT_CANH",
+        "name_vi":  "Bột canh",
+        "name_normalized":  "bot canh",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_CHIEN_GION",
+        "name_vi":  "Bột chiên giòn",
+        "name_normalized":  "bot chien gion",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_BOT_GAO",
+        "name_vi":  "Bột gạo",
+        "name_normalized":  "bot gao",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_HANH",
+        "name_vi":  "Bột hành",
+        "name_normalized":  "bot hanh",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_MI",
+        "name_vi":  "Bột mì",
+        "name_normalized":  "bot mi",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_MI_DA_DUNG",
+        "name_vi":  "Bột mì đa dụng",
+        "name_normalized":  "bot mi da dung",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_NANG",
+        "name_vi":  "Bột năng",
+        "name_normalized":  "bot nang",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_NEM",
+        "name_vi":  "Bột nêm",
+        "name_normalized":  "bot nem",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_NEP",
+        "name_vi":  "Bột nếp",
+        "name_normalized":  "bot nep",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BOT_NGHE",
+        "name_vi":  "Bột nghệ",
+        "name_normalized":  "bot nghe",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_NGHE_NUOC_NGHE_TUOI",
+        "name_vi":  "Bột nghệ/Nước nghệ tươi",
+        "name_normalized":  "bot nghe nuoc nghe tuoi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_NGOT",
+        "name_vi":  "Bột ngọt",
+        "name_normalized":  "bot ngot",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_NGU_VI_HUONG",
+        "name_vi":  "Bột ngũ vị hương",
+        "name_normalized":  "bot ngu vi huong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_NO",
+        "name_vi":  "Bột nở",
+        "name_normalized":  "bot no",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_OT_HAN_QUOC",
+        "name_vi":  "Bột ớt Hàn Quốc",
+        "name_normalized":  "bot ot han quoc",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BOT_TOI",
+        "name_vi":  "Bột tỏi",
+        "name_normalized":  "bot toi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_BUN_AN_KEM",
+        "name_vi":  "Bún ăn kèm",
+        "name_normalized":  "bun an kem",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BUN_SOI_NHO",
+        "name_vi":  "Bún sợi nhỏ",
+        "name_normalized":  "bun soi nho",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BUN_SOI_TO",
+        "name_vi":  "Bún sợi to",
+        "name_normalized":  "bun soi to",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BUN_TAU",
+        "name_vi":  "Bún tàu",
+        "name_normalized":  "bun tau",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BUN_TUOI",
+        "name_vi":  "Bún tươi",
+        "name_normalized":  "bun tuoi",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_BUN_TUOI_RAU_AN_KEM_HANH_PHI",
+        "name_vi":  "Bún tươi/ rau ăn kèm/ hành phi",
+        "name_normalized":  "bun tuoi rau an kem hanh phi",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_CA_CHUA",
+        "name_vi":  "Cà chua",
+        "name_normalized":  "ca chua",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CA_DIEU_HONG",
+        "name_vi":  "Cá diêu hồng",
+        "name_normalized":  "ca dieu hong",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CA_LOC",
+        "name_vi":  "Cá lóc",
+        "name_normalized":  "ca loc",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_CA_RO_PHI",
+        "name_vi":  "Cá rô phi",
+        "name_normalized":  "ca ro phi",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CA_ROT",
+        "name_vi":  "Cà rốt",
+        "name_normalized":  "ca rot",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CA_TIM",
+        "name_vi":  "Cà tím",
+        "name_normalized":  "ca tim",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CA_TRE",
+        "name_vi":  "Cá trê",
+        "name_normalized":  "ca tre",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CA_VIEN",
+        "name_vi":  "Cá viên",
+        "name_normalized":  "ca vien",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CAI_THIA",
+        "name_vi":  "Cải thìa",
+        "name_normalized":  "cai thia",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CAN_TAU",
+        "name_vi":  "Cần tàu",
+        "name_normalized":  "can tau",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CANH_GA",
+        "name_vi":  "Cánh gà",
+        "name_normalized":  "canh ga",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_CHA_CA_THAC_LAC",
+        "name_vi":  "Chả cá thác lác",
+        "name_normalized":  "cha ca thac lac",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CHA_CUA_HAY_CHA_BO",
+        "name_vi":  "Chả cua hay chả bò",
+        "name_normalized":  "cha cua hay cha bo",
+        "category":  "cold_cuts:_sausages_\u0026_ham"
+    },
+    {
+        "code":  "CI_CHA_LUA",
+        "name_vi":  "Chả lụa",
+        "name_normalized":  "cha lua",
+        "category":  "cold_cuts:_sausages_\u0026_ham"
+    },
+    {
+        "code":  "CI_CHAN_GIO_HEO",
+        "name_vi":  "Chân giò heo",
+        "name_normalized":  "chan gio heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_CHANH",
+        "name_vi":  "Chanh",
+        "name_normalized":  "chanh",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_COM",
+        "name_vi":  "Cơm",
+        "name_normalized":  "com",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_COM_NGUOI",
+        "name_vi":  "Cơm nguội",
+        "name_normalized":  "com nguoi",
+        "category":  "instant_foods"
+    },
+    {
+        "code":  "CI_CU_CAI_TRANG",
+        "name_vi":  "Củ cải trắng",
+        "name_normalized":  "cu cai trang",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_CUA_BIEN",
+        "name_vi":  "Cua biển",
+        "name_normalized":  "cua bien",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_CUA_DONG",
+        "name_vi":  "Cua đồng",
+        "name_normalized":  "cua dong",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_DAU_AN",
+        "name_vi":  "Dầu ăn",
+        "name_normalized":  "dau an",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_DAU_BAP",
+        "name_vi":  "Đậu bắp",
+        "name_normalized":  "dau bap",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DAU_HAO",
+        "name_vi":  "Dầu hào",
+        "name_normalized":  "dau hao",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_DAU_HU",
+        "name_vi":  "Đậu hũ",
+        "name_normalized":  "dau hu",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DAU_HU_CHIEN",
+        "name_vi":  "Đậu hũ chiên",
+        "name_normalized":  "dau hu chien",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_DAU_MAU_DIEU",
+        "name_vi":  "Dầu màu điều",
+        "name_normalized":  "dau mau dieu",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_DAU_ME",
+        "name_vi":  "Dầu mè",
+        "name_normalized":  "dau me",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_DAU_PHONG",
+        "name_vi":  "Đậu phộng",
+        "name_normalized":  "dau phong",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_DAU_PHU",
+        "name_vi":  "Đậu phụ",
+        "name_normalized":  "dau phu",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DAU_QUE",
+        "name_vi":  "Đậu que",
+        "name_normalized":  "dau que",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DO_CHUA_AN_KEM",
+        "name_vi":  "Đồ chua ăn kèm",
+        "name_normalized":  "do chua an kem",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_DOC_MUNG",
+        "name_vi":  "Dọc mùng",
+        "name_normalized":  "doc mung",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DU_DU",
+        "name_vi":  "Đu đủ",
+        "name_normalized":  "du du",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_DU_DU_XANH",
+        "name_vi":  "Đủ đủ xanh",
+        "name_normalized":  "du du xanh",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DUA_LEO_CA_CHUA",
+        "name_vi":  "Dưa leo/ cà chua",
+        "name_normalized":  "dua leo ca chua",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_DUA_TUOI",
+        "name_vi":  "Dừa tươi",
+        "name_normalized":  "dua tuoi",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_DUONG",
+        "name_vi":  "Đường",
+        "name_normalized":  "duong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_DUONG_PHEN",
+        "name_vi":  "Đường phèn",
+        "name_normalized":  "duong phen",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_GA",
+        "name_vi":  "Gà",
+        "name_normalized":  "ga",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_GA_TA",
+        "name_vi":  "Gà ta",
+        "name_normalized":  "ga ta",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_GACH_CUA_CON_NGUYEN",
+        "name_vi":  "Gạch cua còn nguyên",
+        "name_normalized":  "gach cua con nguyen",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_GAN_BO",
+        "name_vi":  "Gân bò",
+        "name_normalized":  "gan bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_GAN_HEO",
+        "name_vi":  "Gan heo",
+        "name_normalized":  "gan heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_GAO",
+        "name_vi":  "Gạo",
+        "name_normalized":  "gao",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_GAO_DEO",
+        "name_vi":  "Gạo dẻo",
+        "name_normalized":  "gao deo",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_GAO_NEP",
+        "name_vi":  "Gạo nếp",
+        "name_normalized":  "gao nep",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_GAO_TRANG",
+        "name_vi":  "Gạo trắng",
+        "name_normalized":  "gao trang",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_GIA",
+        "name_vi":  "Giá",
+        "name_normalized":  "gia",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_GIA_DO",
+        "name_vi":  "Giá đỗ",
+        "name_normalized":  "gia do",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_GIA_VI",
+        "name_vi":  "Gia vị",
+        "name_normalized":  "gia vi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_GIA_VI_UOP_DO_NUONG",
+        "name_vi":  "Gia vị ướp đồ nướng",
+        "name_normalized":  "gia vi uop do nuong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_GIAM",
+        "name_vi":  "Giấm",
+        "name_normalized":  "giam",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_GIAM_TRANG",
+        "name_vi":  "Giấm trắng",
+        "name_normalized":  "giam trang",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_GIO_HEO",
+        "name_vi":  "Giò heo",
+        "name_normalized":  "gio heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_GIO_SONG",
+        "name_vi":  "Giò sống",
+        "name_normalized":  "gio song",
+        "category":  "cold_cuts:_sausages_\u0026_ham"
+    },
+    {
+        "code":  "CI_GUNG",
+        "name_vi":  "Gừng",
+        "name_normalized":  "gung",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_HANH",
+        "name_vi":  "Hành",
+        "name_normalized":  "hanh",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_KHO",
+        "name_vi":  "Hành khô",
+        "name_normalized":  "hanh kho",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_LA",
+        "name_vi":  "Hành lá",
+        "name_normalized":  "hanh la",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_NGO",
+        "name_vi":  "Hành ngò",
+        "name_normalized":  "hanh ngo",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_PHI",
+        "name_vi":  "Hành phi",
+        "name_normalized":  "hanh phi",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_TAY",
+        "name_vi":  "Hành tây",
+        "name_normalized":  "hanh tay",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HANH_TIM",
+        "name_vi":  "Hành tím",
+        "name_normalized":  "hanh tim",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HAT_CA_RI",
+        "name_vi":  "Hạt cà ri",
+        "name_normalized":  "hat ca ri",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_HAT_NEM",
+        "name_vi":  "Hạt nêm",
+        "name_normalized":  "hat nem",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_HAT_NEM_CHAY",
+        "name_vi":  "Hạt nêm chay",
+        "name_normalized":  "hat nem chay",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_HAT_NGO",
+        "name_vi":  "Hạt ngò",
+        "name_normalized":  "hat ngo",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HE",
+        "name_vi":  "Hẹ",
+        "name_normalized":  "he",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_HEO_QUAY",
+        "name_vi":  "Heo quay",
+        "name_normalized":  "heo quay",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_HOA_CHUOI",
+        "name_vi":  "Hoa chuối",
+        "name_normalized":  "hoa chuoi",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_HOA_HOI",
+        "name_vi":  "Hoa hồi",
+        "name_normalized":  "hoa hoi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_HUYET_BO_HOAC_HEO",
+        "name_vi":  "Huyết bò hoặc heo",
+        "name_normalized":  "huyet bo hoac heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_HUYET_HEO",
+        "name_vi":  "Huyết heo",
+        "name_normalized":  "huyet heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_KHO_QUA",
+        "name_vi":  "Khổ qua",
+        "name_normalized":  "kho qua",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_KHOAI_MON",
+        "name_vi":  "Khoai môn",
+        "name_normalized":  "khoai mon",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_KHOAI_TAY",
+        "name_vi":  "Khoai tây",
+        "name_normalized":  "khoai tay",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_KY_TU",
+        "name_vi":  "Kỷ tử",
+        "name_normalized":  "ky tu",
+        "category":  "dried_fruits"
+    },
+    {
+        "code":  "CI_LA_CHANH",
+        "name_vi":  "Lá chanh",
+        "name_normalized":  "la chanh",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_LAP_XUONG",
+        "name_vi":  "Lạp xưởng",
+        "name_normalized":  "lap xuong",
+        "category":  "cold_cuts:_sausages_\u0026_ham"
+    },
+    {
+        "code":  "CI_LONG_HEO",
+        "name_vi":  "Lòng heo",
+        "name_normalized":  "long heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_MAM_CA_SAC",
+        "name_vi":  "Mắm cá sặc",
+        "name_normalized":  "mam ca sac",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MAM_RUOC",
+        "name_vi":  "Mắm ruốc",
+        "name_normalized":  "mam ruoc",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MAM_TOM",
+        "name_vi":  "Mắm tôm",
+        "name_normalized":  "mam tom",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MAT_ONG",
+        "name_vi":  "Mật ong",
+        "name_normalized":  "mat ong",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_MAU_DAU_DIEU",
+        "name_vi":  "Màu dầu điều",
+        "name_normalized":  "mau dau dieu",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_ME_VAT",
+        "name_vi":  "Me vắt",
+        "name_normalized":  "me vat",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_MI_AN_LIEN_HOAC_BUN",
+        "name_vi":  "Mì ăn liền hoặc bún",
+        "name_normalized":  "mi an lien hoac bun",
+        "category":  "instant_foods"
+    },
+    {
+        "code":  "CI_MI_CHINH",
+        "name_vi":  "Mì chính",
+        "name_normalized":  "mi chinh",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MI_GOI",
+        "name_vi":  "Mì gói",
+        "name_normalized":  "mi goi",
+        "category":  "instant_foods"
+    },
+    {
+        "code":  "CI_MI_QUANG",
+        "name_vi":  "Mì quảng",
+        "name_normalized":  "mi quang",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_MO_HEO",
+        "name_vi":  "Mỡ heo",
+        "name_normalized":  "mo heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_MOC",
+        "name_vi":  "Mọc",
+        "name_normalized":  "moc",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_MOC_NHI",
+        "name_vi":  "Mộc nhĩ",
+        "name_normalized":  "moc nhi",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_MUC",
+        "name_vi":  "Mực",
+        "name_normalized":  "muc",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_MUC_ONG",
+        "name_vi":  "Mực ống",
+        "name_normalized":  "muc ong",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_MUI_TAU_HUNG_QUE",
+        "name_vi":  "Mùi tàu/húng quế",
+        "name_normalized":  "mui tau hung que",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_MUOI",
+        "name_vi":  "Muối",
+        "name_normalized":  "muoi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MUOI_DUONG",
+        "name_vi":  "Muối/ đường",
+        "name_normalized":  "muoi duong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_MUOP_HUONG",
+        "name_vi":  "Mướp hương",
+        "name_normalized":  "muop huong",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NAM_BO",
+        "name_vi":  "Nạm bò",
+        "name_normalized":  "nam bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_NAM_HUON_G",
+        "name_vi":  "Nấm hươn g",
+        "name_normalized":  "nam huon g",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NAM_MEO",
+        "name_vi":  "Nấm mèo",
+        "name_normalized":  "nam meo",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NAM_ROM",
+        "name_vi":  "Nấm rơm",
+        "name_normalized":  "nam rom",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NEP_BAC",
+        "name_vi":  "Nếp Bắc",
+        "name_normalized":  "nep bac",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_NGO",
+        "name_vi":  "Ngò",
+        "name_normalized":  "ngo",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NGO_GAI",
+        "name_vi":  "Ngò gai",
+        "name_normalized":  "ngo gai",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NGO_RI",
+        "name_vi":  "Ngò rí",
+        "name_normalized":  "ngo ri",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_NGU_VI_HUONG",
+        "name_vi":  "Ngũ vị hương",
+        "name_normalized":  "ngu vi huong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_NUOC",
+        "name_vi":  "Nước",
+        "name_normalized":  "nuoc",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_COT_CHANH",
+        "name_vi":  "Nước cốt chanh",
+        "name_normalized":  "nuoc cot chanh",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_COT_DUA",
+        "name_vi":  "Nước cốt dừa",
+        "name_normalized":  "nuoc cot dua",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_COT_TAC",
+        "name_vi":  "Nước cốt tắc",
+        "name_normalized":  "nuoc cot tac",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_DA",
+        "name_vi":  "Nước đá",
+        "name_normalized":  "nuoc da",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NUOC_DUA",
+        "name_vi":  "Nước dừa",
+        "name_normalized":  "nuoc dua",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_DUA_TUOI_NUOC_LOC",
+        "name_vi":  "Nước dừa tươi/Nước lọc",
+        "name_normalized":  "nuoc dua tuoi nuoc loc",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_DUNG_HEO",
+        "name_vi":  "Nước dùng heo",
+        "name_normalized":  "nuoc dung heo",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NUOC_HAM_XUONG",
+        "name_vi":  "Nước hầm xương",
+        "name_normalized":  "nuoc ham xuong",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NUOC_HANG",
+        "name_vi":  "Nước hàng",
+        "name_normalized":  "nuoc hang",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NUOC_MAM",
+        "name_vi":  "Nước mắm",
+        "name_normalized":  "nuoc mam",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_NUOC_MAU",
+        "name_vi":  "Nước màu",
+        "name_normalized":  "nuoc mau",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_NUOC_MAU_DUA",
+        "name_vi":  "Nước màu dừa",
+        "name_normalized":  "nuoc mau dua",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_ME",
+        "name_vi":  "Nước me",
+        "name_normalized":  "nuoc me",
+        "category":  "beverages"
+    },
+    {
+        "code":  "CI_NUOC_TUONG",
+        "name_vi":  "Nước tương",
+        "name_normalized":  "nuoc tuong",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_O_BANH_MI",
+        "name_vi":  "Ổ bánh mì",
+        "name_normalized":  "o banh mi",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_OT",
+        "name_vi":  "Ớt",
+        "name_normalized":  "ot",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_BOT",
+        "name_vi":  "Ớt bột",
+        "name_normalized":  "ot bot",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_CAY",
+        "name_vi":  "Ớt cay",
+        "name_normalized":  "ot cay",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_CHUONG",
+        "name_vi":  "Ớt chuông",
+        "name_normalized":  "ot chuong",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_OT_DO",
+        "name_vi":  "Ớt đỏ",
+        "name_normalized":  "ot do",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_HIEM",
+        "name_vi":  "Ớt hiểm",
+        "name_normalized":  "ot hiem",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_SUNG",
+        "name_vi":  "Ớt sừng",
+        "name_normalized":  "ot sung",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_OT_TUOI",
+        "name_vi":  "Ớt tươi",
+        "name_normalized":  "ot tuoi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_PATE_GAN_HEO",
+        "name_vi":  "Pate gan heo",
+        "name_normalized":  "pate gan heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_QUA_GAC",
+        "name_vi":  "Quả gấc",
+        "name_normalized":  "qua gac",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_QUE",
+        "name_vi":  "Quế",
+        "name_normalized":  "que",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_RAU_AN_KEM",
+        "name_vi":  "Rau ăn kèm",
+        "name_normalized":  "rau an kem",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_DAY",
+        "name_vi":  "Rau đay",
+        "name_normalized":  "rau day",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_MONG_TOI",
+        "name_vi":  "Rau mồng tơi",
+        "name_normalized":  "rau mong toi",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_MUI",
+        "name_vi":  "Rau mùi",
+        "name_normalized":  "rau mui",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_MUONG",
+        "name_vi":  "Rau muống",
+        "name_normalized":  "rau muong",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_NGO",
+        "name_vi":  "Rau ngổ",
+        "name_normalized":  "rau ngo",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_NGOT",
+        "name_vi":  "Rau ngót",
+        "name_normalized":  "rau ngot",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_RAM",
+        "name_vi":  "Rau răm",
+        "name_normalized":  "rau ram",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_SONG",
+        "name_vi":  "Rau sống",
+        "name_normalized":  "rau song",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RAU_THOM",
+        "name_vi":  "Rau thơm",
+        "name_normalized":  "rau thom",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_RAU_XA_LACH",
+        "name_vi":  "Rau xà lách",
+        "name_normalized":  "rau xa lach",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_RUOU_GAO",
+        "name_vi":  "Rượu gạo",
+        "name_normalized":  "ruou gao",
+        "category":  "alcoholic_beverages"
+    },
+    {
+        "code":  "CI_RUOU_TRANG",
+        "name_vi":  "Rượu trắng",
+        "name_normalized":  "ruou trang",
+        "category":  "alcoholic_beverages"
+    },
+    {
+        "code":  "CI_SA",
+        "name_vi":  "Sả",
+        "name_normalized":  "sa",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_SOI_HU_TIEU",
+        "name_vi":  "Sợi hủ tiếu",
+        "name_normalized":  "soi hu tieu",
+        "category":  "grains_staples"
+    },
+    {
+        "code":  "CI_SUA_TUOI",
+        "name_vi":  "Sữa tươi",
+        "name_normalized":  "sua tuoi",
+        "category":  "milk"
+    },
+    {
+        "code":  "CI_SUON_HEO",
+        "name_vi":  "Sườn heo",
+        "name_normalized":  "suon heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_SUON_HEO_NON",
+        "name_vi":  "Sườn heo non",
+        "name_normalized":  "suon heo non",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_TAO_TAU",
+        "name_vi":  "Táo tàu",
+        "name_normalized":  "tao tau",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_TAU_HU_KY",
+        "name_vi":  "Tàu hũ ky",
+        "name_normalized":  "tau hu ky",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_THAN_THIT_BO",
+        "name_vi":  "Thăn thịt bò",
+        "name_normalized":  "than thit bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THANH_QUE",
+        "name_vi":  "Thanh quế",
+        "name_normalized":  "thanh que",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_THAO_QUA",
+        "name_vi":  "Thảo quả",
+        "name_normalized":  "thao qua",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_THI_LA",
+        "name_vi":  "Thì là",
+        "name_normalized":  "thi la",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_THIT_BA_CHI",
+        "name_vi":  "Thịt ba chỉ",
+        "name_normalized":  "thit ba chi",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_BA_ROI",
+        "name_vi":  "Thịt ba rọi",
+        "name_normalized":  "thit ba roi",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_BAM",
+        "name_vi":  "Thịt băm",
+        "name_normalized":  "thit bam",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_BO",
+        "name_vi":  "Thịt bò",
+        "name_normalized":  "thit bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_GA",
+        "name_vi":  "Thịt gà",
+        "name_normalized":  "thit ga",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_HEO",
+        "name_vi":  "Thịt heo",
+        "name_normalized":  "thit heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_NAC_BAM",
+        "name_vi":  "Thịt nạc băm",
+        "name_normalized":  "thit nac bam",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_NAC_HEO",
+        "name_vi":  "Thịt nạc heo",
+        "name_normalized":  "thit nac heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THIT_SUON",
+        "name_vi":  "Thịt sườn",
+        "name_normalized":  "thit suon",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_THOM",
+        "name_vi":  "Thơm",
+        "name_normalized":  "thom",
+        "category":  "vegetables"
+    },
+    {
+        "code":  "CI_TIEU",
+        "name_vi":  "Tiêu",
+        "name_normalized":  "tieu",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_TIM_HEO",
+        "name_vi":  "Tim heo",
+        "name_normalized":  "tim heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_TOI",
+        "name_vi":  "Tỏi",
+        "name_normalized":  "toi",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_TOM",
+        "name_vi":  "Tôm",
+        "name_normalized":  "tom",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_TOM_KHO",
+        "name_vi":  "Tôm khô",
+        "name_normalized":  "tom kho",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_TOM_TUOI",
+        "name_vi":  "Tôm tươi",
+        "name_normalized":  "tom tuoi",
+        "category":  "seafood_\u0026_fish_balls"
+    },
+    {
+        "code":  "CI_TOP_MO",
+        "name_vi":  "Tóp mỡ",
+        "name_normalized":  "top mo",
+        "category":  "others"
+    },
+    {
+        "code":  "CI_TRAI_THAO",
+        "name_vi":  "Trái thảo",
+        "name_normalized":  "trai thao",
+        "category":  "fresh_fruits"
+    },
+    {
+        "code":  "CI_TRUNG_CUT",
+        "name_vi":  "Trứng cút",
+        "name_normalized":  "trung cut",
+        "category":  "snacks"
+    },
+    {
+        "code":  "CI_TRUNG_GA",
+        "name_vi":  "Trứng gà",
+        "name_normalized":  "trung ga",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_TRUNG_VIT",
+        "name_vi":  "Trứng vịt",
+        "name_normalized":  "trung vit",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_TUONG_DEN",
+        "name_vi":  "Tương đen",
+        "name_normalized":  "tuong den",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_TUONG_HOT_OT",
+        "name_vi":  "Tương hột ớt",
+        "name_normalized":  "tuong hot ot",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_TUONG_OT",
+        "name_vi":  "Tương ớt",
+        "name_normalized":  "tuong ot",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_XI_DAU",
+        "name_vi":  "Xì dầu",
+        "name_normalized":  "xi dau",
+        "category":  "seasonings"
+    },
+    {
+        "code":  "CI_XUONG_BO_CO_LAN_THIT",
+        "name_vi":  "Xương bò có lẫn thịt",
+        "name_normalized":  "xuong bo co lan thit",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_XUONG_HEO",
+        "name_vi":  "Xương heo",
+        "name_normalized":  "xuong heo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_XUONG_ONG_BO",
+        "name_vi":  "Xương ống bò",
+        "name_normalized":  "xuong ong bo",
+        "category":  "fresh_meat"
+    },
+    {
+        "code":  "CI_XUONG_ONG_HEO",
+        "name_vi":  "Xương ống heo",
+        "name_normalized":  "xuong ong heo",
+        "category":  "fresh_meat"
+    }
+]

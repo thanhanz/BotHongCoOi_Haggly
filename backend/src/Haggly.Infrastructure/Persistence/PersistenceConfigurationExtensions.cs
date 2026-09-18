@@ -30,6 +30,9 @@ using Haggly.Infrastructure.Persistence.Queries.Sales;
 using Haggly.Infrastructure.Persistence.Repositories.Finance;
 using Haggly.Infrastructure.Persistence.Repositories.Payments;
 using Haggly.Infrastructure.Persistence.Transactions.Sales;
+using Haggly.Application.Abstractions.Discovery;
+using Haggly.Infrastructure.Persistence.Repositories.Discovery;
+using Haggly.Infrastructure.Persistence.Queries.Discovery;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -70,6 +73,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IProductStallCommandRepository, EfProductStallCommandRepository>();
         services.AddScoped<IMarketCommandRepository, EfMarketCommandRepository>();
         services.AddScoped<IStallCommandRepository, EfStallCommandRepository>();
+        services.AddScoped<IDiscoveryCommandRepository, EfDiscoveryCommandRepository>();
 
         services.AddScoped<IInventoryCommandRepository, EfInventoryCommandRepository>();
         services.AddScoped<IInventoryReferenceQuery, EfInventoryReferenceQuery>();
@@ -102,6 +106,7 @@ public static class PersistenceConfigurationExtensions
         services.AddScoped<IVendorAdminQuery, DapperVendorAdminQuery>();
         services.AddScoped<IInventoryQuery, DapperInventoryQuery>();
         services.AddScoped<IProductListingReader, DapperProductListingRepository>();
+        services.AddScoped<IDiscoveryQuery, DapperDiscoveryQueryRepository>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
         services.AddScoped<RegisterBuyerHandler>();

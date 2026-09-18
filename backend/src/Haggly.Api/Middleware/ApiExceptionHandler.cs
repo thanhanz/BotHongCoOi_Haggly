@@ -10,6 +10,7 @@ using Haggly.Application.Modules.Inventory.Exceptions;
 using Haggly.Application.Modules.Sales.Exceptions;
 using Haggly.Application.Modules.Payments.Exceptions;
 using Haggly.Application.Modules.Finance.Exceptions;
+using Haggly.Application.Modules.Discovery;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -156,6 +157,10 @@ public sealed class ApiExceptionHandler(
                 => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
             RevenueReportNotFoundException
                 => (StatusCodes.Status404NotFound, "Revenue report resource not found", exception.Message),
+            DiscoveryValidationException
+                => (StatusCodes.Status400BadRequest, "Validation failed", exception.Message),
+            DiscoveryNotFoundException
+                => (StatusCodes.Status404NotFound, "Discovery resource not found", exception.Message),
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred",

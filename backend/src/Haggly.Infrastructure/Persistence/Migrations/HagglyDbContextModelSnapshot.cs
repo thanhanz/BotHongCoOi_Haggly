@@ -217,6 +217,146 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.ToTable("product_stalls", "catalog");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CanonicalIngredient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive", "Name");
+
+                    b.ToTable("canonical_ingredients", "discovery");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CommonDish", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique();
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique();
+
+                    b.HasIndex("IsActive", "Name");
+
+                    b.ToTable("common_dishes", "discovery");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CommonDishIngredient", b =>
+                {
+                    b.Property<Guid>("DishId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CanonicalIngredientId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("DishId", "CanonicalIngredientId");
+
+                    b.HasIndex("CanonicalIngredientId");
+
+                    b.ToTable("common_dish_ingredients", "discovery");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.ProductIngredientMapping", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CanonicalIngredientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MappingMethod")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("CanonicalIngredientId", "Status");
+
+                    b.ToTable("product_ingredient_mappings", "discovery");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Finance.RevenueLedger", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1107,7 +1247,6 @@ namespace Haggly.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.Cart", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("BuyerId")
@@ -1136,7 +1275,6 @@ namespace Haggly.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Haggly.Domain.Modules.Sales.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CartId")
@@ -1583,6 +1721,44 @@ namespace Haggly.Infrastructure.Persistence.Migrations
                     b.Navigation("Stall");
                 });
 
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CommonDishIngredient", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Discovery.CanonicalIngredient", "CanonicalIngredient")
+                        .WithMany("Dishes")
+                        .HasForeignKey("CanonicalIngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Discovery.CommonDish", "Dish")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("DishId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CanonicalIngredient");
+
+                    b.Navigation("Dish");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.ProductIngredientMapping", b =>
+                {
+                    b.HasOne("Haggly.Domain.Modules.Discovery.CanonicalIngredient", "CanonicalIngredient")
+                        .WithMany("ProductMappings")
+                        .HasForeignKey("CanonicalIngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Haggly.Domain.Modules.Catalog.Product", "Product")
+                        .WithOne()
+                        .HasForeignKey("Haggly.Domain.Modules.Discovery.ProductIngredientMapping", "ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CanonicalIngredient");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Haggly.Domain.Modules.Finance.RevenueLedger", b =>
                 {
                     b.HasOne("Haggly.Domain.Modules.Payments.PaymentAllocation", "PaymentAllocation")
@@ -1860,6 +2036,18 @@ namespace Haggly.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Haggly.Domain.Modules.Catalog.Product", b =>
                 {
                     b.Navigation("ProductStalls");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CanonicalIngredient", b =>
+                {
+                    b.Navigation("Dishes");
+
+                    b.Navigation("ProductMappings");
+                });
+
+            modelBuilder.Entity("Haggly.Domain.Modules.Discovery.CommonDish", b =>
+                {
+                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("Haggly.Domain.Modules.Identity.Role", b =>

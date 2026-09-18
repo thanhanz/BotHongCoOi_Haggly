@@ -6,6 +6,7 @@ using Haggly.Domain.Modules.Markets;
 using Haggly.Domain.Modules.Sales;
 using Haggly.Domain.Modules.Finance;
 using Haggly.Domain.Modules.Payments;
+using Haggly.Domain.Modules.Discovery;
 
 namespace Haggly.Infrastructure.Persistence;
 
@@ -28,6 +29,12 @@ public sealed class HagglyDbContext(DbContextOptions<HagglyDbContext> options) :
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductStall> ProductStalls => Set<ProductStall>();
+
+    // Discovery
+    public DbSet<CanonicalIngredient> CanonicalIngredients => Set<CanonicalIngredient>();
+    public DbSet<CommonDish> CommonDishes => Set<CommonDish>();
+    public DbSet<CommonDishIngredient> CommonDishIngredients => Set<CommonDishIngredient>();
+    public DbSet<ProductIngredientMapping> ProductIngredientMappings => Set<ProductIngredientMapping>();
 
     // Inventory
     public DbSet<Inventory> Inventories => Set<Inventory>();

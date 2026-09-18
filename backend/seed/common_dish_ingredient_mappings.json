@@ -1,0 +1,1022 @@
+﻿[
+    {
+        "ingredient_id":  "ingre00006",
+        "canonical_code":  "CI_BA_CHI_BO"
+    },
+    {
+        "ingredient_id":  "ingre00072",
+        "canonical_code":  "CI_BANH_CANH_BOT_GAO"
+    },
+    {
+        "ingredient_id":  "ingre00178",
+        "canonical_code":  "CI_BANH_TRANG"
+    },
+    {
+        "ingredient_id":  "ingre00187",
+        "canonical_code":  "CI_BANH_TRANG_CUON_CHA_GIO"
+    },
+    {
+        "ingredient_id":  "ingre00198",
+        "canonical_code":  "CI_BANH_TRANG_MONG"
+    },
+    {
+        "ingredient_id":  "ingre00247",
+        "canonical_code":  "CI_BI_DAO"
+    },
+    {
+        "ingredient_id":  "ingre00253",
+        "canonical_code":  "CI_BI_DO"
+    },
+    {
+        "ingredient_id":  "ingre00269",
+        "canonical_code":  "CI_BO_VIEN"
+    },
+    {
+        "ingredient_id":  "ingre00352",
+        "canonical_code":  "CI_BUN_SOI_NHO"
+    },
+    {
+        "ingredient_id":  "ingre00353",
+        "canonical_code":  "CI_BUN_SOI_TO"
+    },
+    {
+        "ingredient_id":  "ingre00355",
+        "canonical_code":  "CI_BUN_TAU"
+    },
+    {
+        "ingredient_id":  "ingre00357",
+        "canonical_code":  "CI_BUN_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre00361",
+        "canonical_code":  "CI_BUN_TUOI_RAU_AN_KEM_HANH_PHI"
+    },
+    {
+        "ingredient_id":  "ingre00362",
+        "canonical_code":  "CI_BUN_AN_KEM"
+    },
+    {
+        "ingredient_id":  "ingre00416",
+        "canonical_code":  "CI_BO_DAU_PHONG"
+    },
+    {
+        "ingredient_id":  "ingre00430",
+        "canonical_code":  "CI_BAC_HA"
+    },
+    {
+        "ingredient_id":  "ingre00437",
+        "canonical_code":  "CI_BACH_TUOT"
+    },
+    {
+        "ingredient_id":  "ingre00440",
+        "canonical_code":  "CI_BAU"
+    },
+    {
+        "ingredient_id":  "ingre00450",
+        "canonical_code":  "CI_BAP_BO"
+    },
+    {
+        "ingredient_id":  "ingre00454",
+        "canonical_code":  "CI_BAP_CHUOI_BAO_SAN"
+    },
+    {
+        "ingredient_id":  "ingre00457",
+        "canonical_code":  "CI_BAP_CAI"
+    },
+    {
+        "ingredient_id":  "ingre00587",
+        "canonical_code":  "CI_BOT_CANH"
+    },
+    {
+        "ingredient_id":  "ingre00598",
+        "canonical_code":  "CI_BOT_CHIEN_GION"
+    },
+    {
+        "ingredient_id":  "ingre00668",
+        "canonical_code":  "CI_BOT_GAO"
+    },
+    {
+        "ingredient_id":  "ingre00682",
+        "canonical_code":  "CI_BOT_HANH"
+    },
+    {
+        "ingredient_id":  "ingre00759",
+        "canonical_code":  "CI_BOT_MI"
+    },
+    {
+        "ingredient_id":  "ingre00791",
+        "canonical_code":  "CI_BOT_MI_DA_DUNG"
+    },
+    {
+        "ingredient_id":  "ingre00804",
+        "canonical_code":  "CI_BOT_NGHE"
+    },
+    {
+        "ingredient_id":  "ingre00806",
+        "canonical_code":  "CI_BOT_NGHE_NUOC_NGHE_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre00815",
+        "canonical_code":  "CI_BOT_NGU_VI_HUONG"
+    },
+    {
+        "ingredient_id":  "ingre00819",
+        "canonical_code":  "CI_BOT_NGOT"
+    },
+    {
+        "ingredient_id":  "ingre00838",
+        "canonical_code":  "CI_BOT_NEM"
+    },
+    {
+        "ingredient_id":  "ingre00849",
+        "canonical_code":  "CI_BOT_NANG"
+    },
+    {
+        "ingredient_id":  "ingre00859",
+        "canonical_code":  "CI_BOT_NEP"
+    },
+    {
+        "ingredient_id":  "ingre00867",
+        "canonical_code":  "CI_BOT_NO"
+    },
+    {
+        "ingredient_id":  "ingre00978",
+        "canonical_code":  "CI_BOT_TOI"
+    },
+    {
+        "ingredient_id":  "ingre01023",
+        "canonical_code":  "CI_BOT_OT_HAN_QUOC"
+    },
+    {
+        "ingredient_id":  "ingre01079",
+        "canonical_code":  "CI_CHANH"
+    },
+    {
+        "ingredient_id":  "ingre01232",
+        "canonical_code":  "CI_CHAN_GIO_HEO"
+    },
+    {
+        "ingredient_id":  "ingre01265",
+        "canonical_code":  "CI_CHA_CUA_HAY_CHA_BO"
+    },
+    {
+        "ingredient_id":  "ingre01280",
+        "canonical_code":  "CI_CHA_CA_THAC_LAC"
+    },
+    {
+        "ingredient_id":  "ingre01292",
+        "canonical_code":  "CI_CHA_LUA"
+    },
+    {
+        "ingredient_id":  "ingre01335",
+        "canonical_code":  "CI_CUA_BIEN"
+    },
+    {
+        "ingredient_id":  "ingre01344",
+        "canonical_code":  "CI_CUA_DONG"
+    },
+    {
+        "ingredient_id":  "ingre01354",
+        "canonical_code":  "CI_CA_CHUA"
+    },
+    {
+        "ingredient_id":  "ingre01363",
+        "canonical_code":  "CI_CA_CHUA"
+    },
+    {
+        "ingredient_id":  "ingre01419",
+        "canonical_code":  "CI_CA_ROT"
+    },
+    {
+        "ingredient_id":  "ingre01444",
+        "canonical_code":  "CI_CA_TIM"
+    },
+    {
+        "ingredient_id":  "ingre01513",
+        "canonical_code":  "CI_CA_DIEU_HONG"
+    },
+    {
+        "ingredient_id":  "ingre01549",
+        "canonical_code":  "CI_CA_LOC"
+    },
+    {
+        "ingredient_id":  "ingre01610",
+        "canonical_code":  "CI_CA_RO_PHI"
+    },
+    {
+        "ingredient_id":  "ingre01636",
+        "canonical_code":  "CI_CA_TRE"
+    },
+    {
+        "ingredient_id":  "ingre01648",
+        "canonical_code":  "CI_CA_VIEN"
+    },
+    {
+        "ingredient_id":  "ingre01689",
+        "canonical_code":  "CI_CANH_GA"
+    },
+    {
+        "ingredient_id":  "ingre01724",
+        "canonical_code":  "CI_COM"
+    },
+    {
+        "ingredient_id":  "ingre01755",
+        "canonical_code":  "CI_COM_NGUOI"
+    },
+    {
+        "ingredient_id":  "ingre01792",
+        "canonical_code":  "CI_CAI_THIA"
+    },
+    {
+        "ingredient_id":  "ingre01809",
+        "canonical_code":  "CI_CAN_TAU"
+    },
+    {
+        "ingredient_id":  "ingre01868",
+        "canonical_code":  "CI_CU_CAI_TRANG"
+    },
+    {
+        "ingredient_id":  "ingre02029",
+        "canonical_code":  "CI_DUA_LEO_CA_CHUA"
+    },
+    {
+        "ingredient_id":  "ingre02080",
+        "canonical_code":  "CI_DAU_HAO"
+    },
+    {
+        "ingredient_id":  "ingre02093",
+        "canonical_code":  "CI_DAU_MAU_DIEU"
+    },
+    {
+        "ingredient_id":  "ingre02094",
+        "canonical_code":  "CI_DAU_ME"
+    },
+    {
+        "ingredient_id":  "ingre02124",
+        "canonical_code":  "CI_DAU_AN"
+    },
+    {
+        "ingredient_id":  "ingre02147",
+        "canonical_code":  "CI_DOC_MUNG"
+    },
+    {
+        "ingredient_id":  "ingre02198",
+        "canonical_code":  "CI_DUA_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre02242",
+        "canonical_code":  "CI_GAN_HEO"
+    },
+    {
+        "ingredient_id":  "ingre02276",
+        "canonical_code":  "CI_GIA_VI"
+    },
+    {
+        "ingredient_id":  "ingre02326",
+        "canonical_code":  "CI_GIA_VI_UOP_DO_NUONG"
+    },
+    {
+        "ingredient_id":  "ingre02329",
+        "canonical_code":  "CI_GIA"
+    },
+    {
+        "ingredient_id":  "ingre02337",
+        "canonical_code":  "CI_GIA_DO"
+    },
+    {
+        "ingredient_id":  "ingre02346",
+        "canonical_code":  "CI_GIO_HEO"
+    },
+    {
+        "ingredient_id":  "ingre02350",
+        "canonical_code":  "CI_GIO_SONG"
+    },
+    {
+        "ingredient_id":  "ingre02355",
+        "canonical_code":  "CI_GIAM"
+    },
+    {
+        "ingredient_id":  "ingre02370",
+        "canonical_code":  "CI_GIAM_TRANG"
+    },
+    {
+        "ingredient_id":  "ingre02392",
+        "canonical_code":  "CI_GA"
+    },
+    {
+        "ingredient_id":  "ingre02403",
+        "canonical_code":  "CI_GA_TA"
+    },
+    {
+        "ingredient_id":  "ingre02413",
+        "canonical_code":  "CI_GA"
+    },
+    {
+        "ingredient_id":  "ingre02415",
+        "canonical_code":  "CI_GAN_BO"
+    },
+    {
+        "ingredient_id":  "ingre02430",
+        "canonical_code":  "CI_GACH_CUA_CON_NGUYEN"
+    },
+    {
+        "ingredient_id":  "ingre02436",
+        "canonical_code":  "CI_GAO"
+    },
+    {
+        "ingredient_id":  "ingre02439",
+        "canonical_code":  "CI_GAO_DEO"
+    },
+    {
+        "ingredient_id":  "ingre02450",
+        "canonical_code":  "CI_GAO_NEP"
+    },
+    {
+        "ingredient_id":  "ingre02461",
+        "canonical_code":  "CI_GAO_TRANG"
+    },
+    {
+        "ingredient_id":  "ingre02485",
+        "canonical_code":  "CI_GUNG"
+    },
+    {
+        "ingredient_id":  "ingre02512",
+        "canonical_code":  "CI_GUNG"
+    },
+    {
+        "ingredient_id":  "ingre02544",
+        "canonical_code":  "CI_HANH_TAY"
+    },
+    {
+        "ingredient_id":  "ingre02563",
+        "canonical_code":  "CI_HEO_QUAY"
+    },
+    {
+        "ingredient_id":  "ingre02575",
+        "canonical_code":  "CI_HOA_CHUOI"
+    },
+    {
+        "ingredient_id":  "ingre02584",
+        "canonical_code":  "CI_HOA_HOI"
+    },
+    {
+        "ingredient_id":  "ingre02626",
+        "canonical_code":  "CI_HUYET_BO_HOAC_HEO"
+    },
+    {
+        "ingredient_id":  "ingre02629",
+        "canonical_code":  "CI_HUYET_HEO"
+    },
+    {
+        "ingredient_id":  "ingre02636",
+        "canonical_code":  "CI_HANH"
+    },
+    {
+        "ingredient_id":  "ingre02657",
+        "canonical_code":  "CI_HANH"
+    },
+    {
+        "ingredient_id":  "ingre02667",
+        "canonical_code":  "CI_HANH_KHO"
+    },
+    {
+        "ingredient_id":  "ingre02673",
+        "canonical_code":  "CI_HANH_LA"
+    },
+    {
+        "ingredient_id":  "ingre02724",
+        "canonical_code":  "CI_HANH_NGO"
+    },
+    {
+        "ingredient_id":  "ingre02730",
+        "canonical_code":  "CI_HANH_PHI"
+    },
+    {
+        "ingredient_id":  "ingre02741",
+        "canonical_code":  "CI_HANH_TAY"
+    },
+    {
+        "ingredient_id":  "ingre02758",
+        "canonical_code":  "CI_HANH_TAY"
+    },
+    {
+        "ingredient_id":  "ingre02759",
+        "canonical_code":  "CI_HANH_TAY"
+    },
+    {
+        "ingredient_id":  "ingre02768",
+        "canonical_code":  "CI_HANH_TIM"
+    },
+    {
+        "ingredient_id":  "ingre02774",
+        "canonical_code":  "CI_HANH_TIM"
+    },
+    {
+        "ingredient_id":  "ingre02779",
+        "canonical_code":  "CI_HANH_TIM"
+    },
+    {
+        "ingredient_id":  "ingre02926",
+        "canonical_code":  "CI_HAT_CA_RI"
+    },
+    {
+        "ingredient_id":  "ingre02987",
+        "canonical_code":  "CI_HAT_NGO"
+    },
+    {
+        "ingredient_id":  "ingre02995",
+        "canonical_code":  "CI_HAT_NEM"
+    },
+    {
+        "ingredient_id":  "ingre02997",
+        "canonical_code":  "CI_HAT_NEM_CHAY"
+    },
+    {
+        "ingredient_id":  "ingre03085",
+        "canonical_code":  "CI_HE"
+    },
+    {
+        "ingredient_id":  "ingre03208",
+        "canonical_code":  "CI_KHOAI_MON"
+    },
+    {
+        "ingredient_id":  "ingre03222",
+        "canonical_code":  "CI_KHOAI_TAY"
+    },
+    {
+        "ingredient_id":  "ingre03271",
+        "canonical_code":  "CI_KHO_QUA"
+    },
+    {
+        "ingredient_id":  "ingre03334",
+        "canonical_code":  "CI_KY_TU"
+    },
+    {
+        "ingredient_id":  "ingre03370",
+        "canonical_code":  "CI_LA_CHANH"
+    },
+    {
+        "ingredient_id":  "ingre03572",
+        "canonical_code":  "CI_LONG_HEO"
+    },
+    {
+        "ingredient_id":  "ingre03618",
+        "canonical_code":  "CI_LAP_XUONG"
+    },
+    {
+        "ingredient_id":  "ingre03663",
+        "canonical_code":  "CI_ME_VAT"
+    },
+    {
+        "ingredient_id":  "ingre03746",
+        "canonical_code":  "CI_MUOI"
+    },
+    {
+        "ingredient_id":  "ingre03818",
+        "canonical_code":  "CI_MUOI_DUONG"
+    },
+    {
+        "ingredient_id":  "ingre03849",
+        "canonical_code":  "CI_MAU_DAU_DIEU"
+    },
+    {
+        "ingredient_id":  "ingre03958",
+        "canonical_code":  "CI_MI_CHINH"
+    },
+    {
+        "ingredient_id":  "ingre03963",
+        "canonical_code":  "CI_MI_GOI"
+    },
+    {
+        "ingredient_id":  "ingre03981",
+        "canonical_code":  "CI_MI_QUANG"
+    },
+    {
+        "ingredient_id":  "ingre04022",
+        "canonical_code":  "CI_MI_AN_LIEN_HOAC_BUN"
+    },
+    {
+        "ingredient_id":  "ingre04059",
+        "canonical_code":  "CI_MUI_TAU_HUNG_QUE"
+    },
+    {
+        "ingredient_id":  "ingre04104",
+        "canonical_code":  "CI_MUOP_HUONG"
+    },
+    {
+        "ingredient_id":  "ingre04124",
+        "canonical_code":  "CI_MAT_ONG"
+    },
+    {
+        "ingredient_id":  "ingre04144",
+        "canonical_code":  "CI_MAM_CA_SAC"
+    },
+    {
+        "ingredient_id":  "ingre04151",
+        "canonical_code":  "CI_MAM_RUOC"
+    },
+    {
+        "ingredient_id":  "ingre04159",
+        "canonical_code":  "CI_MAM_TOM"
+    },
+    {
+        "ingredient_id":  "ingre04175",
+        "canonical_code":  "CI_MOC"
+    },
+    {
+        "ingredient_id":  "ingre04179",
+        "canonical_code":  "CI_MOC_NHI"
+    },
+    {
+        "ingredient_id":  "ingre04192",
+        "canonical_code":  "CI_MO_HEO"
+    },
+    {
+        "ingredient_id":  "ingre04264",
+        "canonical_code":  "CI_MUC"
+    },
+    {
+        "ingredient_id":  "ingre04281",
+        "canonical_code":  "CI_MUC_ONG"
+    },
+    {
+        "ingredient_id":  "ingre04326",
+        "canonical_code":  "CI_NGO"
+    },
+    {
+        "ingredient_id":  "ingre04329",
+        "canonical_code":  "CI_NGO_GAI"
+    },
+    {
+        "ingredient_id":  "ingre04343",
+        "canonical_code":  "CI_NGO_RI"
+    },
+    {
+        "ingredient_id":  "ingre04381",
+        "canonical_code":  "CI_NGU_VI_HUONG"
+    },
+    {
+        "ingredient_id":  "ingre04490",
+        "canonical_code":  "CI_NUOC"
+    },
+    {
+        "ingredient_id":  "ingre04538",
+        "canonical_code":  "CI_NUOC_COT_CHANH"
+    },
+    {
+        "ingredient_id":  "ingre04554",
+        "canonical_code":  "CI_NUOC_COT_DUA"
+    },
+    {
+        "ingredient_id":  "ingre04591",
+        "canonical_code":  "CI_NUOC_COT_TAC"
+    },
+    {
+        "ingredient_id":  "ingre04608",
+        "canonical_code":  "CI_NUOC_DUNG_HEO"
+    },
+    {
+        "ingredient_id":  "ingre04622",
+        "canonical_code":  "CI_NUOC_DUA"
+    },
+    {
+        "ingredient_id":  "ingre04628",
+        "canonical_code":  "CI_NUOC_DUA_TUOI_NUOC_LOC"
+    },
+    {
+        "ingredient_id":  "ingre04636",
+        "canonical_code":  "CI_NUOC_HANG"
+    },
+    {
+        "ingredient_id":  "ingre04647",
+        "canonical_code":  "CI_NUOC_HAM_XUONG"
+    },
+    {
+        "ingredient_id":  "ingre04671",
+        "canonical_code":  "CI_NUOC_ME"
+    },
+    {
+        "ingredient_id":  "ingre04672",
+        "canonical_code":  "CI_NUOC_MAU"
+    },
+    {
+        "ingredient_id":  "ingre04675",
+        "canonical_code":  "CI_NUOC_MAU_DUA"
+    },
+    {
+        "ingredient_id":  "ingre04694",
+        "canonical_code":  "CI_NUOC_MAM"
+    },
+    {
+        "ingredient_id":  "ingre04790",
+        "canonical_code":  "CI_NUOC_TUONG"
+    },
+    {
+        "ingredient_id":  "ingre04853",
+        "canonical_code":  "CI_NUOC_DA"
+    },
+    {
+        "ingredient_id":  "ingre04889",
+        "canonical_code":  "CI_NAM_BO"
+    },
+    {
+        "ingredient_id":  "ingre04909",
+        "canonical_code":  "CI_NAM_HUON_G"
+    },
+    {
+        "ingredient_id":  "ingre04930",
+        "canonical_code":  "CI_NAM_MEO"
+    },
+    {
+        "ingredient_id":  "ingre04953",
+        "canonical_code":  "CI_NAM_ROM"
+    },
+    {
+        "ingredient_id":  "ingre04984",
+        "canonical_code":  "CI_NEP_BAC"
+    },
+    {
+        "ingredient_id":  "ingre05022",
+        "canonical_code":  "CI_PATE_GAN_HEO"
+    },
+    {
+        "ingredient_id":  "ingre05161",
+        "canonical_code":  "CI_QUA_GAC"
+    },
+    {
+        "ingredient_id":  "ingre05186",
+        "canonical_code":  "CI_QUE"
+    },
+    {
+        "ingredient_id":  "ingre05289",
+        "canonical_code":  "CI_RAU_MUONG"
+    },
+    {
+        "ingredient_id":  "ingre05302",
+        "canonical_code":  "CI_RAU_MUI"
+    },
+    {
+        "ingredient_id":  "ingre05320",
+        "canonical_code":  "CI_RAU_MONG_TOI"
+    },
+    {
+        "ingredient_id":  "ingre05334",
+        "canonical_code":  "CI_RAU_NGOT"
+    },
+    {
+        "ingredient_id":  "ingre05336",
+        "canonical_code":  "CI_RAU_NGO"
+    },
+    {
+        "ingredient_id":  "ingre05359",
+        "canonical_code":  "CI_RAU_RAM"
+    },
+    {
+        "ingredient_id":  "ingre05379",
+        "canonical_code":  "CI_RAU_SONG"
+    },
+    {
+        "ingredient_id":  "ingre05380",
+        "canonical_code":  "CI_RAU_SONG"
+    },
+    {
+        "ingredient_id":  "ingre05385",
+        "canonical_code":  "CI_RAU_THOM"
+    },
+    {
+        "ingredient_id":  "ingre05391",
+        "canonical_code":  "CI_RAU_THOM"
+    },
+    {
+        "ingredient_id":  "ingre05410",
+        "canonical_code":  "CI_RAU_XA_LACH"
+    },
+    {
+        "ingredient_id":  "ingre05420",
+        "canonical_code":  "CI_RAU_AN_KEM"
+    },
+    {
+        "ingredient_id":  "ingre05424",
+        "canonical_code":  "CI_RAU_AN_KEM"
+    },
+    {
+        "ingredient_id":  "ingre05431",
+        "canonical_code":  "CI_RAU_DAY"
+    },
+    {
+        "ingredient_id":  "ingre05531",
+        "canonical_code":  "CI_RUOU_GAO"
+    },
+    {
+        "ingredient_id":  "ingre05574",
+        "canonical_code":  "CI_RUOU_TRANG"
+    },
+    {
+        "ingredient_id":  "ingre05882",
+        "canonical_code":  "CI_SUON_HEO"
+    },
+    {
+        "ingredient_id":  "ingre05886",
+        "canonical_code":  "CI_SUON_HEO_NON"
+    },
+    {
+        "ingredient_id":  "ingre05900",
+        "canonical_code":  "CI_SA"
+    },
+    {
+        "ingredient_id":  "ingre05905",
+        "canonical_code":  "CI_SA"
+    },
+    {
+        "ingredient_id":  "ingre05909",
+        "canonical_code":  "CI_SA"
+    },
+    {
+        "ingredient_id":  "ingre05911",
+        "canonical_code":  "CI_SA"
+    },
+    {
+        "ingredient_id":  "ingre05917",
+        "canonical_code":  "CI_SA"
+    },
+    {
+        "ingredient_id":  "ingre06055",
+        "canonical_code":  "CI_SOI_HU_TIEU"
+    },
+    {
+        "ingredient_id":  "ingre06144",
+        "canonical_code":  "CI_SUA_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre06211",
+        "canonical_code":  "CI_THANH_QUE"
+    },
+    {
+        "ingredient_id":  "ingre06215",
+        "canonical_code":  "CI_THIT_BO"
+    },
+    {
+        "ingredient_id":  "ingre06233",
+        "canonical_code":  "CI_THI_LA"
+    },
+    {
+        "ingredient_id":  "ingre06246",
+        "canonical_code":  "CI_THAN_THIT_BO"
+    },
+    {
+        "ingredient_id":  "ingre06247",
+        "canonical_code":  "CI_THOM"
+    },
+    {
+        "ingredient_id":  "ingre06271",
+        "canonical_code":  "CI_THAO_QUA"
+    },
+    {
+        "ingredient_id":  "ingre06275",
+        "canonical_code":  "CI_THIT_BA_CHI"
+    },
+    {
+        "ingredient_id":  "ingre06289",
+        "canonical_code":  "CI_THIT_BA_ROI"
+    },
+    {
+        "ingredient_id":  "ingre06300",
+        "canonical_code":  "CI_THIT_BO"
+    },
+    {
+        "ingredient_id":  "ingre06312",
+        "canonical_code":  "CI_THIT_BO"
+    },
+    {
+        "ingredient_id":  "ingre06329",
+        "canonical_code":  "CI_THIT_BAM"
+    },
+    {
+        "ingredient_id":  "ingre06336",
+        "canonical_code":  "CI_THIT_BAM"
+    },
+    {
+        "ingredient_id":  "ingre06380",
+        "canonical_code":  "CI_THIT_GA"
+    },
+    {
+        "ingredient_id":  "ingre06398",
+        "canonical_code":  "CI_THIT_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06403",
+        "canonical_code":  "CI_THIT_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06414",
+        "canonical_code":  "CI_THIT_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06415",
+        "canonical_code":  "CI_THIT_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06457",
+        "canonical_code":  "CI_THIT_NAC_BAM"
+    },
+    {
+        "ingredient_id":  "ingre06464",
+        "canonical_code":  "CI_THIT_NAC_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06491",
+        "canonical_code":  "CI_THIT_SUON"
+    },
+    {
+        "ingredient_id":  "ingre06558",
+        "canonical_code":  "CI_TIM_HEO"
+    },
+    {
+        "ingredient_id":  "ingre06612",
+        "canonical_code":  "CI_TIEU"
+    },
+    {
+        "ingredient_id":  "ingre06619",
+        "canonical_code":  "CI_TIEU"
+    },
+    {
+        "ingredient_id":  "ingre06644",
+        "canonical_code":  "CI_TIEU"
+    },
+    {
+        "ingredient_id":  "ingre06772",
+        "canonical_code":  "CI_TRAI_THAO"
+    },
+    {
+        "ingredient_id":  "ingre06816",
+        "canonical_code":  "CI_TRUNG_CUT"
+    },
+    {
+        "ingredient_id":  "ingre06823",
+        "canonical_code":  "CI_TRUNG_GA"
+    },
+    {
+        "ingredient_id":  "ingre06853",
+        "canonical_code":  "CI_TRUNG_VIT"
+    },
+    {
+        "ingredient_id":  "ingre06874",
+        "canonical_code":  "CI_TAU_HU_KY"
+    },
+    {
+        "ingredient_id":  "ingre06900",
+        "canonical_code":  "CI_TAO_TAU"
+    },
+    {
+        "ingredient_id":  "ingre06927",
+        "canonical_code":  "CI_TOP_MO"
+    },
+    {
+        "ingredient_id":  "ingre06930",
+        "canonical_code":  "CI_TOM"
+    },
+    {
+        "ingredient_id":  "ingre06941",
+        "canonical_code":  "CI_TOM_KHO"
+    },
+    {
+        "ingredient_id":  "ingre06963",
+        "canonical_code":  "CI_TOM_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre06996",
+        "canonical_code":  "CI_TUONG_HOT_OT"
+    },
+    {
+        "ingredient_id":  "ingre07012",
+        "canonical_code":  "CI_TUONG_DEN"
+    },
+    {
+        "ingredient_id":  "ingre07028",
+        "canonical_code":  "CI_TUONG_OT"
+    },
+    {
+        "ingredient_id":  "ingre07063",
+        "canonical_code":  "CI_TOI"
+    },
+    {
+        "ingredient_id":  "ingre07071",
+        "canonical_code":  "CI_TOI"
+    },
+    {
+        "ingredient_id":  "ingre07381",
+        "canonical_code":  "CI_XI_DAU"
+    },
+    {
+        "ingredient_id":  "ingre07414",
+        "canonical_code":  "CI_XUONG_BO_CO_LAN_THIT"
+    },
+    {
+        "ingredient_id":  "ingre07422",
+        "canonical_code":  "CI_XUONG_HEO"
+    },
+    {
+        "ingredient_id":  "ingre07434",
+        "canonical_code":  "CI_XUONG_ONG_BO"
+    },
+    {
+        "ingredient_id":  "ingre07435",
+        "canonical_code":  "CI_XUONG_ONG_HEO"
+    },
+    {
+        "ingredient_id":  "ingre07491",
+        "canonical_code":  "CI_DU_DU"
+    },
+    {
+        "ingredient_id":  "ingre07500",
+        "canonical_code":  "CI_DU_DU_XANH"
+    },
+    {
+        "ingredient_id":  "ingre07583",
+        "canonical_code":  "CI_DUONG"
+    },
+    {
+        "ingredient_id":  "ingre07635",
+        "canonical_code":  "CI_DUONG_PHEN"
+    },
+    {
+        "ingredient_id":  "ingre07729",
+        "canonical_code":  "CI_DAU_BAP"
+    },
+    {
+        "ingredient_id":  "ingre07740",
+        "canonical_code":  "CI_DAU_HU"
+    },
+    {
+        "ingredient_id":  "ingre07742",
+        "canonical_code":  "CI_DAU_HU_CHIEN"
+    },
+    {
+        "ingredient_id":  "ingre07781",
+        "canonical_code":  "CI_DAU_PHONG"
+    },
+    {
+        "ingredient_id":  "ingre07785",
+        "canonical_code":  "CI_DAU_PHONG"
+    },
+    {
+        "ingredient_id":  "ingre07791",
+        "canonical_code":  "CI_DAU_PHONG"
+    },
+    {
+        "ingredient_id":  "ingre07810",
+        "canonical_code":  "CI_DAU_PHU"
+    },
+    {
+        "ingredient_id":  "ingre07818",
+        "canonical_code":  "CI_DAU_QUE"
+    },
+    {
+        "ingredient_id":  "ingre07899",
+        "canonical_code":  "CI_DO_CHUA_AN_KEM"
+    },
+    {
+        "ingredient_id":  "ingre07909",
+        "canonical_code":  "CI_DU_DU_XANH"
+    },
+    {
+        "ingredient_id":  "ingre07962",
+        "canonical_code":  "CI_O_BANH_MI"
+    },
+    {
+        "ingredient_id":  "ingre07966",
+        "canonical_code":  "CI_OT"
+    },
+    {
+        "ingredient_id":  "ingre07971",
+        "canonical_code":  "CI_OT"
+    },
+    {
+        "ingredient_id":  "ingre07977",
+        "canonical_code":  "CI_OT_BOT"
+    },
+    {
+        "ingredient_id":  "ingre07993",
+        "canonical_code":  "CI_OT_CAY"
+    },
+    {
+        "ingredient_id":  "ingre07999",
+        "canonical_code":  "CI_OT_CHUONG"
+    },
+    {
+        "ingredient_id":  "ingre08026",
+        "canonical_code":  "CI_OT_HIEM"
+    },
+    {
+        "ingredient_id":  "ingre08055",
+        "canonical_code":  "CI_OT_SUNG"
+    },
+    {
+        "ingredient_id":  "ingre08078",
+        "canonical_code":  "CI_OT_TUOI"
+    },
+    {
+        "ingredient_id":  "ingre08097",
+        "canonical_code":  "CI_OT_DO"
+    }
+]

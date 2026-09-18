@@ -8,6 +8,7 @@ using Haggly.Api.Endpoints.Inventory;
 using Haggly.Api.Endpoints.Sales;
 using Haggly.Api.Endpoints.Payments;
 using Haggly.Api.Endpoints.Finance;
+using Haggly.Api.Endpoints.Discovery;
 using Haggly.Infrastructure.Messaging;
 using Haggly.Infrastructure.Payments;
 
@@ -76,6 +77,7 @@ public partial class Program
         app.MapOrderEndpoints();
         app.MapPaymentEndpoints();
         app.MapRevenueReportEndpoints();
+        app.MapDiscoveryEndpoints();
 
         app.Run();
     }
