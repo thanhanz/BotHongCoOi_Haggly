@@ -10,7 +10,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   return (
     <div dir="ltr" className="flex min-h-dvh flex-col">
       <Header />
-      <main className="mx-auto w-[calc(100%-20px)] max-w-[1440px] flex-1">{children}</main>
+      <main className="w-full min-w-0 flex-1">{children}</main>
       <Footer />
     </div>
   );

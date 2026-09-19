@@ -37,8 +37,16 @@ src/
 ```
 
 Current feature roots are `categories`, `identity`, `product-listings`,
-`products`, and `stalls`. Current routes include the home page, registration,
-products, stall details, and the development-only design-system showcase.
+`products`, `stalls`, `cart`, and `dish-discovery`. Current routes include the
+home page, registration, login, products, stall details, cart, dish search at
+`/common-dishes`, ingredient review at `/common-dishes/[dishId]`, and the
+development-only design-system showcase.
+
+Dish discovery uses the anonymous search and proposal endpoints. The search
+query is stored in `?q=` for return navigation. Ingredient review keeps selection,
+listing alternatives, and quantities locally; displayed totals are advisory.
+Initial quantities use listing minimums because proposals do not contain recipe
+portions. Bulk cart addition and order creation from this screen are deferred.
 
 ## Dependency direction
 

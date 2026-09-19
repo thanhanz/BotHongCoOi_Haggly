@@ -75,6 +75,9 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2xs">
+          <Link href="/common-dishes" className="inline-flex min-h-10 items-center rounded-control px-2 text-xs font-semibold text-brand-primary hover:bg-ready-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:px-3 sm:text-sm">
+            Tìm món
+          </Link>
           <Link href="/cart" aria-label="Giỏ hàng" className="inline-flex size-10 items-center justify-center rounded-control text-foreground-primary hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
             <CartIcon />
           </Link>
