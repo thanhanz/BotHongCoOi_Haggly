@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Form from "next/form";
 import { useAuth } from "@/features/identity/components";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
@@ -38,8 +39,8 @@ export function Header() {
   const { session, isReady, clearSession } = useAuth();
 
   return (
-    <header className="z-40 h-16 shrink-0 border-b border-border-subtle bg-surface-raised/95 backdrop-blur">
-      <Container className="flex h-full items-center gap-sm md:gap-md">
+    <header className="z-40 min-h-16 shrink-0 border-b border-border-subtle bg-surface-raised/95 backdrop-blur md:h-16">
+      <Container className="flex flex-wrap items-center gap-x-sm gap-y-xs py-xs md:h-full md:flex-nowrap md:gap-md md:py-0">
         <Link
           href="/"
           aria-label="Haggly - Trang chủ"
@@ -48,16 +49,18 @@ export function Header() {
           Haggly
         </Link>
 
-        <div role="search" className="min-w-0 flex-1">
+        <Form action="/search" role="search" aria-label="Tìm kiếm toàn chợ" className="order-last flex min-w-0 flex-1 basis-full items-center gap-2xs md:order-none md:basis-auto">
           <Input
+            name="q"
             type="search"
-            aria-label="Tìm kiếm"
-            placeholder="Tìm sản phẩm, sạp hoặc khu chợ…"
-            leftIcon={<SearchIcon />}
-            containerClassName="w-full"
+            aria-label="Tìm sản phẩm hoặc sạp"
+            placeholder="Tìm sản phẩm hoặc sạp…"
+            required
+            containerClassName="min-w-0 flex-1"
             className="bg-surface-canvas"
           />
-        </div>
+          <Button type="submit" size="icon" aria-label="Tìm kiếm" className="shrink-0"><SearchIcon /></Button>
+        </Form>
 
         <nav aria-label="Điều hướng chính" className="hidden shrink-0 items-center gap-xs lg:flex">
           <Link
@@ -74,7 +77,7 @@ export function Header() {
           </Link>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2xs">
+        <div className="ml-auto flex shrink-0 items-center gap-2xs md:ml-0">
           <Link href="/common-dishes" className="inline-flex min-h-10 items-center rounded-control px-2 text-xs font-semibold text-brand-primary hover:bg-ready-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:px-3 sm:text-sm">
             Tìm món
           </Link>

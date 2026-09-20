@@ -160,6 +160,7 @@ active, non-deleted Stalls; missing or non-active Stalls return `404`.
 | `GET /stalls/{stallId}/products/{id}` | Anonymous | Path GUIDs | `200 ApiResponse<ProductStall>` |
 | `PATCH /stalls/{stallId}/products/{id}` | Vendor + owner | `UpdateProductStallRequest` | `200 ApiResponse<ProductStall>` |
 | `GET /product-listings` | Anonymous | Storefront filters | `200 ApiResponse<PagedResult<ProductListing>>` |
+| `GET /search` | Anonymous | Marketplace search filters | `200 ApiResponse<MarketplaceSearchResult>` |
 
 ```ts
 interface CreateCategoryRequest {
@@ -193,6 +194,15 @@ interface ProductListing {
   sellingUnit: ProductUnit; minimumOrderQuantity: number; availableQuantity: number;
   isNegotiable: boolean;
 }
+interface StallSearchResult {
+  id: string; code: string; name: string;
+  locationDescription: string | null; phoneNumber: string | null;
+  availableProductCount: number; productPreview: ProductListing[];
+}
+interface MarketplaceSearchResult {
+  stalls: PagedResult<StallSearchResult>;
+  products: PagedResult<ProductListing>;
+}
 ```
 
 | List | Filters/defaults |
@@ -201,10 +211,28 @@ interface ProductListing {
 | `/products` | Optional `categoryId`; `page=1`; `pageSize=20`. |
 | `/stalls/{stallId}/products` | `page=1`; `pageSize=20`. |
 | `/product-listings` | Optional `categoryId`, `stallId`, `sort=home`; `page=1`; `pageSize=10`. Omitted sort behaves as `home`. |
+| `/search` | Required `q`; `stallPage=1`; `stallPageSize=5` (1–20); `productPage=1`; `productPageSize=20` (1–100). |
 
 `/product-listings` contains active products from active Stalls with positive
 available stock. Use it for buyer product grids. `/stalls/{stallId}/products`
 is configuration and does not prove current availability.
+
+`/search` normalizes Vietnamese accents, case, punctuation, and whitespace.
+The normalized query must contain 2–100 searchable characters. Stall and
+product pages advance independently. Both result groups rank exact matches,
+then prefixes, then contains matches, followed by stable name/ID ordering.
+
+Direct product results match `productName` or the Stall-specific `displayName`.
+Each Stall offer remains a separate result because its price, selling unit,
+negotiability, and availability may differ. Product results use the same active
+and positive-stock eligibility as `/product-listings`.
+
+When the normalized query exactly matches a Stall name, that Stall includes up
+to eight active, in-stock `productPreview` items and its complete
+`availableProductCount`. Preview items may also appear in the direct product
+page when their product or display name matches. Use
+`/product-listings?stallId=<id>` to load all available products for that Stall.
+Invalid query or pagination values return `400` Problem Details.
 
 ## Dish discovery
 

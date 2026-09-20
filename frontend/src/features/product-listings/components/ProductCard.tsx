@@ -73,7 +73,7 @@ export function ProductCard({ listing, showNegotiation = true, showStall = true 
   async function handleAddToCart() {
     setCartStatus(undefined);
     if (!session) {
-      router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+      router.push(`/login?returnTo=${encodeURIComponent(`${pathname}${window.location.search}`)}`);
       return;
     }
     if (!session.roles.some(role => role.toLowerCase() === "buyer")) {

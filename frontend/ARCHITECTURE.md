@@ -37,10 +37,18 @@ src/
 ```
 
 Current feature roots are `categories`, `identity`, `product-listings`,
-`products`, `stalls`, `cart`, `orders`, and `dish-discovery`. Current routes include the
+`products`, `stalls`, `cart`, `orders`, `search`, and `dish-discovery`. Current routes include the
 home page, registration, login, products, stall details, cart, dish search at
 `/common-dishes`, ingredient review at `/common-dishes/[dishId]`, and the
 development-only design-system showcase.
+
+Marketplace search at `/search` consumes anonymous `GET /search`. It shows
+compact links to matching stalls, followed by direct product matches using the
+existing `ProductCard`. The query and independent stall/product pagination live
+in URL parameters; product page-size changes reset only the product page. The
+header search form navigates to this route. Empty queries do not call the API;
+the backend owns normalized query validation and relevance ordering. Stall
+product previews are not mixed into the direct product results.
 
 Dish discovery uses the anonymous search and proposal endpoints. The search
 query is stored in `?q=` for return navigation. Ingredient review keeps selection,
