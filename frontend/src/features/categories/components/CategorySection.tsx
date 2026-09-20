@@ -119,7 +119,7 @@ export function CategorySection({ stallId, selectedCategoryId }: CategorySection
   return (
     <section id="categories" aria-labelledby="categories-heading" className={stallId ? "pb-lg" : "py-xl md:py-2xl"}>
       <Container>
-        <div className={stallId ? "" : "rounded-modal border border-border-prominent bg-surface-container p-sm md:p-md"}>
+        <div className={stallId ? "" : "rounded-modal border border-border-prominent bg-surface-raised p-sm md:p-md"}>
           <div className={stallId ? "sr-only" : "mb-md flex items-end justify-between gap-md"}>
             <div>
               <Typography as="p" variant="labelMd" className="mb-2xs text-brand-secondary">

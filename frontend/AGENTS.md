@@ -14,8 +14,6 @@ then use this file for frontend-only work.
    do not inspect backend source merely to rediscover HTTP shapes.
 2. Read `ARCHITECTURE.md` and the relevant guide in `docs/agent-guides/` for
    non-HTTP architecture or business context.
-3. For UX/UI work, complete the mandatory Stitch MCP preflight in
-   `docs/agent-guides/stitch-design.md` before editing code.
 4. Inspect the target route, feature, shared primitive, API adapter, and nearest
    working example before editing.
 5. Confirm the route and public contract in `../docs/frontend-api-contract.md`

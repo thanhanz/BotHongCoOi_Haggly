@@ -58,7 +58,6 @@ export function CartDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [pendingId, setPendingId] = useState<string>();
   const [error, setError] = useState<string>();
-  const [success, setSuccess] = useState<string>();
   const [drafts, setDrafts] = useState<Record<string, UpdateCartItemRequest>>({});
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
   const updateTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
@@ -184,7 +183,6 @@ export function CartDetails() {
     if (!session || selectedItems.length === 0) return;
     setPendingId("order");
     setError(undefined);
-    setSuccess(undefined);
     discardAllDrafts();
     try {
       const order = await createOrder({ items: selectedItems.map(item => ({
@@ -192,8 +190,7 @@ export function CartDetails() {
         quantity: item.quantity,
         notes: item.notes,
       })) });
-      setSuccess(`Đã tạo đơn ${order.orderNo} thành công.`);
-      await load(false);
+      router.push(`/orders/${encodeURIComponent(order.id)}`);
     } catch (requestError) {
       setError(messageFor(requestError));
     } finally {
@@ -234,7 +231,7 @@ export function CartDetails() {
           </div>
         </div>
 
-        {(error || success) && <div role={error ? "alert" : "status"} className={`mb-sm rounded-control p-sm text-sm ${error ? "bg-state-error-surface text-state-error" : "bg-ready-background text-ready-text"}`}>{error ?? success}</div>}
+        {error && <div role="alert" className="mb-sm rounded-control bg-state-error-surface p-sm text-sm text-state-error">{error}</div>}
 
         <div className="mb-sm rounded-card border border-border-subtle bg-surface-raised px-sm py-xs shadow-card">
           <IndeterminateCheckbox

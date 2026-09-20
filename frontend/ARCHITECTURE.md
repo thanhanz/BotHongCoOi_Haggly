@@ -37,7 +37,7 @@ src/
 ```
 
 Current feature roots are `categories`, `identity`, `product-listings`,
-`products`, `stalls`, `cart`, and `dish-discovery`. Current routes include the
+`products`, `stalls`, `cart`, `orders`, and `dish-discovery`. Current routes include the
 home page, registration, login, products, stall details, cart, dish search at
 `/common-dishes`, ingredient review at `/common-dishes/[dishId]`, and the
 development-only design-system showcase.
@@ -47,6 +47,21 @@ query is stored in `?q=` for return navigation. Ingredient review keeps selectio
 listing alternatives, and quantities locally; displayed totals are advisory.
 Initial quantities use listing minimums because proposals do not contain recipe
 portions. Bulk cart addition and order creation from this screen are deferred.
+
+## Order details
+
+`/orders/[orderId]` displays a buyer-owned order through `GET /orders/{orderId}`.
+Successful cart order creation navigates to this route using the returned ID;
+no order-list or user-ID lookup is required. The orders feature owns the wire
+contracts, status presentation, and pickup summary. Public stall details enrich
+names and locations independently; failed enrichment does not hide the order.
+
+The page displays server totals and statuses, provides manual refresh, copies
+fulfillment order references, and downloads a plain-text pickup list. References
+are not pickup PINs. Payment selection, pickup QR/PINs, scheduled collection
+times, product photos, and market-map geometry are not provided by the order
+details contract; the page does not fabricate them. Its mint palette is scoped
+to the orders feature, while the existing shared header and footer are reused.
 
 ## Dependency direction
 

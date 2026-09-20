@@ -21,7 +21,7 @@ interface ProductListingSectionProps {
   showStall?: boolean;
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 const DEMO_LISTINGS: ProductListing[] = [
   {

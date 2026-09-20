@@ -1,0 +1,9 @@
+.page {
+  /* Screen-specific Stitch palette; shared application tokens stay unchanged. */
+  --brand-primary: #003a25;
+  --surface-canvas: #f2fcf4;
+  --surface-container: #ecf6ee;
+  --status-ready-background: #e6f0e8;
+  --status-awaiting-pickup-background: #ffdbcf;
+  background: var(--surface-canvas);
+}
