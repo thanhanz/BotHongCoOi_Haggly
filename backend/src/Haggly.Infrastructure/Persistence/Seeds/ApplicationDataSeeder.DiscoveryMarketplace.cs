@@ -8,7 +8,16 @@ namespace Haggly.Infrastructure.Persistence;
 public static partial class ApplicationDataSeeder
 {
     private static readonly DiscoveryProductSeed[] DiscoveryProductSeeds =
-    [
+    [
+        // Products created by the base application seed. These entries attach
+        // the existing catalog products to Discovery instead of creating copies.
+        new("CI_CAI_THIA", "Cải thìa Đà Lạt", "Cải thìa giòn, thu hoạch trong ngày", ProductUnit.KG, "rau-cu", "BT-001-S01", 1m, 32_000m, 45m),
+        new("CI_THIT_BA_ROI", "Thịt ba rọi heo", "Ba rọi heo VietGAP, tỷ lệ nạc mỡ cân đối", ProductUnit.KG, "thit-tuoi", "BR-001-S02", 1m, 165_000m, 30m),
+        new("CI_TOM_TUOI", "Tôm sú sống", "Tôm sú cỡ 25–30 con/kg", ProductUnit.KG, "hai-san", "TD-001-S03", 1m, 285_000m, 18m),
+        new("CI_NUOC_MAM", "Nước mắm nhĩ 40 độ đạm", "Nước mắm truyền thống Phú Quốc", ProductUnit.LITER, "gia-vi", "BM-001-S05", 1m, 145_000m, 36m),
+        new("CI_BUOI_DA_XANH", "Bưởi da xanh Bến Tre", "Bưởi loại 1, vị ngọt thanh", ProductUnit.PIECE, "trai-cay", "HT-001-S04", 1m, 78_000m, 40m),
+
+
         new("CI_BUN_SOI_TO", "Bún sợi to tươi", "Bún sợi lớn dùng cho bún bò Huế", ProductUnit.KG, "bun-mi-do-kho", "BT-001-S01", 1m, 34_000m, 55m),
         new("CI_BUN_SOI_TO", "Bún bò sợi lớn đặc biệt", "Bún tươi sợi lớn làm trong ngày", ProductUnit.KG, "bun-mi-do-kho", "BM-001-S05", 0.5m, 38_000m, 32m),
         new("CI_CHAN_GIO_HEO", "Chân giò heo", "Chân giò heo tươi, làm sạch", ProductUnit.KG, "thit-tuoi", "BR-001-S02", 0.5m, 118_000m, 38m),

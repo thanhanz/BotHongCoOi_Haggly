@@ -1354,5 +1354,11 @@
         "name_vi":  "Xương ống heo",
         "name_normalized":  "xuong ong heo",
         "category":  "fresh_meat"
+    },
+    {
+        "code": "CI_BUOI_DA_XANH",
+        "name_vi": "Bưởi da xanh",
+        "name_normalized": "buoi da xanh",
+        "category": "Trái cây"
     }
 ]
