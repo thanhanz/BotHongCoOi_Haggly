@@ -30,10 +30,18 @@ public static class MessagingConfigurationExtensions
                 "Enabled Outbox configuration requires a positive interval and batch size.")
             .ValidateOnStart();
 
+        services.AddOptions<OutboxBenchmarkOptions>()
+            .Bind(configuration.GetSection(OutboxBenchmarkOptions.SectionName))
+            .Validate(options => options.IsValid(),
+                "Enabled outbox benchmark requires a positive duration.")
+            .ValidateOnStart();
+
         services.AddMassTransit(configurator =>
         {
             // Register consumers and their definitions
-            configurator.AddConsumer<PaymentRequestedConsumer, PaymentRequestedConsumerDefinition>();
+            configurator.AddConsumer<
+                PaymentRequestedConsumer,
+                PaymentRequestedConsumerDefinition>();
             configurator.AddConsumer<FinancePaymentSucceededConsumer, FinancePaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<InventoryPaymentSucceededConsumer, InventoryPaymentSucceededConsumerDefinition>();
             configurator.AddConsumer<OrderPaymentSucceededConsumer, OrderPaymentSucceededConsumerDefinition>();
@@ -81,6 +89,7 @@ public static class MessagingConfigurationExtensions
         services.AddScoped<IOutboxWriter, DapperOutboxWriter>();
         services.AddScoped<IOutboxProcessor, DapperOutboxProcessor>();
         services.AddScoped<IInboxRepository, DapperInboxRepository>();
+        services.AddScoped<OutboxMessageStimulateInit>();
 
         services.AddScoped<ProcessPaymentRequestedHandler>();
         
@@ -88,7 +97,14 @@ public static class MessagingConfigurationExtensions
         services.AddSingleton(provider => new DomainEventTypeRegistry(
             provider.GetServices<DomainEventTypeRegistration>()));
         
-        services.AddDomainEvent<PaymentRequested>(PaymentMessagingNames.PaymentRequestedExchange);
+        // Register domain event that store in database
+        // First I will use that event name (not mention version of that event) -> update later
+        // services.AddDomainEvent<PaymentRequested>(PaymentMessagingNames.PaymentRequestedExchange);
+        // services.AddDomainEvent<PaymentSucceededEvent>(PaymentMessagingNames.PaymentSucceededExchange);
+        // services.AddDomainEvent<PaymentFailedEvent>(PaymentMessagingNames.PaymentFailedExchange);
+        
+        services.AddDomainEvent<PaymentRequested>(nameof(PaymentRequested));
+        
         services.AddDomainEvent<PaymentSucceededEvent>(PaymentMessagingNames.PaymentSucceededExchange);
         services.AddDomainEvent<PaymentFailedEvent>(PaymentMessagingNames.PaymentFailedExchange);
         return services;

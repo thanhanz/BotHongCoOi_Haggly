@@ -11,8 +11,7 @@ namespace Haggly.Infrastructure.Messaging.Outbox;
 
 public sealed class DapperOutboxWriter(
     HagglyDbContext dbContext,
-    DomainEventTypeRegistry eventTypes,
-    TimeProvider timeProvider) : IOutboxWriter
+    DomainEventTypeRegistry eventTypes) : IOutboxWriter
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -20,10 +19,10 @@ public sealed class DapperOutboxWriter(
         """
         INSERT INTO messaging.outbox_messages
             ("Id", "EventType", "Payload", "CorrelationId",
-             "OccurredAt", "CreatedAt", "ProcessedAt")
+             "OccurredAt", "ProcessedAt")
         VALUES
             (@Id, @EventType, CAST(@Payload AS jsonb), @CorrelationId,
-             @OccurredAt, @CreatedAt, NULL);
+             @OccurredAt, NULL);
         """;
 
     public async Task WriteAsync<TEvent>(
@@ -52,8 +51,7 @@ public sealed class DapperOutboxWriter(
                 EventType = eventType,
                 Payload = payload,
                 domainEvent.CorrelationId,
-                domainEvent.OccurredAt,
-                CreatedAt = timeProvider.GetUtcNow()
+                domainEvent.OccurredAt
             },
             currentTransaction.GetDbTransaction(),
             cancellationToken: cancellationToken));

@@ -5,6 +5,7 @@ using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Messaging.Serialization;
 using Haggly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Haggly.IntegrationTests.Infrastructure.Persistence.Outbox;
@@ -126,8 +127,8 @@ public sealed class DapperOutboxProcessorTests
             [
                 DomainEventTypeRegistration.For<TestOutboxEvent>("tests.outbox-event.v1")
             ]),
-            publisher ?? new RecordingDomainEventPublisher(),
-            TimeProvider.System);
+            publisher ?? new RecordingDomainEventPublisher(), 
+            NullLogger<DapperOutboxProcessor>.Instance);
 
     private static DapperOutboxWriter CreateWriter(HagglyDbContext dbContext)
         => new(
@@ -135,8 +136,7 @@ public sealed class DapperOutboxProcessorTests
             new DomainEventTypeRegistry(
             [
                 DomainEventTypeRegistration.For<TestOutboxEvent>("tests.outbox-event.v1")
-            ]),
-            TimeProvider.System);
+            ]));
 
     private static async Task InsertOutboxMessageAsync(TestOutboxEvent domainEvent)
     {

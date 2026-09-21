@@ -10,6 +10,7 @@ using Haggly.Api.Endpoints.Payments;
 using Haggly.Api.Endpoints.Finance;
 using Haggly.Api.Endpoints.Discovery;
 using Haggly.Infrastructure.Messaging;
+using Haggly.Infrastructure.Messaging.Outbox;
 using Haggly.Infrastructure.Payments;
 
 public partial class Program
@@ -50,6 +51,12 @@ public partial class Program
             await ApplicationDataSeeder.SeedAsync(
                 scope.ServiceProvider.GetRequiredService<HagglyDbContext>(),
                 scope.ServiceProvider.GetRequiredService<Haggly.Application.Abstractions.Identity.IPasswordHasher>());
+            if (app.Configuration.GetValue<bool>($"{OutboxBenchmarkOptions.SectionName}:Enabled"))
+            {
+                await scope.ServiceProvider
+                    .GetRequiredService<OutboxMessageStimulateInit>()
+                    .SeedDataAsync();
+            }
         }
 
         //Middleware start here
@@ -78,6 +85,7 @@ public partial class Program
         app.MapPaymentEndpoints();
         app.MapRevenueReportEndpoints();
         app.MapDiscoveryEndpoints();
+        app.MapMarketplaceSearchEndpoints();
 
         app.Run();
     }
