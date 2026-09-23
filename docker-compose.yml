@@ -1,6 +1,5 @@
-# Shared local infrastructure for both application boundaries. The Next.js
-# frontend and .NET API are currently run from their respective directories on
-# the host during development.
+# Shared local application stack. The frontend is still run from its directory
+# on the host, while the API and its infrastructure run in containers.
 services:
   postgres:
     image: postgres:17
@@ -23,8 +22,8 @@ services:
     image: rabbitmq:4-management
     container_name: haggly-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: haggly
+      RABBITMQ_DEFAULT_PASS: 1234
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -33,6 +32,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: haggly-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__HagglyDatabase: Host=postgres;Port=5432;Database=haggly;Username=postgres;Password=1234
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: haggly
+      RabbitMq__Password: 1234
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   haggly-postgres-data:
