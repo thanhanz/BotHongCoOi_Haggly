@@ -23,6 +23,10 @@ database/local/*
 # Test output
 /coverage/
 
+# Locally packed repository tools
+/.artifacts/
+/backend/.artifacts/
+
 # Local environment
 .env*.local
 

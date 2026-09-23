@@ -22,44 +22,64 @@ Wait for PostgreSQL and RabbitMQ to report `healthy`. Development settings use P
 From `backend/`:
 
 ```powershell
-dotnet tool restore
 dotnet restore Haggly.slnx
 dotnet build Haggly.slnx --no-restore
 ```
 
-### 3. Apply migrations
+### 3. Install the administration tool
+
+From `backend/`, install the repository-local tool:
 
 ```powershell
-dotnet ef database update `
-  --project src\Haggly.Infrastructure\Haggly.Infrastructure.csproj `
-  --startup-project src\Haggly.Api\Haggly.Api.csproj `
-  -- `
-  --connection "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
+.\scripts\install-haggly-tool.ps1
+```
+
+On Linux or macOS, use `bash scripts/install-haggly-tool.sh`. The generated
+tool package is kept under the ignored `.artifacts/` directory.
+
+Set the database connection for the current shell instead of placing its
+password in command history:
+
+```powershell
+$env:HAGGLY_CONNECTION_STRING = "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
+```
+
+On Linux or macOS:
+
+```bash
+export HAGGLY_CONNECTION_STRING='Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234'
+```
+
+### 4. Apply migrations
+
+```powershell
+dotnet haggly migrate
 ```
 
 The API also applies pending migrations during Development startup. The explicit command is needed before the standalone Discovery import.
 
-### 4. Import Discovery seed data
+### 5. Import Discovery seed data
 
 Validate the JSON files without changing the database:
 
 ```powershell
-dotnet run --project tools\Haggly.DataImport\Haggly.DataImport.csproj -- validate
+dotnet haggly validate-reference
 ```
 
 Import canonical ingredients, common dishes, and their relations:
 
 ```powershell
-dotnet run --project tools\Haggly.DataImport\Haggly.DataImport.csproj -- `
-  import `
-  --connection "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
+dotnet haggly seed-reference
 ```
 
-The repeatable importer reads `seed/` by default. It also accepts `HAGGLY_CONNECTION_STRING` and `--seed-dir <path>`.
+The repeatable importer reads `seed/` by default. It also accepts
+`HAGGLY_CONNECTION_STRING`, `--connection <connection-string>`, and
+`--seed-dir <path>`. Migration and reference seeding are intentionally separate
+commands.
 
 Run this import before the first API start. Discovery marketplace products are seeded only after all required canonical ingredients exist. If the API was already started, import the data and restart it.
 
-### 5. Run the API and application seed
+### 6. Run the API and application seed
 
 ```powershell
 dotnet run --project src\Haggly.Api\Haggly.Api.csproj
@@ -71,7 +91,7 @@ The launch profile sets `ASPNETCORE_ENVIRONMENT=Development`. Startup creates re
 - Swagger: `https://localhost:58557/swagger`
 - RabbitMQ management: `http://localhost:15672`
 
-### 6. Run tests
+### 7. Run tests
 
 ```powershell
 dotnet test tests\Haggly.UnitTests\Haggly.UnitTests.csproj --no-build
