@@ -98,7 +98,7 @@ lines by `posSaleId`. Both endpoints require the owning vendor.
 3. Buyer cart APIs (order APIs implemented; cart deferred).
 4. Negotiation.
 5. Payment and pickup.
-6. Revenue and reporting APIs.
+6. Broader revenue and reporting APIs (summary revenue MVP implemented).
 
 Each slice should be implemented vertically through Domain, Application,
 Infrastructure, API, and focused tests. Cross-module workflows belong to one
@@ -318,25 +318,36 @@ Rules:
 - A fulfillment cannot be picked up twice.
 - An order is completed only after all active stall fulfillments are picked up.
 
-## 9. Revenue and reporting APIs (remaining)
+## 9. Revenue and reporting APIs (summary MVP implemented)
 
 ```http
-GET /api/v1/vendor/reports/sales?from=&to=&stallId=
-GET /api/v1/vendor/reports/revenue?from=&to=&stallId=
-GET /api/v1/vendor/reports/inventory?from=&to=&stallId=
-GET /api/v1/admin/reports/markets?from=&to=&marketId=
-GET /api/v1/admin/audit-log?entityType=&entityId=&from=&to=
+GET /api/v1/vendor/reports/revenue?from=&to=&saleChannel=&stallId=
+GET /api/v1/admin/reports/revenue?from=&to=&saleChannel=&marketId=&vendorId=&stallId=
 ```
 
 Rules:
 
-- Vendors see only their own stall data.
-- POS revenue ledger persistence is implemented; reporting projections remain
-  to be added.
-- Revenue belongs to a stall and is reduced by refunds.
-- Reports are projections over orders, payments, inventory ledgers, and revenue
-  entries; they do not become a second source of truth.
-- Administrative audit queries must preserve actor and timestamp information.
+- Vendors see only their own current stall data; an inaccessible selected stall
+  is returned as not found.
+- Reports count one completed POS transaction or one paid online stall
+  fulfillment as one sale. A multi-stall online order therefore contributes one
+  sale to each participating stall.
+- `NetRevenue` is the sum of matching `SALE` revenue-entry `NetAmount` values.
+- `saleChannel` accepts `ALL`, `POS`, or `ONLINE` and defaults to `ALL`.
+- `from` defaults to 00:00 UTC today and `to` defaults to the current UTC time.
+  Supplied values are normalized to UTC and the range cannot exceed 366 days.
+- Vendor responses contain totals and per-stall summaries. Administrator
+  responses contain overall totals grouped by vendor and stall.
+- Reports are projections over revenue entries and do not become a second source
+  of truth.
+
+Deferred reporting work:
+
+- Refund processing and refund-aware reporting.
+- Detailed sales and order rows.
+- Inventory reporting.
+- Administrative audit logs preserving actor and timestamp information.
+- CSV or spreadsheet exports and market-specific administrator scope.
 
 ## Common API conventions
 

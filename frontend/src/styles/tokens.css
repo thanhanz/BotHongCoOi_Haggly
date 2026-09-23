@@ -1,0 +1,63 @@
+:root {
+  /* Brand */
+  --brand-primary: #1e513a;
+  --brand-primary-hover: #17422f;
+  --brand-primary-active: #123526;
+  --brand-secondary: #c85a32;
+  --brand-secondary-hover: #ad4825;
+  --brand-secondary-active: #8f391d;
+  --brand-tertiary: #e89a3c;
+  --brand-tertiary-hover: #cf8127;
+  --brand-tertiary-active: #ad681d;
+
+  /* Surfaces and content */
+  --surface-canvas: #f2fcf4;;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f2ede4;
+  --surface-container: #f7f3ec;
+  --text-primary: #1c2520;
+  --text-secondary: #66706a;
+  --text-inverse: #ffffff;
+  --border-subtle: rgba(28, 37, 32, 0.08);
+  --border-prominent: rgba(28, 37, 32, 0.16);
+
+  /* Semantic states */
+  --state-success: #1e513a;
+  --state-warning: #c77e23;
+  --state-error: #ba1a1a;
+  --state-error-hover: #9f1515;
+  --state-error-active: #861111;
+  --state-error-surface: #ffedea;
+  --status-ready-background: #e8efea;
+  --status-ready-text: #1e513a;
+  --status-preparing-background: #fef3e2;
+  --status-preparing-text: #c77e23;
+  --status-awaiting-pickup-background: #f9ece7;
+  --status-awaiting-pickup-text: #c85a32;
+
+  /* Spacing: 8px base with a 4px compact half-step */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* Shape */
+  --radius-badge: 0.375rem;
+  --radius-control: 0.5rem;
+  --radius-card: 1rem;
+  --radius-modal: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(28, 37, 32, 0.04), 0 8px 24px rgba(28, 37, 32, 0.05);
+  --shadow-overlay: 0 24px 64px rgba(28, 37, 32, 0.16);
+
+  /* Controls */
+  --control-height-sm: 2rem;
+  --control-height-md: 2.5rem;
+  --control-height-lg: 3rem;
+}

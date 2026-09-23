@@ -1,0 +1,4436 @@
+[
+  {
+    "id": "dish3428",
+    "name_vi": "Bún bò Huế",
+    "name_normalized": "bun bo hue",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01232",
+        "name_vi": "Chân giò heo",
+        "name_normalized": "chan gio heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04889",
+        "name_vi": "Nạm bò",
+        "name_normalized": "nam bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00353",
+        "name_vi": "Bún sợi to",
+        "name_normalized": "bun soi to",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre02626",
+        "name_vi": "Huyết bò hoặc heo",
+        "name_normalized": "huyet bo hoac heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01265",
+        "name_vi": "Chả cua hay chả bò",
+        "name_normalized": "cha cua hay cha bo",
+        "category": "cold_cuts:_sausages_&_ham"
+      },
+      {
+        "ingredient_id": "ingre02093",
+        "name_vi": "Dầu màu điều",
+        "name_normalized": "dau mau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre05900",
+        "name_vi": "Sả",
+        "name_normalized": "sa",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02485",
+        "name_vi": "Gừng",
+        "name_normalized": "gung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04151",
+        "name_vi": "Mắm ruốc",
+        "name_normalized": "mam ruoc",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02337",
+        "name_vi": "Giá đỗ",
+        "name_normalized": "gia do",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04059",
+        "name_vi": "Mùi tàu/húng quế",
+        "name_normalized": "mui tau hung que",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02575",
+        "name_vi": "Hoa chuối",
+        "name_normalized": "hoa chuoi",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3155",
+    "name_vi": "Phở bò Hà Nội",
+    "name_normalized": "pho bo ha noi",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre07434",
+        "name_vi": "Xương ống bò",
+        "name_normalized": "xuong ong bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07414",
+        "name_vi": "Xương bò có lẫn thịt",
+        "name_normalized": "xuong bo co lan thit",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00450",
+        "name_vi": "Bắp bò",
+        "name_normalized": "bap bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06312",
+        "name_vi": "Thịt bò loại ngon",
+        "name_normalized": "thit bo loai ngon",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02512",
+        "name_vi": "Gừng nhỏ",
+        "name_normalized": "gung nho",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06772",
+        "name_vi": "Trái thảo",
+        "name_normalized": "trai thao",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre02584",
+        "name_vi": "Hoa hồi",
+        "name_normalized": "hoa hoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06211",
+        "name_vi": "Thanh quế nhỏ",
+        "name_normalized": "thanh que nho",
+        "category": "others"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3131",
+    "name_vi": "Bún riêu miền Nam",
+    "name_normalized": "bun rieu mien nam",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01344",
+        "name_vi": "Cua đồng",
+        "name_normalized": "cua dong",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre01354",
+        "name_vi": "Cà chua",
+        "name_normalized": "ca chua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06823",
+        "name_vi": "Trứng gà",
+        "name_normalized": "trung ga",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02629",
+        "name_vi": "Huyết heo",
+        "name_normalized": "huyet heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07740",
+        "name_vi": "Đậu hũ",
+        "name_normalized": "dau hu",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07422",
+        "name_vi": "Xương heo",
+        "name_normalized": "xuong heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06414",
+        "name_vi": "Thịt heo xay",
+        "name_normalized": "thit heo xay",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02657",
+        "name_vi": "Hành băm",
+        "name_normalized": "hanh bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02926",
+        "name_vi": "Hạt cà ri",
+        "name_normalized": "hat ca ri",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02430",
+        "name_vi": "Gạch cua còn nguyên",
+        "name_normalized": "gach cua con nguyen",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre04490",
+        "name_vi": "Nước",
+        "name_normalized": "nuoc",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00352",
+        "name_vi": "Bún sợi nhỏ",
+        "name_normalized": "bun soi nho",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02724",
+        "name_vi": "Hành ngò",
+        "name_normalized": "hanh ngo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04159",
+        "name_vi": "Mắm tôm",
+        "name_normalized": "mam tom",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01292",
+        "name_vi": "Chả lụa",
+        "name_normalized": "cha lua",
+        "category": "cold_cuts:_sausages_&_ham"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4163",
+    "name_vi": "Bún chả Hà Nội",
+    "name_normalized": "bun cha ha noi",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00357",
+        "name_vi": "Bún tươi",
+        "name_normalized": "bun tuoi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre06275",
+        "name_vi": "Thịt ba chỉ",
+        "name_normalized": "thit ba chi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06415",
+        "name_vi": "Thịt heo xay nhuyễn",
+        "name_normalized": "thit heo xay nhuyen",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01419",
+        "name_vi": "Cà rốt",
+        "name_normalized": "ca rot",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07909",
+        "name_vi": "Đủ đủ xanh",
+        "name_normalized": "du du xanh",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07500",
+        "name_vi": "Đu đủ xanh",
+        "name_normalized": "du du xanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre05380",
+        "name_vi": "Rau sống các loại",
+        "name_normalized": "rau song cac loai",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02774",
+        "name_vi": "Hành tím băm",
+        "name_normalized": "hanh tim bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07971",
+        "name_vi": "Ớt băm",
+        "name_normalized": "ot bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02080",
+        "name_vi": "Dầu hào",
+        "name_normalized": "dau hao",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04124",
+        "name_vi": "Mật ong",
+        "name_normalized": "mat ong",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04672",
+        "name_vi": "Nước màu",
+        "name_normalized": "nuoc mau",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02355",
+        "name_vi": "Giấm",
+        "name_normalized": "giam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4019",
+    "name_vi": "Bún thịt nướng",
+    "name_normalized": "bun thit nuong",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06398",
+        "name_vi": "Thịt heo",
+        "name_normalized": "thit heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00357",
+        "name_vi": "Bún tươi",
+        "name_normalized": "bun tuoi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre05379",
+        "name_vi": "Rau sống",
+        "name_normalized": "rau song",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04124",
+        "name_vi": "Mật ong",
+        "name_normalized": "mat ong",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04790",
+        "name_vi": "Nước tương",
+        "name_normalized": "nuoc tuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04675",
+        "name_vi": "Nước màu dừa",
+        "name_normalized": "nuoc mau dua",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre02093",
+        "name_vi": "Dầu màu điều",
+        "name_normalized": "dau mau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre02080",
+        "name_vi": "Dầu hào",
+        "name_normalized": "dau hao",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00815",
+        "name_vi": "Bột ngũ vị hương",
+        "name_normalized": "bot ngu vi huong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00682",
+        "name_vi": "Bột hành",
+        "name_normalized": "bot hanh",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00978",
+        "name_vi": "Bột tỏi",
+        "name_normalized": "bot toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3458",
+    "name_vi": "Bún mắm",
+    "name_normalized": "bun mam",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02563",
+        "name_vi": "Heo quay",
+        "name_normalized": "heo quay",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01513",
+        "name_vi": "Cá diêu hồng",
+        "name_normalized": "ca dieu hong",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre01280",
+        "name_vi": "Chả cá thác lác",
+        "name_normalized": "cha ca thac lac",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre04264",
+        "name_vi": "Mực",
+        "name_normalized": "muc",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre04144",
+        "name_vi": "Mắm cá sặc",
+        "name_normalized": "mam ca sac",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01444",
+        "name_vi": "Cà tím",
+        "name_normalized": "ca tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06247",
+        "name_vi": "Thơm",
+        "name_normalized": "thom",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05900",
+        "name_vi": "Sả",
+        "name_normalized": "sa",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre08055",
+        "name_vi": "Ớt sừng",
+        "name_normalized": "ot sung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03085",
+        "name_vi": "Hẹ",
+        "name_normalized": "he",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00357",
+        "name_vi": "Bún tươi",
+        "name_normalized": "bun tuoi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3115",
+    "name_vi": "Bún cá dọc mùng",
+    "name_normalized": "bun ca doc mung",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01610",
+        "name_vi": "Cá rô phi",
+        "name_normalized": "ca ro phi",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre02147",
+        "name_vi": "Dọc mùng",
+        "name_normalized": "doc mung",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01354",
+        "name_vi": "Cà chua",
+        "name_normalized": "ca chua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06233",
+        "name_vi": "Thì là",
+        "name_normalized": "thi la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06823",
+        "name_vi": "Trứng gà",
+        "name_normalized": "trung ga",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00598",
+        "name_vi": "Bột chiên giòn",
+        "name_normalized": "bot chien gion",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre08026",
+        "name_vi": "Ớt hiểm",
+        "name_normalized": "ot hiem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre00804",
+        "name_vi": "Bột nghệ",
+        "name_normalized": "bot nghe",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00361",
+        "name_vi": "Bún tươi/ rau ăn kèm/ hành phi",
+        "name_normalized": "bun tuoi rau an kem hanh phi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3128",
+    "name_vi": "Bún mọc sườn",
+    "name_normalized": "bun moc suon",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00357",
+        "name_vi": "Bún tươi",
+        "name_normalized": "bun tuoi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre05882",
+        "name_vi": "Sườn heo",
+        "name_normalized": "suon heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04175",
+        "name_vi": "Mọc",
+        "name_normalized": "moc",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07742",
+        "name_vi": "Đậu hũ chiên",
+        "name_normalized": "dau hu chien",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre01868",
+        "name_vi": "Củ cải trắng",
+        "name_normalized": "cu cai trang",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02730",
+        "name_vi": "Hành phi",
+        "name_normalized": "hanh phi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00587",
+        "name_vi": "Bột canh",
+        "name_normalized": "bot canh",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3118",
+    "name_vi": "Hủ tiếu gõ",
+    "name_normalized": "hu tieu go",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06055",
+        "name_vi": "Sợi hủ tiếu",
+        "name_normalized": "soi hu tieu",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre07422",
+        "name_vi": "Xương heo",
+        "name_normalized": "xuong heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06464",
+        "name_vi": "Thịt nạc heo",
+        "name_normalized": "thit nac heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06941",
+        "name_vi": "Tôm khô",
+        "name_normalized": "tom kho",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre01868",
+        "name_vi": "Củ cải trắng",
+        "name_normalized": "cu cai trang",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02329",
+        "name_vi": "Giá",
+        "name_normalized": "gia",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02730",
+        "name_vi": "Hành phi",
+        "name_normalized": "hanh phi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06927",
+        "name_vi": "Tóp mỡ",
+        "name_normalized": "top mo",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre00587",
+        "name_vi": "Bột canh",
+        "name_normalized": "bot canh",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre07635",
+        "name_vi": "Đường phèn",
+        "name_normalized": "duong phen",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3116",
+    "name_vi": "Mì quảng giò heo",
+    "name_normalized": "mi quang gio heo",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02346",
+        "name_vi": "Giò heo",
+        "name_normalized": "gio heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre03981",
+        "name_vi": "Mì quảng",
+        "name_normalized": "mi quang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre07781",
+        "name_vi": "Đậu phộng",
+        "name_normalized": "dau phong",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01023",
+        "name_vi": "Bột ớt Hàn Quốc",
+        "name_normalized": "bot ot han quoc",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02093",
+        "name_vi": "Dầu màu điều",
+        "name_normalized": "dau mau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3238",
+    "name_vi": "Cao lầu",
+    "name_normalized": "cao lau",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06398",
+        "name_vi": "Thịt heo",
+        "name_normalized": "thit heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07435",
+        "name_vi": "Xương ống heo",
+        "name_normalized": "xuong ong heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00791",
+        "name_vi": "Bột mì đa dụng",
+        "name_normalized": "bot mi da dung",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00668",
+        "name_vi": "Bột gạo",
+        "name_normalized": "bot gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04790",
+        "name_vi": "Nước tương",
+        "name_normalized": "nuoc tuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04381",
+        "name_vi": "Ngũ vị hương",
+        "name_normalized": "ngu vi huong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05391",
+        "name_vi": "Rau thơm ăn kèm",
+        "name_normalized": "rau thom an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02329",
+        "name_vi": "Giá",
+        "name_normalized": "gia",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3236",
+    "name_vi": "Bánh canh cua biển",
+    "name_normalized": "banh canh cua bien",
+    "category": "mon nuoc",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01335",
+        "name_vi": "Cua biển",
+        "name_normalized": "cua bien",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre00072",
+        "name_vi": "Bánh canh bột gạo",
+        "name_normalized": "banh canh bot gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre06963",
+        "name_vi": "Tôm tươi",
+        "name_normalized": "tom tuoi",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre04953",
+        "name_vi": "Nấm rơm",
+        "name_normalized": "nam rom",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06816",
+        "name_vi": "Trứng cút",
+        "name_normalized": "trung cut",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre01868",
+        "name_vi": "Củ cải trắng",
+        "name_normalized": "cu cai trang",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02724",
+        "name_vi": "Hành ngò",
+        "name_normalized": "hanh ngo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03849",
+        "name_vi": "Màu dầu điều",
+        "name_normalized": "mau dau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4256",
+    "name_vi": "Cơm tấm sườn nướng",
+    "name_normalized": "com tam suon nuong",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06491",
+        "name_vi": "Thịt sườn",
+        "name_normalized": "thit suon",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre05909",
+        "name_vi": "Sả cây",
+        "name_normalized": "sa cay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02779",
+        "name_vi": "Hành tím cỡ bự",
+        "name_normalized": "hanh tim co bu",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07899",
+        "name_vi": "Đồ chua ăn kèm",
+        "name_normalized": "do chua an kem",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre02029",
+        "name_vi": "Dưa leo/ cà chua",
+        "name_normalized": "dua leo ca chua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04790",
+        "name_vi": "Nước tương",
+        "name_normalized": "nuoc tuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06144",
+        "name_vi": "Sữa tươi",
+        "name_normalized": "sua tuoi",
+        "category": "milk"
+      },
+      {
+        "ingredient_id": "ingre04381",
+        "name_vi": "Ngũ vị hương",
+        "name_normalized": "ngu vi huong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04538",
+        "name_vi": "Nước cốt chanh",
+        "name_normalized": "nuoc cot chanh",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre04124",
+        "name_vi": "Mật ong",
+        "name_normalized": "mat ong",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02355",
+        "name_vi": "Giấm",
+        "name_normalized": "giam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish7083",
+    "name_vi": "Cơm chiên Dương Châu",
+    "name_normalized": "com chien duong chau",
+    "category": "mon chien",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01755",
+        "name_vi": "Cơm nguội",
+        "name_normalized": "com nguoi",
+        "category": "instant_foods"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre06823",
+        "name_vi": "Trứng gà",
+        "name_normalized": "trung ga",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01419",
+        "name_vi": "Cà rốt",
+        "name_normalized": "ca rot",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07818",
+        "name_vi": "Đậu que",
+        "name_normalized": "dau que",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03618",
+        "name_vi": "Lạp xưởng",
+        "name_normalized": "lap xuong",
+        "category": "cold_cuts:_sausages_&_ham"
+      },
+      {
+        "ingredient_id": "ingre01292",
+        "name_vi": "Chả lụa",
+        "name_normalized": "cha lua",
+        "category": "cold_cuts:_sausages_&_ham"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02080",
+        "name_vi": "Dầu hào",
+        "name_normalized": "dau hao",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04790",
+        "name_vi": "Nước tương",
+        "name_normalized": "nuoc tuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish7654",
+    "name_vi": "Cơm gà",
+    "name_normalized": "com ga",
+    "category": "mon hap",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02413",
+        "name_vi": "Gà đã được làm sạch",
+        "name_normalized": "ga da duoc lam sach",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02439",
+        "name_vi": "Gạo dẻo",
+        "name_normalized": "gao deo",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02485",
+        "name_vi": "Gừng",
+        "name_normalized": "gung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05900",
+        "name_vi": "Sả",
+        "name_normalized": "sa",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre08026",
+        "name_vi": "Ớt hiểm",
+        "name_normalized": "ot hiem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05359",
+        "name_vi": "Rau răm",
+        "name_normalized": "rau ram",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre00804",
+        "name_vi": "Bột nghệ",
+        "name_normalized": "bot nghe",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00838",
+        "name_vi": "Bột nêm",
+        "name_normalized": "bot nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5938",
+    "name_vi": "Thịt kho trứng luộc nước dừa",
+    "name_normalized": "thit kho trung luoc nuoc dua",
+    "category": "mon kho",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06275",
+        "name_vi": "Thịt ba chỉ",
+        "name_normalized": "thit ba chi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06823",
+        "name_vi": "Trứng gà",
+        "name_normalized": "trung ga",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02198",
+        "name_vi": "Dừa tươi",
+        "name_normalized": "dua tuoi",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish6018",
+    "name_vi": "Cá kho tộ",
+    "name_normalized": "ca kho to",
+    "category": "mon kho",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01636",
+        "name_vi": "Cá trê",
+        "name_normalized": "ca tre",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre04192",
+        "name_vi": "Mỡ heo",
+        "name_normalized": "mo heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre08026",
+        "name_vi": "Ớt hiểm",
+        "name_normalized": "ot hiem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06619",
+        "name_vi": "Tiêu hạt",
+        "name_normalized": "tieu hat",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish6250",
+    "name_vi": "Gà kho gừng",
+    "name_normalized": "ga kho gung",
+    "category": "mon kho",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02392",
+        "name_vi": "Gà",
+        "name_normalized": "ga",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02485",
+        "name_vi": "Gừng",
+        "name_normalized": "gung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04343",
+        "name_vi": "Ngò rí",
+        "name_normalized": "ngo ri",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5581",
+    "name_vi": "Bò kho khoai tây cà rốt",
+    "name_normalized": "bo kho khoai tay ca rot",
+    "category": "mon kho",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06215",
+        "name_vi": "Thịt bò",
+        "name_normalized": "thit bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02544",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01419",
+        "name_vi": "Cà rốt",
+        "name_normalized": "ca rot",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03222",
+        "name_vi": "Khoai tây",
+        "name_normalized": "khoai tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05302",
+        "name_vi": "Rau mùi",
+        "name_normalized": "rau mui",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04490",
+        "name_vi": "Nước",
+        "name_normalized": "nuoc",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5047",
+    "name_vi": "Bò lúc lắc",
+    "name_normalized": "bo luc lac",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06300",
+        "name_vi": "Thịt bò",
+        "name_normalized": "thit bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07999",
+        "name_vi": "Ớt chuông",
+        "name_normalized": "ot chuong",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03222",
+        "name_vi": "Khoai tây",
+        "name_normalized": "khoai tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04790",
+        "name_vi": "Nước tương",
+        "name_normalized": "nuoc tuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07028",
+        "name_vi": "Tương ớt",
+        "name_normalized": "tuong ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5053",
+    "name_vi": "Sườn xào chua ngọt",
+    "name_normalized": "suon xao chua ngot",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre05886",
+        "name_vi": "Sườn heo non",
+        "name_normalized": "suon heo non",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07999",
+        "name_vi": "Ớt chuông",
+        "name_normalized": "ot chuong",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02759",
+        "name_vi": "Hành tây nhỏ",
+        "name_normalized": "hanh tay nho",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02636",
+        "name_vi": "Hành",
+        "name_normalized": "hanh",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04326",
+        "name_vi": "Ngò",
+        "name_normalized": "ngo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02355",
+        "name_vi": "Giấm",
+        "name_normalized": "giam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish6374",
+    "name_vi": "Thịt rang cháy cạnh miền Bắc",
+    "name_normalized": "thit rang chay canh mien bac",
+    "category": "mon chien",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06275",
+        "name_vi": "Thịt ba chỉ",
+        "name_normalized": "thit ba chi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02667",
+        "name_vi": "Hành khô",
+        "name_normalized": "hanh kho",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre08078",
+        "name_vi": "Ớt tươi",
+        "name_normalized": "ot tuoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03958",
+        "name_vi": "Mì chính",
+        "name_normalized": "mi chinh",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00587",
+        "name_vi": "Bột canh",
+        "name_normalized": "bot canh",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04636",
+        "name_vi": "Nước hàng",
+        "name_normalized": "nuoc hang",
+        "category": "others"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5046",
+    "name_vi": "Rau muống xào tỏi",
+    "name_normalized": "rau muong xao toi",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre05289",
+        "name_vi": "Rau muống",
+        "name_normalized": "rau muong",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02080",
+        "name_vi": "Dầu hào",
+        "name_normalized": "dau hao",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5382",
+    "name_vi": "Mì xào bò rau cải",
+    "name_normalized": "mi xao bo rau cai",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre03963",
+        "name_vi": "Mì gói",
+        "name_normalized": "mi goi",
+        "category": "instant_foods"
+      },
+      {
+        "ingredient_id": "ingre06300",
+        "name_vi": "Thịt bò",
+        "name_normalized": "thit bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01792",
+        "name_vi": "Cải thìa",
+        "name_normalized": "cai thia",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04343",
+        "name_vi": "Ngò rí",
+        "name_normalized": "ngo ri",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02094",
+        "name_vi": "Dầu mè",
+        "name_normalized": "dau me",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish5013",
+    "name_vi": "Thịt bò xào hành tây",
+    "name_normalized": "thit bo xao hanh tay",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06300",
+        "name_vi": "Thịt bò",
+        "name_normalized": "thit bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4923",
+    "name_vi": "Mực xào sả ớt",
+    "name_normalized": "muc xao sa ot",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre04281",
+        "name_vi": "Mực ống",
+        "name_normalized": "muc ong",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre05917",
+        "name_vi": "Sả tươi",
+        "name_normalized": "sa tuoi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07993",
+        "name_vi": "Ớt cay",
+        "name_normalized": "ot cay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06996",
+        "name_vi": "Tương hột ớt",
+        "name_normalized": "tuong hot ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05531",
+        "name_vi": "Rượu gạo",
+        "name_normalized": "ruou gao",
+        "category": "alcoholic_beverages"
+      },
+      {
+        "ingredient_id": "ingre07381",
+        "name_vi": "Xì dầu",
+        "name_normalized": "xi dau",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04853",
+        "name_vi": "Nước đá",
+        "name_normalized": "nuoc da",
+        "category": "others"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0519",
+    "name_vi": "Canh chua cá lóc",
+    "name_normalized": "canh chua ca loc",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01549",
+        "name_vi": "Cá lóc",
+        "name_normalized": "ca loc",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06247",
+        "name_vi": "Thơm",
+        "name_normalized": "thom",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01354",
+        "name_vi": "Cà chua",
+        "name_normalized": "ca chua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07729",
+        "name_vi": "Đậu bắp",
+        "name_normalized": "dau bap",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00430",
+        "name_vi": "Bạc hà",
+        "name_normalized": "bac ha",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03663",
+        "name_vi": "Me vắt",
+        "name_normalized": "me vat",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre02337",
+        "name_vi": "Giá đỗ",
+        "name_normalized": "gia do",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04329",
+        "name_vi": "Ngò gai",
+        "name_normalized": "ngo gai",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre05336",
+        "name_vi": "Rau ngổ",
+        "name_normalized": "rau ngo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0526",
+    "name_vi": "Canh khổ qua nhồi thịt",
+    "name_normalized": "canh kho qua nhoi thit",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre03271",
+        "name_vi": "Khổ qua",
+        "name_normalized": "kho qua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06329",
+        "name_vi": "Thịt băm",
+        "name_normalized": "thit bam",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04930",
+        "name_vi": "Nấm mèo",
+        "name_normalized": "nam meo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06853",
+        "name_vi": "Trứng vịt",
+        "name_normalized": "trung vit",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04608",
+        "name_vi": "Nước dùng heo",
+        "name_normalized": "nuoc dung heo",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0729",
+    "name_vi": "Canh rau ngót thịt băm",
+    "name_normalized": "canh rau ngot thit bam",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre05334",
+        "name_vi": "Rau ngót",
+        "name_normalized": "rau ngot",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06403",
+        "name_vi": "Thịt heo băm",
+        "name_normalized": "thit heo bam",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0330",
+    "name_vi": "Canh bí đỏ thịt bằm",
+    "name_normalized": "canh bi do thit bam",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00253",
+        "name_vi": "Bí đỏ",
+        "name_normalized": "bi do",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06336",
+        "name_vi": "Thịt bằm",
+        "name_normalized": "thit bam",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01809",
+        "name_vi": "Cần tàu",
+        "name_normalized": "can tau",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0810",
+    "name_vi": "Canh cua rau đay",
+    "name_normalized": "canh cua rau day",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01344",
+        "name_vi": "Cua đồng",
+        "name_normalized": "cua dong",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre05431",
+        "name_vi": "Rau đay",
+        "name_normalized": "rau day",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05320",
+        "name_vi": "Rau mồng tơi",
+        "name_normalized": "rau mong toi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04104",
+        "name_vi": "Mướp hương",
+        "name_normalized": "muop huong",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02774",
+        "name_vi": "Hành tím băm",
+        "name_normalized": "hanh tim bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02276",
+        "name_vi": "Gia vị",
+        "name_normalized": "gia vi",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0184",
+    "name_vi": "Canh bí đao thịt bằm",
+    "name_normalized": "canh bi dao thit bam",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00247",
+        "name_vi": "Bí đao",
+        "name_normalized": "bi dao",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06398",
+        "name_vi": "Thịt heo",
+        "name_normalized": "thit heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04343",
+        "name_vi": "Ngò rí",
+        "name_normalized": "ngo ri",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0303",
+    "name_vi": "Canh bầu nấu tôm",
+    "name_normalized": "canh bau nau tom",
+    "category": "mon canh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00440",
+        "name_vi": "Bầu",
+        "name_normalized": "bau",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04343",
+        "name_vi": "Ngò rí",
+        "name_normalized": "ngo ri",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish8923",
+    "name_vi": "Gỏi cuốn tôm thịt",
+    "name_normalized": "goi cuon tom thit",
+    "category": "an vat",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06398",
+        "name_vi": "Thịt heo",
+        "name_normalized": "thit heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre03085",
+        "name_vi": "Hẹ",
+        "name_normalized": "he",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00357",
+        "name_vi": "Bún tươi",
+        "name_normalized": "bun tuoi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00198",
+        "name_vi": "Bánh tráng mỏng",
+        "name_normalized": "banh trang mong",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre04538",
+        "name_vi": "Nước cốt chanh",
+        "name_normalized": "nuoc cot chanh",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03818",
+        "name_vi": "Muối/ đường",
+        "name_normalized": "muoi duong",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish6334",
+    "name_vi": "Chả giò miền Bắc",
+    "name_normalized": "cha gio mien bac",
+    "category": "mon chien",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06289",
+        "name_vi": "Thịt ba rọi",
+        "name_normalized": "thit ba roi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01419",
+        "name_vi": "Cà rốt",
+        "name_normalized": "ca rot",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00457",
+        "name_vi": "Bắp cải",
+        "name_normalized": "bap cai",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04179",
+        "name_vi": "Mộc nhĩ",
+        "name_normalized": "moc nhi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00355",
+        "name_vi": "Bún tàu",
+        "name_normalized": "bun tau",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre06853",
+        "name_vi": "Trứng vịt",
+        "name_normalized": "trung vit",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00187",
+        "name_vi": "Bánh tráng cuốn chả giò",
+        "name_normalized": "banh trang cuon cha gio",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06619",
+        "name_vi": "Tiêu hạt",
+        "name_normalized": "tieu hat",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0924",
+    "name_vi": "Bánh xèo miền Nam",
+    "name_normalized": "banh xeo mien nam",
+    "category": "mon banh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00668",
+        "name_vi": "Bột gạo",
+        "name_normalized": "bot gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00806",
+        "name_vi": "Bột nghệ/Nước nghệ tươi",
+        "name_normalized": "bot nghe nuoc nghe tuoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04628",
+        "name_vi": "Nước dừa tươi/Nước lọc",
+        "name_normalized": "nuoc dua tuoi nuoc loc",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06963",
+        "name_vi": "Tôm tươi",
+        "name_normalized": "tom tuoi",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre06275",
+        "name_vi": "Thịt ba chỉ",
+        "name_normalized": "thit ba chi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02329",
+        "name_vi": "Giá",
+        "name_normalized": "gia",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre08097",
+        "name_vi": "Ớt đỏ",
+        "name_normalized": "ot do",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish0922",
+    "name_vi": "Bánh cuốn Bắc",
+    "name_normalized": "banh cuon bac",
+    "category": "mon banh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00668",
+        "name_vi": "Bột gạo",
+        "name_normalized": "bot gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre04490",
+        "name_vi": "Nước",
+        "name_normalized": "nuoc",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre06414",
+        "name_vi": "Thịt heo xay",
+        "name_normalized": "thit heo xay",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04179",
+        "name_vi": "Mộc nhĩ",
+        "name_normalized": "moc nhi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04909",
+        "name_vi": "Nấm hươn g",
+        "name_normalized": "nam huon g",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02730",
+        "name_vi": "Hành phi",
+        "name_normalized": "hanh phi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish1269",
+    "name_vi": "Bánh khọt",
+    "name_normalized": "banh khot",
+    "category": "mon banh",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre06457",
+        "name_vi": "Thịt nạc băm",
+        "name_normalized": "thit nac bam",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04264",
+        "name_vi": "Mực",
+        "name_normalized": "muc",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre00668",
+        "name_vi": "Bột gạo",
+        "name_normalized": "bot gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre01724",
+        "name_vi": "Cơm",
+        "name_normalized": "com",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre04554",
+        "name_vi": "Nước cốt dừa",
+        "name_normalized": "nuoc cot dua",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre00598",
+        "name_vi": "Bột chiên giòn",
+        "name_normalized": "bot chien gion",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre04930",
+        "name_vi": "Nấm mèo",
+        "name_normalized": "nam meo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00804",
+        "name_vi": "Bột nghệ",
+        "name_normalized": "bot nghe",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04622",
+        "name_vi": "Nước dừa",
+        "name_normalized": "nuoc dua",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre00849",
+        "name_vi": "Bột năng",
+        "name_normalized": "bot nang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre06823",
+        "name_vi": "Trứng gà",
+        "name_normalized": "trung ga",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre08026",
+        "name_vi": "Ớt hiểm",
+        "name_normalized": "ot hiem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4345",
+    "name_vi": "Bánh mì thịt nướng",
+    "name_normalized": "banh mi thit nuong",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06414",
+        "name_vi": "Thịt heo xay",
+        "name_normalized": "thit heo xay",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05905",
+        "name_vi": "Sả băm",
+        "name_normalized": "sa bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04124",
+        "name_vi": "Mật ong",
+        "name_normalized": "mat ong",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02080",
+        "name_vi": "Dầu hào",
+        "name_normalized": "dau hao",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07012",
+        "name_vi": "Tương đen",
+        "name_normalized": "tuong den",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02094",
+        "name_vi": "Dầu mè",
+        "name_normalized": "dau me",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre06644",
+        "name_vi": "Tiêu xay",
+        "name_normalized": "tieu xay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07962",
+        "name_vi": "Ổ bánh mì",
+        "name_normalized": "o banh mi",
+        "category": "others"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish3797",
+    "name_vi": "Nem nướng Ninh Hòa",
+    "name_normalized": "nem nuong ninh hoa",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06414",
+        "name_vi": "Thịt heo xay",
+        "name_normalized": "thit heo xay",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02350",
+        "name_vi": "Giò sống",
+        "name_normalized": "gio song",
+        "category": "cold_cuts:_sausages_&_ham"
+      },
+      {
+        "ingredient_id": "ingre04192",
+        "name_vi": "Mỡ heo",
+        "name_normalized": "mo heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre05022",
+        "name_vi": "Pate gan heo",
+        "name_normalized": "pate gan heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00178",
+        "name_vi": "Bánh tráng",
+        "name_normalized": "banh trang",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre00867",
+        "name_vi": "Bột nở",
+        "name_normalized": "bot no",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02093",
+        "name_vi": "Dầu màu điều",
+        "name_normalized": "dau mau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre00416",
+        "name_vi": "Bơ đậu phộng",
+        "name_normalized": "bo dau phong",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre00859",
+        "name_vi": "Bột nếp",
+        "name_normalized": "bot nep",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00362",
+        "name_vi": "Bún ăn kèm",
+        "name_normalized": "bun an kem",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre05424",
+        "name_vi": "Rau ăn kèm tùy sở thích",
+        "name_normalized": "rau an kem tuy so thich",
+        "category": "vegetables"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish8071",
+    "name_vi": "Gỏi gà bắp chuối (hoa chuối)",
+    "name_normalized": "goi ga bap chuoi hoa chuoi",
+    "category": "mon goi - salad",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02403",
+        "name_vi": "Gà ta",
+        "name_normalized": "ga ta",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00454",
+        "name_vi": "Bắp chuối bào sẵn",
+        "name_normalized": "bap chuoi bao san",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02758",
+        "name_vi": "Hành tây lớn",
+        "name_normalized": "hanh tay lon",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre05385",
+        "name_vi": "Rau thơm",
+        "name_normalized": "rau thom",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02730",
+        "name_vi": "Hành phi",
+        "name_normalized": "hanh phi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07791",
+        "name_vi": "Đậu phộng rang",
+        "name_normalized": "dau phong rang",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02370",
+        "name_vi": "Giấm trắng",
+        "name_normalized": "giam trang",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish8329",
+    "name_vi": "Gỏi đu đủ tôm thịt",
+    "name_normalized": "goi du du tom thit",
+    "category": "mon goi - salad",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre07491",
+        "name_vi": "Đu đủ",
+        "name_normalized": "du du",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre06275",
+        "name_vi": "Thịt ba chỉ",
+        "name_normalized": "thit ba chi",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre05359",
+        "name_vi": "Rau răm",
+        "name_normalized": "rau ram",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07971",
+        "name_vi": "Ớt băm",
+        "name_normalized": "ot bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07785",
+        "name_vi": "Đậu phộng giã",
+        "name_normalized": "dau phong gia",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre02730",
+        "name_vi": "Hành phi",
+        "name_normalized": "hanh phi",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04591",
+        "name_vi": "Nước cốt tắc",
+        "name_normalized": "nuoc cot tac",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4243",
+    "name_vi": "Gà nướng muối ớt bằng lò nướng",
+    "name_normalized": "ga nuong muoi ot bang lo nuong",
+    "category": "mon nuong",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02392",
+        "name_vi": "Gà",
+        "name_normalized": "ga",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07966",
+        "name_vi": "Ớt",
+        "name_normalized": "ot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02326",
+        "name_vi": "Gia vị ướp đồ nướng",
+        "name_normalized": "gia vi uop do nuong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03849",
+        "name_vi": "Màu dầu điều",
+        "name_normalized": "mau dau dieu",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre07977",
+        "name_vi": "Ớt bột",
+        "name_normalized": "ot bot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04381",
+        "name_vi": "Ngũ vị hương",
+        "name_normalized": "ngu vi huong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish7152",
+    "name_vi": "Cánh gà chiên nước mắm",
+    "name_normalized": "canh ga chien nuoc mam",
+    "category": "mon chien",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre01689",
+        "name_vi": "Cánh gà",
+        "name_normalized": "canh ga",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre05410",
+        "name_vi": "Rau xà lách",
+        "name_normalized": "rau xa lach",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00759",
+        "name_vi": "Bột mì",
+        "name_normalized": "bot mi",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre02768",
+        "name_vi": "Hành tím",
+        "name_normalized": "hanh tim",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4796",
+    "name_vi": "Đậu hũ sốt cà chua chay",
+    "name_normalized": "dau hu sot ca chua chay",
+    "category": "mon xao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre07742",
+        "name_vi": "Đậu hũ chiên",
+        "name_normalized": "dau hu chien",
+        "category": "snacks"
+      },
+      {
+        "ingredient_id": "ingre01354",
+        "name_vi": "Cà chua",
+        "name_normalized": "ca chua",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre02997",
+        "name_vi": "Hạt nêm chay",
+        "name_normalized": "hat nem chay",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish8490",
+    "name_vi": "Cháo gà nấm rơm",
+    "name_normalized": "chao ga nam rom",
+    "category": "mon tu ga",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02461",
+        "name_vi": "Gạo trắng",
+        "name_normalized": "gao trang",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre06380",
+        "name_vi": "Thịt gà",
+        "name_normalized": "thit ga",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre04953",
+        "name_vi": "Nấm rơm",
+        "name_normalized": "nam rom",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre00457",
+        "name_vi": "Bắp cải",
+        "name_normalized": "bap cai",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07063",
+        "name_vi": "Tỏi",
+        "name_normalized": "toi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01079",
+        "name_vi": "Chanh",
+        "name_normalized": "chanh",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre06612",
+        "name_vi": "Tiêu",
+        "name_normalized": "tieu",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish4365",
+    "name_vi": "Cháo lòng miền Tây",
+    "name_normalized": "chao long mien tay",
+    "category": "mon chao",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre02436",
+        "name_vi": "Gạo",
+        "name_normalized": "gao",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre02450",
+        "name_vi": "Gạo nếp",
+        "name_normalized": "gao nep",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre03572",
+        "name_vi": "Lòng heo",
+        "name_normalized": "long heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02242",
+        "name_vi": "Gan heo",
+        "name_normalized": "gan heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre07422",
+        "name_vi": "Xương heo",
+        "name_normalized": "xuong heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06558",
+        "name_vi": "Tim heo",
+        "name_normalized": "tim heo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre05574",
+        "name_vi": "Rượu trắng",
+        "name_normalized": "ruou trang",
+        "category": "alcoholic_beverages"
+      },
+      {
+        "ingredient_id": "ingre05900",
+        "name_vi": "Sả",
+        "name_normalized": "sa",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02485",
+        "name_vi": "Gừng",
+        "name_normalized": "gung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02673",
+        "name_vi": "Hành lá",
+        "name_normalized": "hanh la",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish7918",
+    "name_vi": "Lẩu Thái mini",
+    "name_normalized": "lau thai mini",
+    "category": "mon lau",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre06246",
+        "name_vi": "Thăn thịt bò",
+        "name_normalized": "than thit bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre06930",
+        "name_vi": "Tôm",
+        "name_normalized": "tom",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre07810",
+        "name_vi": "Đậu phụ",
+        "name_normalized": "dau phu",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre01648",
+        "name_vi": "Cá viên",
+        "name_normalized": "ca vien",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre00437",
+        "name_vi": "Bạch tuột",
+        "name_normalized": "bach tuot",
+        "category": "seafood_&_fish_balls"
+      },
+      {
+        "ingredient_id": "ingre05420",
+        "name_vi": "Rau ăn kèm",
+        "name_normalized": "rau an kem",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04022",
+        "name_vi": "Mì ăn liền hoặc bún",
+        "name_normalized": "mi an lien hoac bun",
+        "category": "instant_foods"
+      },
+      {
+        "ingredient_id": "ingre04647",
+        "name_vi": "Nước hầm xương",
+        "name_normalized": "nuoc ham xuong",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre08097",
+        "name_vi": "Ớt đỏ",
+        "name_normalized": "ot do",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03370",
+        "name_vi": "Lá chanh",
+        "name_normalized": "la chanh",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre04671",
+        "name_vi": "Nước me",
+        "name_normalized": "nuoc me",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre05911",
+        "name_vi": "Sả cắt khúc nhỏ",
+        "name_normalized": "sa cat khuc nho",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre07071",
+        "name_vi": "Tỏi băm",
+        "name_normalized": "toi bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02774",
+        "name_vi": "Hành tím băm",
+        "name_normalized": "hanh tim bam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre01363",
+        "name_vi": "Cà chua cỡ vừa",
+        "name_normalized": "ca chua co vua",
+        "category": "vegetables"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish7735",
+    "name_vi": "Lẩu bò thập cẩm",
+    "name_normalized": "lau bo thap cam",
+    "category": "mon lau",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre00450",
+        "name_vi": "Bắp bò",
+        "name_normalized": "bap bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre02415",
+        "name_vi": "Gân bò",
+        "name_normalized": "gan bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00006",
+        "name_vi": "Ba chỉ bò",
+        "name_normalized": "ba chi bo",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre00269",
+        "name_vi": "Bò viên",
+        "name_normalized": "bo vien",
+        "category": "fresh_meat"
+      },
+      {
+        "ingredient_id": "ingre01868",
+        "name_vi": "Củ cải trắng",
+        "name_normalized": "cu cai trang",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre03208",
+        "name_vi": "Khoai môn",
+        "name_normalized": "khoai mon",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02741",
+        "name_vi": "Hành tây",
+        "name_normalized": "hanh tay",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02485",
+        "name_vi": "Gừng",
+        "name_normalized": "gung",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05900",
+        "name_vi": "Sả",
+        "name_normalized": "sa",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre06900",
+        "name_vi": "Táo tàu",
+        "name_normalized": "tao tau",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre03334",
+        "name_vi": "Kỷ tử",
+        "name_normalized": "ky tu",
+        "category": "dried_fruits"
+      },
+      {
+        "ingredient_id": "ingre06271",
+        "name_vi": "Thảo quả",
+        "name_normalized": "thao qua",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre02987",
+        "name_vi": "Hạt ngò",
+        "name_normalized": "hat ngo",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02584",
+        "name_vi": "Hoa hồi",
+        "name_normalized": "hoa hoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05186",
+        "name_vi": "Quế",
+        "name_normalized": "que",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07012",
+        "name_vi": "Tương đen",
+        "name_normalized": "tuong den",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05574",
+        "name_vi": "Rượu trắng",
+        "name_normalized": "ruou trang",
+        "category": "alcoholic_beverages"
+      },
+      {
+        "ingredient_id": "ingre04694",
+        "name_vi": "Nước mắm",
+        "name_normalized": "nuoc mam",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre07635",
+        "name_vi": "Đường phèn",
+        "name_normalized": "duong phen",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre02124",
+        "name_vi": "Dầu ăn",
+        "name_normalized": "dau an",
+        "category": "others"
+      },
+      {
+        "ingredient_id": "ingre06874",
+        "name_vi": "Tàu hũ ky",
+        "name_normalized": "tau hu ky",
+        "category": "vegetables"
+      },
+      {
+        "ingredient_id": "ingre02995",
+        "name_vi": "Hạt nêm",
+        "name_normalized": "hat nem",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre00819",
+        "name_vi": "Bột ngọt",
+        "name_normalized": "bot ngot",
+        "category": "seasonings"
+      }
+    ],
+    "type": "dish"
+  },
+  {
+    "id": "dish9456",
+    "name_vi": "Xôi gấc",
+    "name_normalized": "xoi gac",
+    "category": "ngay le tet",
+    "ingredients": [
+      {
+        "ingredient_id": "ingre05161",
+        "name_vi": "Quả gấc",
+        "name_normalized": "qua gac",
+        "category": "fresh_fruits"
+      },
+      {
+        "ingredient_id": "ingre04984",
+        "name_vi": "Nếp Bắc",
+        "name_normalized": "nep bac",
+        "category": "grains_staples"
+      },
+      {
+        "ingredient_id": "ingre07583",
+        "name_vi": "Đường",
+        "name_normalized": "duong",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre04554",
+        "name_vi": "Nước cốt dừa",
+        "name_normalized": "nuoc cot dua",
+        "category": "beverages"
+      },
+      {
+        "ingredient_id": "ingre03746",
+        "name_vi": "Muối",
+        "name_normalized": "muoi",
+        "category": "seasonings"
+      },
+      {
+        "ingredient_id": "ingre05574",
+        "name_vi": "Rượu trắng",
+        "name_normalized": "ruou trang",
+        "category": "alcoholic_beverages"
+      }
+    ],
+    "type": "dish"
+  }
+]

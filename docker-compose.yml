@@ -1,3 +1,6 @@
+# Shared local infrastructure for both application boundaries. The Next.js
+# frontend and .NET API are currently run from their respective directories on
+# the host during development.
 services:
   postgres:
     image: postgres:17

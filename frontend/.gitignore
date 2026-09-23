@@ -1,0 +1,19 @@
+# Dependencies
+/node_modules/
+
+# Next.js build output
+/.next/
+/out/
+
+# Generated TypeScript state
+/next-env.d.ts
+*.tsbuildinfo
+
+# Test output
+/coverage/
+
+# Local environment
+.env*.local
+
+# Logs
+pnpm-debug.log*

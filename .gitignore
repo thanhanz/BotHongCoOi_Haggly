@@ -8,3 +8,23 @@ obj/
 appsettings.Local.json
 database/local/*
 !database/local/.gitkeep
+
+# Dependencies
+/node_modules/
+
+# Next.js build output
+/.next/
+/out/
+
+# Generated TypeScript state
+/next-env.d.ts
+*.tsbuildinfo
+
+# Test output
+/coverage/
+
+# Local environment
+.env*.local
+
+# Logs
+npm-debug.log*

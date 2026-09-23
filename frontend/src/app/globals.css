@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-primary-active: var(--brand-primary-active);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-secondary-hover: var(--brand-secondary-hover);
+  --color-brand-secondary-active: var(--brand-secondary-active);
+  --color-brand-tertiary: var(--brand-tertiary);
+  --color-brand-tertiary-hover: var(--brand-tertiary-hover);
+  --color-brand-tertiary-active: var(--brand-tertiary-active);
+  --color-surface-canvas: var(--surface-canvas);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-container: var(--surface-container);
+  --color-foreground-primary: var(--text-primary);
+  --color-foreground-secondary: var(--text-secondary);
+  --color-foreground-inverse: var(--text-inverse);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-prominent: var(--border-prominent);
+  --color-state-success: var(--state-success);
+  --color-state-warning: var(--state-warning);
+  --color-state-error: var(--state-error);
+  --color-state-error-hover: var(--state-error-hover);
+  --color-state-error-active: var(--state-error-active);
+  --color-state-error-surface: var(--state-error-surface);
+  --color-ready-background: var(--status-ready-background);
+  --color-ready-text: var(--status-ready-text);
+  --color-preparing-background: var(--status-preparing-background);
+  --color-preparing-text: var(--status-preparing-text);
+  --color-awaiting-pickup-background: var(--status-awaiting-pickup-background);
+  --color-awaiting-pickup-text: var(--status-awaiting-pickup-text);
+  --font-sans: var(--font-be-vietnam-pro);
+  --font-data: var(--font-space-grotesk);
+  --spacing-2xs: var(--space-2xs);
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+  --spacing-3xl: var(--space-3xl);
+  --radius-badge: var(--radius-badge);
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-modal: var(--radius-modal);
+  --radius-pill: var(--radius-pill);
+  --shadow-card: var(--shadow-card);
+  --shadow-overlay: var(--shadow-overlay);
+}
+
+* {
+  border-color: var(--border-subtle);
+}
+
+html {
+  background: var(--surface-canvas);
+}
+
+body {
+  margin: 0;
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-be-vietnam-pro), sans-serif;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: var(--brand-tertiary);
+  color: var(--text-primary);
+}
