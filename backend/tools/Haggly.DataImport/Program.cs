@@ -1,6 +1,7 @@
 using Haggly.DataImport;
 using Haggly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 const string connectionEnvironmentVariable = "HAGGLY_CONNECTION_STRING";
 
@@ -77,7 +78,10 @@ async Task<ValidatedDiscoverySeed> ValidateSeedAsync(CancellationToken cancellat
 
 HagglyDbContext CreateDbContext()
 {
-    var connection = Option("--connection") ?? Environment.GetEnvironmentVariable(connectionEnvironmentVariable);
+    var connection = Option("--connection")
+        ?? Environment.GetEnvironmentVariable(connectionEnvironmentVariable)
+        ?? Environment.GetEnvironmentVariable("ConnectionStrings__HagglyDatabase")
+        ?? ReadConnectionFromApiSettings();
     if (string.IsNullOrWhiteSpace(connection))
     {
         throw new InvalidOperationException(
@@ -88,6 +92,31 @@ HagglyDbContext CreateDbContext()
         .UseNpgsql(connection)
         .Options;
     return new HagglyDbContext(options);
+}
+
+static string? ReadConnectionFromApiSettings()
+{
+    var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+        ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+        ?? "Development";
+    var fileName = $"appsettings.{environment}.json";
+    var currentDirectory = Directory.GetCurrentDirectory();
+    var candidates = new[]
+    {
+        Path.Combine(currentDirectory, "src", "Haggly.Api", fileName),
+        Path.Combine(currentDirectory, "backend", "src", "Haggly.Api", fileName)
+    };
+    var settingsPath = candidates.FirstOrDefault(File.Exists);
+    if (settingsPath is null)
+    {
+        return null;
+    }
+
+    using var document = JsonDocument.Parse(File.ReadAllText(settingsPath));
+    return document.RootElement
+        .GetProperty("ConnectionStrings")
+        .GetProperty("HagglyDatabase")
+        .GetString();
 }
 
 static string ResolveSeedDirectory(string? configuredPath)
@@ -128,7 +157,8 @@ static void PrintHelp()
           dotnet haggly validate-reference [--seed-dir <path>]
 
         Connection:
-          Set HAGGLY_CONNECTION_STRING instead of passing --connection to avoid
-          storing a database password in shell history.
+          Resolution order: --connection, HAGGLY_CONNECTION_STRING,
+          ConnectionStrings__HagglyDatabase, then the API appsettings file for
+          DOTNET_ENVIRONMENT (Development by default).
         """);
 }

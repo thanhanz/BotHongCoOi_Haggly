@@ -37,8 +37,10 @@ From `backend/`, install the repository-local tool:
 On Linux or macOS, use `bash scripts/install-haggly-tool.sh`. The generated
 tool package is kept under the ignored `.artifacts/` directory.
 
-Set the database connection for the current shell instead of placing its
-password in command history:
+For local Development, the tool automatically reads
+src/Haggly.Api/appsettings.Development.json; no connection setup is required.
+To override it for another machine or deployment, set the connection for the
+current shell instead of placing its password in command history:
 
 ```powershell
 $env:HAGGLY_CONNECTION_STRING = "Host=localhost;Port=5433;Database=haggly;Username=postgres;Password=1234"
